@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 	}
 
 	resultServ = launch_server(communicationPort, UE4Port);
-	if(resultServ != 0){
+	if(resultServ != NO_ERROR){
 		msg = "Server stopped with errors\n";
 		write(1, msg, strlen(msg));
 		#ifdef DEBUG
