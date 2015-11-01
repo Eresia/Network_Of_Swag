@@ -18,5 +18,8 @@ client.o: client/client.h client/client.c
 launch_client.o: client/client.h client/launch_client.c
 	gcc -o client/launch_client.o -c client/launch_client.c
 
+clean_all: clean
+	rm *.out;
+
 clean:
-	rm client/*.o; rm server/*.o; rm *.out;
+	rm client/*.o; rm server/*.o;
