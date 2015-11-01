@@ -32,9 +32,14 @@ int main(int argc, char** argv){
       exit(0);
   }
 
+  char* buff = (char*) malloc(10*sizeof(char));
+  send(sock, "Bonjour", 7, 0);
+  printf("Message envoyé\n");
+  recv(sock, buff, 10, 0);
+  printf("Message reçu : %s\n", buff);
+
   closesocket(sock);
 
-  printf("Réussilol\n");
 
   return 0;
 }

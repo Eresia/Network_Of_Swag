@@ -6,11 +6,14 @@ int launch_server(int communicationPort, int UEPort){
   bool StopServer = false;
   int result;
   int infoSize;
-  SOCKET serverSocket, client;
+  int clientPosition = 0, firstPosition;
+  bool serverFull;
+  SOCKET serverSocket, clientSocket;
   SOCKADDR_IN serverInformation, clientInformation;
+  pthread_t thread;
 
   server->port = communicationPort;
-  server->clients = (Client*) malloc(NB_CLIENT_MAX * sizeof(Client));
+  server->clients = (Client**) malloc(NB_CLIENT_MAX * sizeof(Client*));
 
   result = begin_listen(&serverSocket, &serverInformation, communicationPort);
   if(result != NO_ERROR){
@@ -22,9 +25,9 @@ int launch_server(int communicationPort, int UEPort){
   #ifdef DEBUG
     printf("Waiting for clients\n");
   #endif
-  client = accept(serverSocket, (SOCKADDR *)&clientInformation, &infoSize);
+  clientSocket = accept(serverSocket, (SOCKADDR *)&clientInformation, &infoSize);
 
-  if(client == INVALID_SOCKET){
+  if(clientSocket == INVALID_SOCKET){
     #ifdef DEBUG
       printf("No connected with the client\n");
     #endif
@@ -33,17 +36,42 @@ int launch_server(int communicationPort, int UEPort){
     #ifdef DEBUG
       printf("Client connected\n");
     #endif
+    firstPosition = clientPosition;
+    serverFull = false;
+    while(server->clients[clientPosition] != NULL){
+        clientPosition++;
+        if(clientPosition == NB_CLIENT_MAX){
+            clientPosition = 0;
+        }
+        if(clientPosition == firstPosition){
+            printf("The server is full\n");
+            serverFull = true;
+        }
+    }
+
+    if(!serverFull){
+        Client client;
+        client.id = clientSocket;
+        client.thread = thread;
+        server->clients[clientPosition] = &client;
+        if(pthread_create(&thread, NULL, listenClient, &client) != 0){
+            #ifdef DEBUG
+              printf("Thread not created\n");
+            #endif
+            server->clients[clientPosition] = NULL;
+        }
+    }
+    else{
+        pthread_create(&thread, NULL, serverIsFull, &clientSocket);
+    }
+
 
   }
 
-
+  pthread_join(thread, NULL);
 
   closesocket(serverSocket);
   return NO_ERROR;
-}
-
-void* connectToClient(void* client){
-
 }
 
 int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
@@ -93,4 +121,24 @@ int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
   #endif
 
   return NO_ERROR;
+}
+
+
+
+void* listenClient(void* clientVoid){
+    SOCKET* client = (SOCKET*) clientVoid;
+    char* buff = (char*) malloc(10*sizeof(char));
+    recv(*client, buff, 10, 0);
+    printf("Message reçu : %s\n", buff);
+    send(*client, "Hello", 5, 0);
+    printf("Message envoyé\n");
+
+    closesocket(*client);
+    pthread_exit(NULL);
+}
+
+void* serverIsFull(void* clientVoid){
+    SOCKET* client = (SOCKET*) clientVoid;
+    closesocket(*client);
+    pthread_exit(NULL);
 }

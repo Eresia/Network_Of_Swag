@@ -61,23 +61,25 @@
 		false = 0, true = 1
 	};
 
-	typedef struct ClientVar* Client;
-	struct ClientVar{
-		int id;
+	typedef struct Client Client;
+	struct Client{
+		SOCKET id;
 		int source;
 		char *ip;
+		pthread_t thread;
 	};
 
 	typedef struct ServerVar* Server;
 	struct ServerVar{
 			int port;
 			int connectedClient;
-			Client* clients;
+			Client** clients;
 	};
 
 	//server-client
 	int launch_server(int , int );
-	void* connectToClient(void* );
+	void* listenClient(void* );
+	void* serverIsFull(void* client);
 
 	//sockets
 	int begin_listen(SOCKET*, SOCKADDR_IN*, int);
