@@ -65,7 +65,7 @@
 	typedef struct Client Client;
 	struct Client{
 		SOCKET id;
-		int source;
+		bool isClosed;
 		char *ip;
 		pthread_t thread;
 	};

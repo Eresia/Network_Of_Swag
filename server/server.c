@@ -56,6 +56,7 @@ int launch_server(int communicationPort, int UEPort){
         SpeakClient speak;
         client.id = clientSocket;
         client.thread = thread;
+        client.isClosed = false;
         speak.client = client;
         speak.delta = delta;
         speak.startValue = &deltaPosition;
@@ -149,12 +150,33 @@ void* speakClient(void* clientVoid){
     int* value = speakClient->startValue;
     char** delta = speakClient->delta;
 
+    while(true){
 
+        char* result = ("\0");
 
-    while(delta[*value] != NULL){
+        while(delta[*value] != NULL){
+            realloc(result, strlen(result) + strlen(*delta[*value]));
+            strcat(result, sprintf("%d%s", strlen(*delta[*value]), *delta[*value]));
+            *value++;
+        }
 
+        if(!client.isClosed){
+            #ifdef DEBUG
+              printf("Sending : \"%s\" to the client\n", result);
+            #endif
+            send(client->id, result, strlen(result), 0);
+            #ifdef DEBUG
+              printf("Message sent", result);
+            #endif
 
-        *value++;
+        }
+        else{
+            #ifdef DEBUG
+              printf("Disconnected client\n");
+            #endif
+            break;
+        }
+
     }
 }
 
