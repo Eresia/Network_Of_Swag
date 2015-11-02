@@ -6,11 +6,12 @@ int launch_server(int communicationPort, int UEPort){
   bool StopServer = false;
   int result;
   int infoSize;
-  int clientPosition = 0, firstPosition;
+  int clientPosition = 0, firstPosition, deltaPosition;
   bool serverFull;
   SOCKET serverSocket, clientSocket;
   SOCKADDR_IN serverInformation, clientInformation;
   pthread_t thread;
+  char** delta = (char**) malloc(NB_DELTA_MAX * sizeof(char*));
 
   server->port = communicationPort;
   server->clients = (Client**) malloc(NB_CLIENT_MAX * sizeof(Client*));
@@ -50,13 +51,18 @@ int launch_server(int communicationPort, int UEPort){
     }
 
     if(!serverFull){
+        pthread_t speakThread;
         Client client;
+        SpeakClient speak;
         client.id = clientSocket;
         client.thread = thread;
+        speak.client = client;
+        speak.delta = delta;
+        speak.startValue = &deltaPosition;
         server->clients[clientPosition] = &client;
-        if(pthread_create(&thread, NULL, listenClient, &client) != 0){
+        if((pthread_create(&thread, NULL, listenClient, &client) != 0) && (pthread_create(&speakThread, NULL, speakClient, &speak) != 0)){
             #ifdef DEBUG
-              printf("Thread not created\n");
+              printf("Threads not created\n");
             #endif
             server->clients[clientPosition] = NULL;
         }
@@ -126,18 +132,36 @@ int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
 
 
 void* listenClient(void* clientVoid){
-    SOCKET* client = (SOCKET*) clientVoid;
+    Client* client = (Client*) clientVoid;
     char* buff = (char*) malloc(10*sizeof(char));
-    recv(*client, buff, 10, 0);
+    recv(client->id, buff, 10, 0);
     printf("Message reçu : %s\n", buff);
-    send(*client, "Hello", 5, 0);
+    send(client->id, "Hello", 5, 0);
     printf("Message envoyé\n");
 
-    closesocket(*client);
+    closesocket(client->id);
     pthread_exit(NULL);
 }
 
+void* speakClient(void* clientVoid){
+    SpeakClient* speakClient = (SpeakClient*) clientVoid;
+    Client client = speakClient->client;
+    int* value = speakClient->startValue;
+    char** delta = speakClient->delta;
+
+
+
+    while(delta[*value] != NULL){
+
+
+        *value++;
+    }
+}
+
 void* serverIsFull(void* clientVoid){
+    #ifdef DEBUG
+      printf("Server is full, client not accepted\n");
+    #endif
     SOCKET* client = (SOCKET*) clientVoid;
     closesocket(*client);
     pthread_exit(NULL);

@@ -3,6 +3,7 @@
 
 	#define DEBUG
 	#define NB_CLIENT_MAX 100
+	#define NB_DELTA_MAX 1000
 
 	/*Returns and errors :
 		0 : No error
@@ -69,6 +70,13 @@
 		pthread_t thread;
 	};
 
+	typedef struct SpeakClient SpeakClient;
+	struct SpeakClient{
+		Client client;
+		char** delta;
+		int* startValue;
+	};
+
 	typedef struct ServerVar* Server;
 	struct ServerVar{
 			int port;
@@ -79,6 +87,7 @@
 	//server-client
 	int launch_server(int , int );
 	void* listenClient(void* );
+	void* speakClient(void* );
 	void* serverIsFull(void* client);
 
 	//sockets
