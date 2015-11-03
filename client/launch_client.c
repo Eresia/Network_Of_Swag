@@ -32,15 +32,19 @@ int main(int argc, char** argv){
       exit(0);
   }
 
-  char* buff = (char*) malloc(10*sizeof(char));
+  int size;
+  char* sizeChar = (char*) malloc(sizeof(char));
+  char* buff;
   send(sock, "Bonjour", 7, 0);
   printf("Message envoyé\n");
-  recv(sock, buff, 10, 0);
+  recv(sock, sizeChar, 1, 0);
+  size = atoi(sizeChar);
+  buff = (char*) malloc(size*sizeof(char));
+  recv(sock, buff, size, 0);
+  buff[size] = '\0';
   printf("Message reçu : %s\n", buff);
 
-  printf("Sock avant : %d\n", sock);
   closesocket(sock);
-  printf("Sock après : %d\n", sock);
 
   return 0;
 }

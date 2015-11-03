@@ -68,13 +68,15 @@
 		bool isClosed;
 		char *ip;
 		pthread_t thread;
+		pthread_mutex_t *mutexClose;
 	};
 
 	typedef struct SpeakClient SpeakClient;
 	struct SpeakClient{
-		Client client;
+		Client *client;
 		char** delta;
 		int* startValue;
+		pthread_mutex_t *mutexDelta;
 	};
 
 	typedef struct ServerVar* Server;
@@ -88,6 +90,7 @@
 	int launch_server(int , int );
 	void* listenClient(void* );
 	void* speakClient(void* );
+	void* testClientConnexion(void* );
 	void* serverIsFull(void* client);
 
 	//sockets

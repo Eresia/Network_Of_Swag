@@ -6,12 +6,13 @@ int launch_server(int communicationPort, int UEPort){
   bool StopServer = false;
   int result;
   int infoSize;
-  int clientPosition = 0, firstPosition, deltaPosition;
+  int clientPosition = 0, firstPosition, deltaPosition = 0;
   bool serverFull;
   SOCKET serverSocket, clientSocket;
   SOCKADDR_IN serverInformation, clientInformation;
-  pthread_t thread;
+  pthread_t thread, speakThread;;
   char** delta = (char**) malloc(NB_DELTA_MAX * sizeof(char*));
+  pthread_mutex_t mutexDelta = PTHREAD_MUTEX_INITIALIZER;
 
   server->port = communicationPort;
   server->clients = (Client**) malloc(NB_CLIENT_MAX * sizeof(Client*));
@@ -51,19 +52,28 @@ int launch_server(int communicationPort, int UEPort){
     }
 
     if(!serverFull){
-        pthread_t speakThread;
         Client client;
         SpeakClient speak;
+        pthread_mutex_t mutexClose = PTHREAD_MUTEX_INITIALIZER;
         client.id = clientSocket;
         client.thread = thread;
         client.isClosed = false;
-        speak.client = client;
+        client.mutexClose = &mutexClose;
+        speak.client = &client;
         speak.delta = delta;
         speak.startValue = &deltaPosition;
+        speak.mutexDelta = &mutexDelta;
         server->clients[clientPosition] = &client;
-        if((pthread_create(&thread, NULL, listenClient, &client) != 0) && (pthread_create(&speakThread, NULL, speakClient, &speak) != 0)){
+        if(pthread_create(&thread, NULL, listenClient, &client) != 0){
+
             #ifdef DEBUG
-              printf("Threads not created\n");
+              printf("Threads listen not created\n");
+            #endif
+            server->clients[clientPosition] = NULL;
+        }
+        if(pthread_create(&speakThread, NULL, speakClient, &speak) != 0){
+            #ifdef DEBUG
+              printf("Threads speak not created\n");
             #endif
             server->clients[clientPosition] = NULL;
         }
@@ -75,8 +85,30 @@ int launch_server(int communicationPort, int UEPort){
 
   }
 
+  #ifdef DEBUG
+    printf("Threads lancement\n");
+  #endif
+
   pthread_join(thread, NULL);
 
+  #ifdef DEBUG
+    printf("Writing in delta\n");
+  #endif
+
+  pthread_mutex_lock(&mutexDelta);
+  delta[0] = "Hello";
+  pthread_mutex_unlock(&mutexDelta);
+
+  #ifdef DEBUG
+    printf("Sleep\n");
+  #endif
+
+  sleep(1);
+  pthread_mutex_lock(server->clients[0]->mutexClose);
+  server->clients[0]->isClosed = true;
+  closesocket(server->clients[0]->id);
+  pthread_mutex_unlock(server->clients[0]->mutexClose);
+  pthread_join(speakThread, NULL);
   closesocket(serverSocket);
   return NO_ERROR;
 }
@@ -137,47 +169,99 @@ void* listenClient(void* clientVoid){
     char* buff = (char*) malloc(10*sizeof(char));
     recv(client->id, buff, 10, 0);
     printf("Message reçu : %s\n", buff);
-    send(client->id, "Hello", 5, 0);
-    printf("Message envoyé\n");
 
-    closesocket(client->id);
     pthread_exit(NULL);
 }
 
 void* speakClient(void* clientVoid){
     SpeakClient* speakClient = (SpeakClient*) clientVoid;
-    Client client = speakClient->client;
+    Client* client = speakClient->client;
     int* value = speakClient->startValue;
     char** delta = speakClient->delta;
 
-    while(true){
+    #ifdef DEBUG
+      printf("Begin of the loop\n");
+    #endif
 
-        char* result = ("\0");
+    for(;;){
 
-        while(delta[*value] != NULL){
-            realloc(result, strlen(result) + strlen(*delta[*value]));
-            strcat(result, sprintf("%d%s", strlen(*delta[*value]), *delta[*value]));
-            *value++;
+        char* result = (char *) malloc(sizeof(char));
+        result[0] = '\0';
+        bool isClosed;
+        bool deltaIsNull;
+
+        for(;;){
+
+            #ifdef DEBUG
+              printf("Check if delta\n");
+            #endif
+
+            pthread_mutex_lock(speakClient->mutexDelta);
+            deltaIsNull = (delta[*value] == NULL);
+            pthread_mutex_unlock(speakClient->mutexDelta);
+
+            if(!deltaIsNull){
+                #ifdef DEBUG
+                  printf("It has delta\n");
+                #endif
+                result = realloc(result, (strlen(result) + strlen(delta[*value]) * sizeof(char)));
+                sprintf(result, "%s%d%s", result, (int) strlen(delta[*value]), delta[*value]);
+                *value++;
+                break;
+            }
+            else{
+                #ifdef DEBUG
+                  printf("It has not delta, end of search\n");
+                #endif
+                break;
+            }
         }
 
-        if(!client.isClosed){
+        if(!deltaIsNull){
+
             #ifdef DEBUG
-              printf("Sending : \"%s\" to the client\n", result);
-            #endif
-            send(client->id, result, strlen(result), 0);
-            #ifdef DEBUG
-              printf("Message sent", result);
+              printf("Check if client is closed\n");
             #endif
 
+            pthread_mutex_lock(client->mutexClose);
+            isClosed = client->isClosed;
+            pthread_mutex_unlock(client->mutexClose);
+
+            #ifdef DEBUG
+              printf("Begin to sending message\n");
+            #endif
+
+            if(!isClosed){
+                #ifdef DEBUG
+                  printf("Sending : \"%s\" to the client\n", result);
+                #endif
+                send(client->id, result, strlen(result), 0);
+                #ifdef DEBUG
+                  printf("Message sent\n");
+                #endif
+
+            }
+            else{
+                #ifdef DEBUG
+                  printf("Disconnected client\n");
+                #endif
+                break;
+            }
         }
         else{
-            #ifdef DEBUG
-              printf("Disconnected client\n");
-            #endif
-            break;
+            pthread_mutex_lock(client->mutexClose);
+            isClosed = client->isClosed;
+            pthread_mutex_unlock(client->mutexClose);
+            if(isClosed){
+                #ifdef DEBUG
+                  printf("Disconnected client\n");
+                #endif
+                break;
+            }
         }
 
     }
+    pthread_exit(NULL);
 }
 
 void* serverIsFull(void* clientVoid){
