@@ -1,2 +1,2 @@
-# server_NoS
-Serveur en C pour le jeu Network of Swag (Nom temporaire)
+# Network Of Swag
+Jeu en réseau en C
