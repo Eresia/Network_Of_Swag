@@ -1,25 +1,76 @@
-all: launch_server.out launch_client.out
+CC=gcc
+headName=h
+srcName=c
+CFLAGS=-Wall -DDEBUG
+EFLAGS=-lpthread -g
 
-launch_server.out: server/server.o server/launch_server.o
-	gcc -o launch_server.out server/server.o server/launch_server.o -lpthread
+server=server.out
+client=client.out
 
-server.o: server/server.c server/server.h
-	gcc -Wall -o server/server.o -c server/server.c
+nameObjectDir=bin
+nameObjectSrc=src
 
-launch_server.o: server/launch_server.c server/server.h
-	gcc -Wall -o server/launch_server.o -c server/launch_server.c
+objectDirClient=$(shell pwd)/client/$(nameObjectDir)
+objectDirServer=$(shell pwd)/server/$(nameObjectDir)
+objectDirData=$(shell pwd)/data/$(nameObjectDir)
+srcDirServer=$(shell pwd)/server/$(nameObjectSrc)
+srcDirClient=$(shell pwd)/client/$(nameObjectSrc)
+srcDirData=$(shell pwd)/data/$(nameObjectSrc)
 
-launch_client.out: client/client.o client/launch_client.o
-	gcc -o launch_client.out client/client.o client/launch_client.o
+directoriesServer=$(wildcard $(srcDirServer)/*/)
+directoriesClient=$(wildcard $(srcDirClient)/*/)
+directoriesData=$(wildcard $(srcDirData)/*/)
 
-client.o: client/client.h client/client.c
-	gcc -Wall -o client/client.o -c client/client.c
+srcFileServer=$(foreach dir, $(directoriesServer), $(wildcard $(dir)*.$(srcName)))
+srcFileClient=$(foreach dir, $(directoriesClient), $(wildcard $(dir)*.$(srcName)))
+srcFileData=$(foreach dir, $(directoriesData), $(wildcard $(dir)*.$(srcName)))
 
-launch_client.o: client/client.h client/launch_client.c
-	gcc -Wall -o client/launch_client.o -c client/launch_client.c
+headersServer=$(wildcard $(directoriesServer)*.$(headName)) $(wildcard $(directoriesData)*.$(headName))
+headersClient=$(wildcard $(directoriesClient)*.$(headName)) $(wildcard $(directoriesData)*.$(headName))
+
+objectsServer=$(foreach file, $(srcFileServer:.$(srcName)=.o), $(objectDirServer)/$(notdir $(file)))
+objectsClient=$(foreach file, $(srcFileClient:.$(srcName)=.o), $(objectDirClient)/$(notdir $(file)))
+objectsData=$(foreach file, $(srcFileData:.$(srcName)=.o), $(objectDirData)/$(notdir $(file)))
+
+all: $(server) $(client)
+
+$(server): compilationServer
+	$(CC) -o $(server) $(objectsServer) $(objectsData) $(EFLAGS)
+
+$(client): compilationClient
+	$(CC) -o $(client) $(objectsClient) $(objectsData) $(EFLAGS)
+
+compilationServer:
+	@mkdir $(objectDirServer) -p
+	@mkdir $(objectDirData) -p
+	@for dir in $(directoriesServer) $(directoriesData); do \
+		if [ ! -e $$dir/Makefile ]; then \
+				cp Makefile_type $$dir/Makefile; \
+		fi; \
+		make --no-print-directory -C $$dir objectDir="../../$(nameObjectDir)" headers="$(headersServer)" CC="$(CC)" headName="$(headName)" srcName="$(srcName)" CFLAGS="$(CFLAGS)";	\
+	done
+
+
+compilationClient:
+	@mkdir $(objectDirClient) -p
+	@mkdir $(objectDirData) -p
+	@for dir in $(directoriesClient) $(directoriesData); do \
+		if [ ! -e $$dir/Makefile ]; then \
+				cp Makefile_type $$dir/Makefile; \
+		fi; \
+		make --no-print-directory -C $$dir objectDir=../../$(nameObjectDir) headers="$(headersClient)" CC="$(CC)" headName="$(headName)" srcName="$(srcName)" CFLAGS="$(CFLAGS)";	\
+	done
 
 clean_all: clean
-	rm *.out;
+	rm $(server) $(client)
 
 clean:
-	rm client/*.o; rm server/*.o;
+	@for dir in $(directoriesServer); do	\
+		make --no-print-directory -C $$dir clean objectDir=../../$(nameObjectDir);	\
+	done
+	@for dir in $(directoriesClient); do	\
+		make --no-print-directory -C $$dir clean objectDir=../../$(nameObjectDir);	\
+	done
+	@for dir in $(directoriesData); do	\
+		make --no-print-directory -C $$dir clean objectDir=../../$(nameObjectDir);	\
+	done

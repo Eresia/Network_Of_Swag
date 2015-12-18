@@ -1,4 +1,4 @@
-#include "server.h"
+#include "../network/server.h"
 
 /*Server arguments :
 	1 : Port of communication

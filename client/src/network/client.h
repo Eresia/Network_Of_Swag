@@ -1,7 +1,6 @@
-#ifndef DEFINE_SERVER
-#define DEFINE_SERVER
+#ifndef DEFINE_CLIENT
+#define DEFINE_CLIENT
 
-	//#define DEBUG
 	/*Returns and errors :
 		0 : No error
 		1 : Bad number of arguments

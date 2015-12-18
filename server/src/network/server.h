@@ -1,7 +1,6 @@
 #ifndef DEFINE_SERVER
 #define DEFINE_SERVER
 
-	#define DEBUG
 	#define NB_CLIENT_MAX 100
 	#define NB_DELTA_MAX 1000
 
@@ -15,7 +14,7 @@
 	#define NO_ERROR 0
 	#define BAD_NUMBER_OF_ARGUMENTS 1
 	#define INCORRECT_ARGUMENT 2
-	#define OTHER_ERROR
+	#define OTHER_ERROR 3
 
 	//General includes
 	#include <stdlib.h>
@@ -67,7 +66,6 @@
 		SOCKET id;
 		bool isClosed;
 		char *ip;
-		pthread_t thread;
 		pthread_mutex_t *mutexClose;
 	};
 

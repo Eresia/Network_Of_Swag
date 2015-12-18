@@ -3,14 +3,13 @@
 int launch_server(int communicationPort, int UEPort){
 
   Server server = (Server) malloc(sizeof(struct ServerVar));
-  bool StopServer = false;
   int result;
   int infoSize;
   int clientPosition = 0, firstPosition, deltaPosition = 0;
   bool serverFull;
   SOCKET serverSocket, clientSocket;
   SOCKADDR_IN serverInformation, clientInformation;
-  pthread_t thread, speakThread;;
+  pthread_t thread, speakThread;
   char** delta = (char**) malloc(NB_DELTA_MAX * sizeof(char*));
   pthread_mutex_t mutexDelta = PTHREAD_MUTEX_INITIALIZER;
 
@@ -27,7 +26,7 @@ int launch_server(int communicationPort, int UEPort){
   #ifdef DEBUG
     printf("Waiting for clients\n");
   #endif
-  clientSocket = accept(serverSocket, (SOCKADDR *)&clientInformation, &infoSize);
+  clientSocket = accept(serverSocket, (SOCKADDR *)&clientInformation, (socklen_t*) &infoSize);
 
   if(clientSocket == INVALID_SOCKET){
     #ifdef DEBUG
@@ -56,7 +55,6 @@ int launch_server(int communicationPort, int UEPort){
         SpeakClient speak;
         pthread_mutex_t mutexClose = PTHREAD_MUTEX_INITIALIZER;
         client.id = clientSocket;
-        client.thread = thread;
         client.isClosed = false;
         client.mutexClose = &mutexClose;
         speak.client = &client;
@@ -71,11 +69,37 @@ int launch_server(int communicationPort, int UEPort){
             #endif
             server->clients[clientPosition] = NULL;
         }
-        if(pthread_create(&speakThread, NULL, speakClient, &speak) != 0){
+        else if(pthread_create(&speakThread, NULL, speakClient, &speak) != 0){
             #ifdef DEBUG
               printf("Threads speak not created\n");
             #endif
             server->clients[clientPosition] = NULL;
+
+			#ifdef DEBUG
+		      printf("Threads lancement\n");
+		    #endif
+
+		    pthread_join(thread, NULL);
+
+		    #ifdef DEBUG
+		      printf("Writing in delta\n");
+		    #endif
+
+		    pthread_mutex_lock(&mutexDelta);
+		    delta[0] = "Hello";
+		    pthread_mutex_unlock(&mutexDelta);
+
+		    #ifdef DEBUG
+		      printf("Sleep\n");
+		    #endif
+
+		    sleep(1);
+		    pthread_mutex_lock(server->clients[0]->mutexClose);
+		    server->clients[0]->isClosed = true;
+		    closesocket(server->clients[0]->id);
+		    pthread_mutex_unlock(server->clients[0]->mutexClose);
+		    pthread_join(speakThread, NULL);
+		    closesocket(serverSocket);
         }
     }
     else{
@@ -85,32 +109,7 @@ int launch_server(int communicationPort, int UEPort){
 
   }
 
-  #ifdef DEBUG
-    printf("Threads lancement\n");
-  #endif
-
-  pthread_join(thread, NULL);
-
-  #ifdef DEBUG
-    printf("Writing in delta\n");
-  #endif
-
-  pthread_mutex_lock(&mutexDelta);
-  delta[0] = "Hello";
-  pthread_mutex_unlock(&mutexDelta);
-
-  #ifdef DEBUG
-    printf("Sleep\n");
-  #endif
-
-  sleep(1);
-  pthread_mutex_lock(server->clients[0]->mutexClose);
-  server->clients[0]->isClosed = true;
-  closesocket(server->clients[0]->id);
-  pthread_mutex_unlock(server->clients[0]->mutexClose);
-  pthread_join(speakThread, NULL);
-  closesocket(serverSocket);
-  return NO_ERROR;
+	return NO_ERROR;
 }
 
 int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
@@ -122,7 +121,7 @@ int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
     #ifdef DEBUG
       printf("Error in socket creation\n");
     #endif
-    return OTHER_ERROR;
+	return OTHER_ERROR;
   }
 
   #ifdef DEBUG
@@ -206,7 +205,7 @@ void* speakClient(void* clientVoid){
                 #endif
                 result = realloc(result, (strlen(result) + strlen(delta[*value]) * sizeof(char)));
                 sprintf(result, "%s%d%s", result, (int) strlen(delta[*value]), delta[*value]);
-                *value++;
+                (*value)++;
                 break;
             }
             else{
