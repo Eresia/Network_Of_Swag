@@ -35,10 +35,10 @@ objectsData=$(foreach file, $(srcFileData:.$(srcName)=.o), $(objectDirData)/$(no
 all: $(server) $(client)
 
 $(server): compilationServer
-	$(CC) -o $(server) $(objectsServer) $(objectsData) $(EFLAGS)
+	@$(CC) -o $(server) $(objectsServer) $(objectsData) $(EFLAGS)
 
 $(client): compilationClient
-	$(CC) -o $(client) $(objectsClient) $(objectsData) $(EFLAGS)
+	@$(CC) -o $(client) $(objectsClient) $(objectsData) $(EFLAGS)
 
 compilationServer:
 	@mkdir $(objectDirServer) -p

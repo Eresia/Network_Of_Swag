@@ -1,4 +1,4 @@
-#include "../network/server.h"
+#include "../network/ServerNetwork.h"
 
 /*Server arguments :
 	1 : Port of communication
@@ -7,7 +7,7 @@
 */
 int main(int argc, char** argv){
 
-	int nbArgc = 1, communicationPort, UE4Port;
+	/*int nbArgc = 1, communicationPort, UE4Port;
 	int resultServ;
 	char* msg;
 
@@ -43,7 +43,10 @@ int main(int argc, char** argv){
 	}
 
 	msg = "Serveur stopped without error\n";
-	printf("%s", msg);
+	printf("%s", msg);*/
+
+	printf("Je suis un serveur\n");
+	
 
 	return NO_ERROR;
 

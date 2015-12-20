@@ -30,3 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+# Under Makefile
+client/src/*/Makefile
+data/src/*/Makefile
+server/src/*/Makefile
