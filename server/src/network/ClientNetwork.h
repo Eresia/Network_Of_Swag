@@ -5,8 +5,8 @@
 #include "DefineNetwork.h"
 
 
-typedef struct Client Client;
-struct Client{
+typedef struct ClientNetwork ClientNetwork;
+struct ClientNetwork{
 	SOCKET id;
 	bool isClosed;
 	char *ip;

@@ -1,7 +1,7 @@
 #include "ServerNetwork.h"
 
-int launch_server(int port){
-
+void* launch_server(void* server_void){
+	//ServerNetwork* server = (ServerNetwork*) server_void;
 
 
 

@@ -7,15 +7,15 @@
 
 #define NB_CLIENT_MAX 100
 
-typedef struct ServerVar* Server;
-struct ServerVar{
+typedef struct ServerNetwork ServerNetwork;
+struct ServerNetwork{
 	int port;
 	int connectedClient;
-	Client** clients;
+	ClientNetwork** clients;
 };
 
 //server-client
-int launch_server(int);
+void* launch_server(void*);
 /*void* listenClient(void* );
 void* speakClient(void* );
 void* testClientConnexion(void* );

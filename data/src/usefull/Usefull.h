@@ -23,7 +23,6 @@ enum bool{
 	false = 0, true = 1
 };
 
-char* getString();
 void clean(const char *, FILE *);
 
 #endif

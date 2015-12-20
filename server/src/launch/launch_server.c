@@ -1,4 +1,4 @@
-#include "../network/ServerNetwork.h"
+#include "../game/Server.h"
 
 /*Server arguments :
 	1 : Port of communication
@@ -7,46 +7,34 @@
 */
 int main(int argc, char** argv){
 
-	/*int nbArgc = 1, communicationPort, UE4Port;
-	int resultServ;
-	char* msg;
+	Server* server;
+	Gameloop gl;
+	ServerNetwork sn;
 
-	if(argc != (nbArgc+1)){
-		msg = "Bad number of arguments\n";
-		write(1, msg, strlen(msg));
-		#ifdef DEBUG
-			printf("%s", msg);
-		#endif
+	if(argc != 2){
+		printf("Not expected arguments");
 		return BAD_NUMBER_OF_ARGUMENTS;
 	}
 
-	communicationPort = atoi(argv[1]);
-	UE4Port = 9999;
+	sn.port = atoi(argv[1]);
 
-	if((communicationPort == 0) || (UE4Port == 0)){
-		msg = "Incorrect arguments\n";
-		write(1, msg, strlen(msg));
-		#ifdef DEBUG
-			printf("%s", msg);
-		#endif
+	if(sn.port == 0){
+		printf("Number expected for port");
 		return INCORRECT_ARGUMENT;
 	}
 
-	resultServ = launch_server(communicationPort, UE4Port);
-	if(resultServ != NO_ERROR){
-		msg = "Server stopped with errors\n";
-		write(1, msg, strlen(msg));
-		#ifdef DEBUG
-			printf("%s", msg);
-		#endif
-		return resultServ;
-	}
+	server = malloc(sizeof(Server));
+	sn.connectedClient = 0;
+	sn.clients = malloc(NB_CLIENT_MAX*sizeof(ClientNetwork*));
 
-	msg = "Serveur stopped without error\n";
-	printf("%s", msg);*/
+	server->gl = gl;
+	server->sn = sn;
+
+	//Launch server
+	//Launch shell
 
 	printf("Je suis un serveur\n");
-	
+
 
 	return NO_ERROR;
 
