@@ -63,14 +63,11 @@ compilationClient:
 
 clean_all: clean
 	rm $(server) $(client)
+	find data/ -name Makefile -exec rm {} +
+	find server/ -name Makefile -exec rm {} +
+	find client/ -name Makefile -exec rm {} +
 
 clean:
-	@for dir in $(directoriesServer); do	\
-		make --no-print-directory -C $$dir clean objectDir=../../$(nameObjectDir);	\
-	done
-	@for dir in $(directoriesClient); do	\
-		make --no-print-directory -C $$dir clean objectDir=../../$(nameObjectDir);	\
-	done
-	@for dir in $(directoriesData); do	\
-		make --no-print-directory -C $$dir clean objectDir=../../$(nameObjectDir);	\
-	done
+	rm -R $(objectDirClient)
+	rm -R $(objectDirServer)
+	rm -R $(objectDirData)

@@ -10,4 +10,4 @@ all: $(OBJECTS)
 	$(CC) -o $(objectDir)/$@ -c $< $(CFLAGS)
 
 clean:
-	rm $(OBJECTS_PATH);
+	rm -R $(OBJECTS_PATH);
