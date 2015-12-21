@@ -1,6 +1,6 @@
 #include "ServerNetwork.h"
 
-void* launch_server(void* server_void){
+void* launch_network(void* server_void){
 	//ServerNetwork* server = (ServerNetwork*) server_void;
 
 

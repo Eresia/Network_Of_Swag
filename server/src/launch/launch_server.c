@@ -1,35 +1,39 @@
-#include "../game/Server.h"
+#include "launch_server.h"
 
 /*Server arguments :
 	1 : Port of communication
-	2 : Port of UE
-
 */
 int main(int argc, char** argv){
 
-	Server* server;
+	Server server;
 	Gameloop gl;
 	ServerNetwork sn;
+	pthread_t thread_gameloop, thread_network, thread_shell;
 
 	if(argc != 2){
-		printf("Not expected arguments");
+		printf("Not expected arguments\n");
 		return BAD_NUMBER_OF_ARGUMENTS;
 	}
 
 	sn.port = atoi(argv[1]);
 
 	if(sn.port == 0){
-		printf("Number expected for port");
+		printf("Number expected for port\n");
 		return INCORRECT_ARGUMENT;
 	}
 
-	server = malloc(sizeof(Server));
+	//server = malloc(sizeof(Server));
 	sn.connectedClient = 0;
 	sn.clients = malloc(NB_CLIENT_MAX*sizeof(ClientNetwork*));
 
-	server->gl = gl;
-	server->sn = sn;
+	server.gl = gl;
+	server.sn = sn;
 
+	pthread_create(&thread_gameloop, NULL, launch_gameloop, &server);
+	pthread_create(&thread_network, NULL, launch_network, &server);
+	pthread_create(&thread_shell, NULL, launch_shell, &server);
+	pthread_join(thread_gameloop, NULL);
+	//Launch Gameloop
 	//Launch server
 	//Launch shell
 

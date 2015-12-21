@@ -23,6 +23,7 @@ enum bool{
 	false = 0, true = 1
 };
 
+//Clean a descriptor after a "fgets"
 void clean(const char *, FILE *);
 
 #endif

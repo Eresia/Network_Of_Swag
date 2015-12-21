@@ -15,7 +15,7 @@ struct ServerNetwork{
 };
 
 //server-client
-void* launch_server(void*);
+void* launch_network(void*);
 /*void* listenClient(void* );
 void* speakClient(void* );
 void* testClientConnexion(void* );
