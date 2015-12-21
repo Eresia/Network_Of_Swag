@@ -12,6 +12,7 @@ void* launch_gameloop(void* server_void){
 		usleep(50);
 	}while(!stopServer);
 
+	pthread_join(*server->sn.thread, NULL);
 	pthread_exit(NULL);
 }
 

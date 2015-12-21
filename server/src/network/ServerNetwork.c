@@ -4,6 +4,13 @@ void* launch_network(void* server_void){
 
 	Server* server = (Server*) server_void;
 	bool stopServer;
+	SOCKET socket;
+	int result;
+
+	result = begin_listen(&socket, server->sn.port);
+    if(result != NO_ERROR){
+      pthread_exit(&result);
+    }
 
 	do{
 		pthread_mutex_lock(server->gl.stopMutex);
@@ -12,12 +19,15 @@ void* launch_network(void* server_void){
 		usleep(50);
 	}while(!stopServer);
 
-	pthread_exit(NO_ERROR);
+	closesocket(socket);
+	result = NO_ERROR;
+	pthread_exit(&result);
 }
 
 //Fonction qui lance l'écoute du serveur
-int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
+int begin_listen(SOCKET* server, int port){
 
+	SOCKADDR_IN info;
 	*server = socket(AF_INET, SOCK_STREAM, 0);
 	if(*server == INVALID_SOCKET)
 	{
@@ -32,12 +42,12 @@ int begin_listen(SOCKET* server, SOCKADDR_IN* info, int port){
 	#endif
 
 	//On assigne les informations de connexions au serveur
-	info->sin_addr.s_addr = htonl(INADDR_ANY); /* Accept any adress */
-	info->sin_family = AF_INET;
-	info->sin_port = htons(port);
+	info.sin_addr.s_addr = htonl(INADDR_ANY); /* Accept any adress */
+	info.sin_family = AF_INET;
+	info.sin_port = htons(port);
 
 	//On bind le serveur sur le port s'il est disponible
-	if(bind (*server, (SOCKADDR *) info, sizeof(*info)) == SOCKET_ERROR)
+	if(bind (*server, (SOCKADDR *) &info, sizeof(info)) == SOCKET_ERROR)
 	{
 		#ifdef DEBUG
 		printf("Socket can't be bind\n");

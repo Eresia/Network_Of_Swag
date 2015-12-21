@@ -16,7 +16,7 @@ void* launch_shell(void* server_void){
 			pthread_mutex_lock(server->gl.stopMutex);
 			server->gl.isStopped = true;
 			pthread_mutex_unlock(server->gl.stopMutex);
-		}
+	}
 		else{
 			usleep(50);
 		}

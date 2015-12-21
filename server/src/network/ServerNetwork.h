@@ -12,6 +12,7 @@ struct ServerNetwork{
 	int port;
 	int connectedClient;
 	ClientNetwork** clients;
+	pthread_t* thread;
 };
 
 #include "../game/Server.h"
@@ -24,7 +25,7 @@ void* testClientConnexion(void* );
 void* serverIsFull(void* client);*/
 
 //sockets
-int begin_listen(SOCKET*, SOCKADDR_IN*, int);
+int begin_listen(SOCKET*, int);
 
 
 
