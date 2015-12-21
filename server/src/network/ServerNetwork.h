@@ -14,6 +14,8 @@ struct ServerNetwork{
 	ClientNetwork** clients;
 };
 
+#include "../game/Server.h"
+
 //server-client
 void* launch_network(void*);
 /*void* listenClient(void* );

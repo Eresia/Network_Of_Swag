@@ -9,6 +9,7 @@ int main(int argc, char** argv){
 	Gameloop gl;
 	ServerNetwork sn;
 	pthread_t thread_gameloop, thread_network, thread_shell;
+	pthread_mutex_t stopMutex = PTHREAD_MUTEX_INITIALIZER;
 
 	if(argc != 2){
 		printf("Not expected arguments\n");
@@ -22,10 +23,12 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
-	//server = malloc(sizeof(Server));
+	gl.stopMutex = &stopMutex;
+	gl.isStopped = false;
 	sn.connectedClient = 0;
 	sn.clients = malloc(NB_CLIENT_MAX*sizeof(ClientNetwork*));
 
+	//server = malloc(sizeof(Server));
 	server.gl = gl;
 	server.sn = sn;
 
@@ -33,11 +36,8 @@ int main(int argc, char** argv){
 	pthread_create(&thread_network, NULL, launch_network, &server);
 	pthread_create(&thread_shell, NULL, launch_shell, &server);
 	pthread_join(thread_gameloop, NULL);
-	//Launch Gameloop
-	//Launch server
-	//Launch shell
 
-	printf("Je suis un serveur\n");
+	printf("Serveur stopped\n");
 
 
 	return NO_ERROR;

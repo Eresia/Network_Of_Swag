@@ -1,11 +1,18 @@
 #include "ServerNetwork.h"
 
 void* launch_network(void* server_void){
-	//ServerNetwork* server = (ServerNetwork*) server_void;
 
+	Server* server = (Server*) server_void;
+	bool stopServer;
 
+	do{
+		pthread_mutex_lock(server->gl.stopMutex);
+		stopServer = server->gl.isStopped;
+		pthread_mutex_unlock(server->gl.stopMutex);
+		usleep(50);
+	}while(!stopServer);
 
-	return NO_ERROR;
+	pthread_exit(NO_ERROR);
 }
 
 //Fonction qui lance l'écoute du serveur

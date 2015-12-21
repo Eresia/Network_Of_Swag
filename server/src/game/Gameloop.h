@@ -7,12 +7,14 @@
 #include <pthread.h>
 
 #include "../../../data/src/usefull/Usefull.h"
-#include "Server.h"
 
 typedef struct Gameloop Gameloop;
 struct Gameloop{
-
+	bool isStopped;
+	pthread_mutex_t* stopMutex;
 };
+
+#include "Server.h"
 
 void* launch_gameloop(void*);
 void makeCommand(char*);
