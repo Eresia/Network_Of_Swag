@@ -2,14 +2,39 @@
 #include <stdlib.h>
 #include "map.h"
 
-void displayMap(bloc map[120][100]);
+bloc **getMapFromFile(char* filePath);
+void displayMap(bloc **map);
 
 int main(int argc, char const *argv[]) {
 
+	bloc **map = getMapFromFile("static.map");
+
+	displayMap(map);
+
+	return 0;
+}
+
+bloc **getMapFromFile(char *filePath) {
+
 	char mapBloc;
-	FILE *mapFile = NULL;
-	bloc map[120][100];
+	FILE *mapFile;
+	bloc **map;
 	int x=0, y=0;
+
+	map = malloc(120 * sizeof(bloc *));
+	if(map != NULL) {
+		for(x=0 ; x<120 ; x++) {
+			map[x] = malloc(100 * sizeof(bloc));
+			if(map[x] == NULL) {
+				printf("Error loading the map %s", filePath);
+				return NULL;
+			}
+		}
+	}
+	else {
+		printf("Error loading the map %s", filePath);
+		return NULL;
+	}
 
 	bloc air = {AIR, BLUE, false};
 	bloc dirt = {DIRT, GREEN, true};
@@ -17,7 +42,7 @@ int main(int argc, char const *argv[]) {
 	bloc wood = {WOOD, BROWN, true};
 	bloc iron = {IRON, ORANGE, true};
 
-	mapFile = fopen("static.map", "r");
+	mapFile = fopen(filePath, "r");
 
 	if(mapFile != NULL) {
 		for(y=0 ; y<100 ; y++) {
@@ -49,12 +74,10 @@ int main(int argc, char const *argv[]) {
 		fclose(mapFile);
 	}
 
-	displayMap(map);
-
-	return 0;
+	return map;
 }
 
-void displayMap(bloc map[120][100])  {
+void displayMap(bloc **map)  {
 	int x, y;
 
 	for(y=0 ; y<100 ; y++) {
