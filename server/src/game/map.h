@@ -5,7 +5,6 @@ typedef enum {false, true} Boolean;
 typedef struct {
 	BlockType type;
 	Background back;
-	Boolean solid;
 } block;
 
 /*
@@ -19,6 +18,7 @@ const block _IRON = {IRON, CAVE, true};
 
 block **getMapFromFile(char* filePath);
 void displayMap(block **map);
+void displayMapPlayer(block **map, int player[]);
 
 block **removeBlock(block **map, int x, int y);
 block **addBlock(block **map, int x, int y, block newBlock);

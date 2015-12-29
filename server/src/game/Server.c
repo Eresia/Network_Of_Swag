@@ -4,20 +4,13 @@
 
 int main(int argc, char const *argv[]) {
 
+	int player[2] = {68, 50};
 	block **map = getMapFromFile("static.map");
 
-	/*
-	removeBlock(map, 30, 26);
-	removeBlock(map, 31, 26);
-	removeBlock(map, 31, 27);
-
-	block iron = {IRON, CAVE, true};
-
-	addBlock(map, 30, 26, iron);
-	addBlock(map, 31, 26, iron);
-	addBlock(map, 31, 27, iron);
-	*/
-	displayMap(map);
+	while(map[player[0]][player[1]+1].type == NONE) {
+		player[1] ++;
+		displayMapPlayer(map, player);
+	}
 
 	return 0;
 }
@@ -44,12 +37,12 @@ block **getMapFromFile(char *filePath) {
 		return NULL;
 	}
 
-	block sky = {NONE, SKY, false};
-	block cave = {NONE, CAVE, false};
-	block dirt = {DIRT, SKY, true};
-	block stone = {STONE, CAVE, true};
-	block wood = {WOOD, SKY, true};
-	block iron = {IRON, CAVE, true};
+	block sky = {NONE, SKY};
+	block cave = {NONE, CAVE};
+	block dirt = {DIRT, SKY};
+	block stone = {STONE, CAVE};
+	block wood = {WOOD, SKY};
+	block iron = {IRON, CAVE};
 
 	mapFile = fopen(filePath, "r");
 
@@ -105,4 +98,50 @@ void displayMap(block **map)  {
 		printf("\033[0m\n");
 	}
 	printf("\033[0m\n");
+}
+
+void displayMapPlayer(block **map, int player[]) {
+	int startX = 0, startY = 0, x, y;
+
+	if(player[0] > 90) {
+		startX = 60;
+	}
+	else if(player[0] > 30) {
+		startX = player[0] - 30;
+	}
+
+	if(player[1] > 90) {
+		startY = 80;
+	}
+	else if(player[1] > 10) {
+		startY = player[1] - 10;
+	}
+
+	system("clear");
+
+	for(y=startY ; y<startY+20 ; y++) {
+		for(x=startX ; x<startX+60 ; x++) {
+			if(map[x][y].type == NONE) {
+				printf("\033[%dm", map[x][y].back);
+			}
+			else {
+				printf("\033[%dm", map[x][y].type);
+			}
+
+			if(x == player[0]) {
+				if(y == player[1] || y+1 == player[1]) {
+					printf("\033[37mX");
+				}
+				else {
+					printf(" ");
+				}
+			}
+			else {
+				printf(" ");
+			}
+		}
+		printf("\033[0m\n");
+	}
+	printf("\033[0m\n");
+
 }
