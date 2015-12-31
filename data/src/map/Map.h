@@ -10,6 +10,7 @@ typedef enum {CAVE=40, SKY=44} Background;
 typedef struct {
 	BlockType type;
 	Background back;
+	bool isSolid;
 } block;
 
 block **removeBlock(block **map, int x, int y);

@@ -6,9 +6,9 @@ SDL_Surface* ironBmp;
 SDL_Surface* stoneBmp;
 SDL_Surface* woodBmp;
 
-void printMap(SDL_Window* window,bloc **map, int x, int y){
+void printMap(SDL_Window* window,block **map, int x, int y){
   int i,j;
-  bloc currentBloc;
+  block currentBloc;
   int nbBlocX = WIDTH/24 +1 ;
   int nbBlocY = HEIGHT/24 +1;
   for(i=0 ; i<nbBlocX ;i++){
@@ -24,22 +24,22 @@ void printMap(SDL_Window* window,bloc **map, int x, int y){
   SDL_UpdateWindowSurface(window);
 }
 
-void printBlock(SDL_Window* mw, bloc blocValue, int x, int y){
+void printBlock(SDL_Window* mw, block blocValue, int x, int y){
   SDL_Surface* surface = NULL;
   switch (blocValue.type) {
-    case 0:
+    case NONE:
       surface = airBmp;
       break;
-    case 1:
+    case DIRT:
       surface = dirtBmp;
       break;
-    case 2:
+    case STONE:
       surface = stoneBmp;
       break;
-    case 3:
+    case WOOD:
       surface = woodBmp;
       break;
-    case 4:
+    case IRON:
       surface = ironBmp;
       break;
   }
@@ -49,14 +49,20 @@ void printBlock(SDL_Window* mw, bloc blocValue, int x, int y){
   SDL_BlitSurface(surface,NULL,SDL_GetWindowSurface(mw), &block);
 }
 
-Boolean waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents évenement
-  Boolean quit = false;
+bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents évenement
+  bool quit = false;
   int mouseX,mouseY;
-  bloc air = {AIR, BLUE, false};
-  bloc dirt = {DIRT, GREEN, true};
-  bloc stone = {STONE, GRAY, true};
-  bloc wood = {WOOD, BROWN, true};
-  bloc iron = {IRON, ORANGE, true};
+  /*block air = {NONE, BLUE, false};
+  block dirt = {DIRT, GREEN, true};
+  block stone = {STONE, GRAY, true};
+  block wood = {WOOD, BROWN, true};
+  block iron = {IRON, ORANGE, true};*/
+
+  block air = {NONE, SKY, false};
+  //block dirt = {DIRT, SKY, true};
+  //block stone = {STONE, CAVE, true};
+  block wood = {WOOD, CAVE, true};
+  //block iron = {IRON, CAVE, true};
 
   if(SDL_PollEvent(&event)){
     switch (event.type) {
