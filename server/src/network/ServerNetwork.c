@@ -3,9 +3,12 @@
 void* launch_network(void* server_void){
 
 	Server* server = (Server*) server_void;
+	server->sn.clients = createList();
 	bool stopServer;
 	SOCKET socket, clientSocket;
+	SOCKADDR_IN *clientInfo = malloc(sizeof(SOCKADDR_IN));
 	int result;
+	int lastId = -1;
 
 	result = begin_listen(&socket, server->sn.port);
 	if(result != NO_ERROR){
@@ -14,7 +17,7 @@ void* launch_network(void* server_void){
 
 	do{
 
-		clientSocket = waitConnexion(socket, 1, 0);
+		clientSocket = waitConnexion(socket, clientInfo, 1, 0);
 
 		if(clientSocket == INVALID_SOCKET){
 			#ifdef DEBUG
@@ -30,6 +33,18 @@ void* launch_network(void* server_void){
 			#ifdef DEBUG
 			printf("Client connected\n");
 			#endif
+			ClientNetwork cn;
+			pthread_t thread;
+			pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+			lastId++;
+
+			cn.socket = clientSocket;
+			cn.id = lastId;
+			cn.isClosed = false;
+			cn.info = clientInfo;
+			cn.closeMutex = &mutex;
+			cn.thread = &thread;
 		}
 
 
@@ -95,8 +110,7 @@ int begin_listen(SOCKET* server, int port){
 	return NO_ERROR;
 }
 
-SOCKET waitConnexion(SOCKET server, int secTimeout, int uSecTimeout){
-	SOCKADDR_IN info;
+SOCKET waitConnexion(SOCKET server, SOCKADDR_IN *info, int secTimeout, int uSecTimeout){
 	int infoSize, iResult;
 	fd_set rfds;
 	struct timeval tv;
@@ -107,12 +121,12 @@ SOCKET waitConnexion(SOCKET server, int secTimeout, int uSecTimeout){
 	tv.tv_sec = (long) secTimeout;
 	tv.tv_usec = (long) uSecTimeout;
 
-	infoSize = sizeof(info);
+	infoSize = sizeof(*info);
 
 	iResult = select(server + 1, &rfds, (fd_set *) 0, (fd_set *) 0, &tv);
 	if(iResult > 0)
 	{
-		return accept(server, (SOCKADDR *) &info, (socklen_t*) &infoSize);
+		return accept(server, (SOCKADDR *) info, (socklen_t*) &infoSize);
 	}
 	else
 	{

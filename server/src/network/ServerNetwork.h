@@ -4,6 +4,7 @@
 #include "../../../data/src/usefull/Usefull.h"
 #include "DefineNetwork.h"
 #include "ClientNetwork.h"
+#include "ListClient.h"
 
 #define NB_CLIENT_MAX 100
 
@@ -13,7 +14,7 @@ typedef struct ServerNetwork ServerNetwork;
 struct ServerNetwork{
 	int port;
 	int connectedClient;
-	ClientNetwork** clients;
+	ListClient clients;
 	pthread_t* thread;
 };
 
@@ -28,7 +29,7 @@ void* serverIsFull(void* client);*/
 
 //sockets
 int begin_listen(SOCKET*, int);
-SOCKET waitConnexion(SOCKET, int, int);
+SOCKET waitConnexion(SOCKET, SOCKADDR_IN*, int, int);
 
 
 

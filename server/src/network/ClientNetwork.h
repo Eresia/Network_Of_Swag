@@ -7,10 +7,11 @@
 
 typedef struct ClientNetwork ClientNetwork;
 struct ClientNetwork{
-	SOCKET id;
+	SOCKET socket;
+	int id;
 	bool isClosed;
-	char *ip;
-	pthread_t thread;
+	SOCKADDR_IN* info;
+	pthread_t *thread;
 	pthread_mutex_t *closeMutex;
 };
 
