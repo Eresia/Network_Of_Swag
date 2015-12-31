@@ -1,19 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "map.h"
+#include "../../../data/src/map/Map.h"
+#include "Server.h"
 
+/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent)
 int main(int argc, char const *argv[]) {
 
-	int player[2] = {68, 50};
-	block **map = getMapFromFile("static.map");
+	int player[2] = {60, 44};
+	block **map = getMapFromFile("server/src/game/static.map");
+	map = removeBlock(map, 64, 43);
+	block iron = {IRON, CAVE};
+	map = addBlock(map, 64, 43, iron);
+	getFileFromMap(map, "server/src/game/static2.map");
+	map = getMapFromFile("server/src/game/static2.map");
+
 
 	while(map[player[0]][player[1]+1].type == NONE) {
 		player[1] ++;
 		displayMapPlayer(map, player);
 	}
 
+	//displayMap(map);
+
 	return 0;
 }
+*/
 
 block **getMapFromFile(char *filePath) {
 
@@ -83,7 +94,57 @@ block **getMapFromFile(char *filePath) {
 	return map;
 }
 
-void displayMap(block **map)  {
+void getFileFromMap(block **map, char *filePath) {
+
+	FILE *mapFile;
+	char mapBlock;
+	mapFile = fopen(filePath, "w+");
+	int x=0, y=0;
+
+	if(mapFile != NULL) {
+		for(y=0 ; y<100 ; y++) {
+			for(x=0 ; x<120 ; x++) {
+				//mapBlock = fgetc(mapFile);
+				switch(map[x][y].type) {
+					case NONE:
+						switch(map[x][y].back) {
+							case SKY:
+								mapBlock = '0';
+								break;
+							case CAVE:
+								mapBlock = '5';
+								break;
+							default:
+								mapBlock = '0';
+								break;
+						}
+						break;
+					case DIRT:
+						mapBlock = '1';
+						break;
+					case STONE:
+						mapBlock = '2';
+						break;
+					case WOOD:
+						mapBlock = '3';
+						break;
+					case IRON:
+						mapBlock = '4';
+						break;
+					default:
+						mapBlock = '0';
+						break;
+				}
+				fputc(mapBlock, mapFile);
+			}
+			fputc('\n', mapFile);
+		}
+
+		fclose(mapFile);
+	}
+}
+
+void displayMap(block **map) {
 	int x, y;
 
 	for(y=0 ; y<100 ; y++) {

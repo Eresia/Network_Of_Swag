@@ -1,9 +1,13 @@
 #include "Gameloop.h"
+#include "Server.h"
+#include "../../../data/src/map/Map.h"
 
 void* launch_gameloop(void* server_void){
 
 	Server* server = (Server*) server_void;
 	bool stopServer;
+
+	block **map = getMapFromFile("static.map");
 
 	do{
 		pthread_mutex_lock(server->gl.stopMutex);

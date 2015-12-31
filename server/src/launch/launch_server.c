@@ -1,4 +1,5 @@
 #include "launch_server.h"
+#include "../../../data/src/map/Map.h"
 
 /*Server arguments :
 	1 : Port of communication
