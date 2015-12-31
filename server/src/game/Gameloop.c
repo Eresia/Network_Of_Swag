@@ -1,4 +1,6 @@
 #include "Gameloop.h"
+#include "Server.h"
+#include "../../../data/src/map/Map.h"
 
 void* launch_gameloop(void* server_void){
 
@@ -13,6 +15,8 @@ void* launch_gameloop(void* server_void){
 		pthread_join(*server->sn.thread, NULL);
 		pthread_exit(NULL);
 	}
+
+	block **map = getMapFromFile("static.map");
 
 	do{
 		sem_wait(closeGl);

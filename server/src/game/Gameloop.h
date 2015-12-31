@@ -9,6 +9,7 @@
 #include <semaphore.h>
 
 #include "../../../data/src/usefull/Usefull.h"
+#include "../../../data/src/map/Map.h"
 
 typedef struct Gameloop Gameloop;
 struct Gameloop{

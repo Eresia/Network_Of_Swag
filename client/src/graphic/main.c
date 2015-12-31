@@ -3,7 +3,7 @@
 int main(){ //Main de test (Bruno)
   if(SDL_Init(SDL_INIT_VIDEO) == -1){
     fprintf(stderr, "Erreur initialisation de la vidéo : %s\n", SDL_GetError());
-    exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);//
   }
   else{
     SDL_Window* window = NULL;
@@ -12,11 +12,11 @@ int main(){ //Main de test (Bruno)
     window = SDL_CreateWindow("name", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT,NULL);
 
     if(window){
-      Boolean quit = false;
+      bool quit = false;
       SDL_Event event;
       loadBmp();
 
-      bloc **map = getMapFromFile("../../../server/src/game/static.map"); //Map temporaire a partir des fonctions de vincent
+      block **map = getMapFromFile("../../../server/src/game/static.map"); //Map temporaire a partir des fonctions de vincent
       printMap(window,map,40,60);
 
       while(quit == false){

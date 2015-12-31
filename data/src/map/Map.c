@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "map.h"
+#include "Map.h"
+#include "../usefull/Usefull.h"
 
 block **removeBlock(block **map, int x, int y) {
 	if(map[x][y].type != NONE) {
@@ -18,7 +19,7 @@ block **addBlock(block **map, int x, int y, block newBlock) {
 	return map;
 }
 
-Boolean isBlockFree(block **map, int x, int y) {
+bool isBlockFree(block **map, int x, int y) {
 	if(map[x][y].type == NONE && map[x][y+1].type == NONE) {
 		return true;
 	}
