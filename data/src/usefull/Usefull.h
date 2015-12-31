@@ -26,4 +26,6 @@ typedef enum bool bool;
 //Clean a descriptor after a "fgets"
 void clean(const char *, FILE *);
 
+bool startsWith(const char *str, const char *pre);
+
 #endif

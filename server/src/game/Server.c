@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../data/src/map/Map.h"
 #include "Server.h"
 
-/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent) 
+#define MAX_LINE_SIZE 2000
+
+/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent)
 int main(int argc, char const *argv[]) {
 
-	int player[2] = {60, 44};
+	//int player[2] = {60, 44};
 	block **map = getMapFromFile("server/src/game/static.map");
 	map = removeBlock(map, 64, 43);
 	block iron = {IRON, CAVE};
@@ -14,11 +15,21 @@ int main(int argc, char const *argv[]) {
 	getFileFromMap(map, "server/src/game/static2.map");
 	map = getMapFromFile("server/src/game/static2.map");
 
+	player p1 = malloc(sizeof(player));
+
+
+
+	player *p = malloc(sizeof(player));
+	p[0] = p1;
+
+	getFileFromPlayers(p, 1, "server/src/game/20151231.players");
+
 
 	while(map[player[0]][player[1]+1].type == NONE) {
 		player[1] ++;
 		displayMapPlayer(map, player);
 	}
+
 
 	//displayMap(map);
 
@@ -141,6 +152,107 @@ void getFileFromMap(block **map, char *filePath) {
 		}
 
 		fclose(mapFile);
+	}
+}
+
+player getPlayerFromFile(char *name, char *filePath) {
+	player p;
+
+	FILE *file;
+	char playerLine[MAX_LINE_SIZE] = "";
+	bool playerFound = false;
+
+	char *nameAccol = malloc(strlen(name)+2);
+	strcpy(nameAccol, name);
+	strcat(nameAccol, "{");
+
+	file = fopen(filePath, "r");
+
+	if(file != NULL) {
+		while(fgets(playerLine, MAX_LINE_SIZE, file) != NULL) {
+			if(startsWith(playerLine, nameAccol)) {
+				playerFound = true;
+
+				int i=0;
+			}
+		}
+
+		fclose(file);
+	}
+
+	if(! playerFound) {
+
+	}
+
+	return p;
+}
+
+void getFileFromPlayers(player *p, int nbPlayers, char *filePath) {
+
+	int i=0;
+	FILE *oldFile, *newFile;
+	char playerLine[MAX_LINE_SIZE] = "";
+	oldFile = fopen(filePath, "r");
+	newFile = fopen("server/src/game/temp.players", "a");
+
+	bool playerFound = false;
+
+	char **nameAccol;
+	nameAccol = malloc(nbPlayers * sizeof(char*));
+
+	for(i=0 ; i<nbPlayers ; i++) {
+		nameAccol[i] = malloc(strlen(p[i].name) * sizeof(char));
+		strcpy(nameAccol[i], p[i].name);
+		strcat(nameAccol[i], "{");
+	}
+
+	if(oldFile != NULL && newFile != NULL) {
+		while(fgets(playerLine, MAX_LINE_SIZE, oldFile) != NULL) {
+			playerFound = false;
+			for(i=0 ; (i<nbPlayers) && (!playerFound); i++) {
+				if(startsWith(playerLine, nameAccol[i])) {
+					playerFound = true;
+					player playerAdd = p[i];
+					fprintf(newFile, "%s(%d,%d)(", nameAccol[i], playerAdd.position[0], playerAdd.position[1]);
+
+					int j=0;
+					for(j=0 ; j<INV_SIZE ; j++) {
+						invCase inv = playerAdd.inventory[j];
+						if(inv.number != 0) {
+							switch(inv.desc.type) {
+								case IRON:
+									fprintf(newFile, "IRON");
+									break;
+								case WOOD:
+									fprintf(newFile, "WOOD");
+									break;
+								case DIRT:
+									fprintf(newFile, "DIRT");
+									break;
+								case STONE:
+									fprintf(newFile, "STONE");
+									break;
+								default:
+									fprintf(newFile, "NONE");
+									break;
+							}
+							fprintf(newFile, "-%d", inv.number);
+						}
+						if(j != INV_SIZE-1) {
+							fprintf(newFile, ",");
+						}
+					}
+
+					fprintf(newFile, ")}\n");
+				}
+			}
+			if(! playerFound) {
+				fputs(playerLine, newFile);
+			}
+		}
+
+		fclose(oldFile);
+		fclose(newFile);
 	}
 }
 
