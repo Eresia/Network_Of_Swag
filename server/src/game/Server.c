@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "Server.h"
 
+#define MAX_LINE_SIZE 2000
+
 block **getMapFromFile(char *filePath) {
 
 	char mapBlock;

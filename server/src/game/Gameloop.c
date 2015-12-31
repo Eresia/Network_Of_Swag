@@ -6,24 +6,16 @@ void* launch_gameloop(void* server_void){
 
 	Server* server = (Server*) server_void;
 	bool stopServer;
-	sem_t* closeGl;
-
-	if((closeGl = sem_open("/semGl", O_CREAT, 0777)) == SEM_FAILED){
-		printf("sem failed\n");
-		perror(NULL);
-		server->gl.isStopped = true;
-		pthread_join(*server->sn.thread, NULL);
-		pthread_exit(NULL);
-	}
 
 	block **map = getMapFromFile("static.map");
 
 	do{
-		sem_wait(closeGl);
+		pthread_mutex_lock(server->gl.stopMutex);
 		stopServer = server->gl.isStopped;
-		sem_post(closeGl);
+		pthread_mutex_unlock(server->gl.stopMutex);
 		usleep(50);
 	}while(!stopServer);
+
 	pthread_join(*server->sn.thread, NULL);
 	pthread_exit(NULL);
 

@@ -6,15 +6,6 @@ void* launch_network(void* server_void){
 	bool stopServer;
 	SOCKET socket, clientSocket;
 	int result;
-	sem_t* closeGl;
-
-	if((closeGl = sem_open("/semGl", O_CREAT, 0777, 1)) == SEM_FAILED){
-		printf("sem failed\n");
-		perror(NULL);
-		server->gl.isStopped = true;
-		pthread_join(*server->sn.thread, NULL);
-		pthread_exit(NULL);
-	}
 
 	result = begin_listen(&socket, server->sn.port);
 	if(result != NO_ERROR){
@@ -42,9 +33,9 @@ void* launch_network(void* server_void){
 		}
 
 
-		sem_wait(closeGl);
+		pthread_mutex_lock(server->gl.stopMutex);
 		stopServer = server->gl.isStopped;
-		sem_post(closeGl);
+		pthread_mutex_unlock(server->gl.stopMutex);
 		usleep(50);
 	}while(!stopServer);
 

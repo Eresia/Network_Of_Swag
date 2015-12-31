@@ -11,6 +11,7 @@ struct ClientNetwork{
 	bool isClosed;
 	char *ip;
 	pthread_t thread;
+	pthread_mutex_t *closeMutex;
 };
 
 

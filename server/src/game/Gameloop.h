@@ -15,6 +15,7 @@ typedef struct Gameloop Gameloop;
 struct Gameloop{
 	bool isStopped;
 	pthread_t* thread;
+	pthread_mutex_t* stopMutex;
 };
 
 #include "Server.h"
