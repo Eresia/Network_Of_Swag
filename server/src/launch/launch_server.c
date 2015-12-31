@@ -9,7 +9,6 @@ int main(int argc, char** argv){
 	Gameloop gl;
 	ServerNetwork sn;
 	pthread_t thread_gameloop, thread_network, thread_shell;
-	pthread_mutex_t stopMutex = PTHREAD_MUTEX_INITIALIZER;
 
 	if(argc != 2){
 		printf("Not expected arguments\n");
@@ -23,7 +22,6 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
-	gl.stopMutex = &stopMutex;
 	gl.isStopped = false;
 	gl.thread = &thread_gameloop;
 
@@ -34,6 +32,8 @@ int main(int argc, char** argv){
 	//server = malloc(sizeof(Server));
 	server.gl = gl;
 	server.sn = sn;
+
+	sem_unlink("/semGl");
 
 	pthread_create(&thread_gameloop, NULL, launch_gameloop, &server);
 	pthread_create(&thread_network, NULL, launch_network, &server);

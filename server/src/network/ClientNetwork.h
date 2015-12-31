@@ -10,7 +10,7 @@ struct ClientNetwork{
 	SOCKET id;
 	bool isClosed;
 	char *ip;
-	pthread_mutex_t *mutexClose;
+	pthread_t thread;
 };
 
 

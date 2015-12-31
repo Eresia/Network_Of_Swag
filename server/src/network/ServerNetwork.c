@@ -4,18 +4,47 @@ void* launch_network(void* server_void){
 
 	Server* server = (Server*) server_void;
 	bool stopServer;
-	SOCKET socket;
+	SOCKET socket, clientSocket;
 	int result;
+	sem_t* closeGl;
+
+	if((closeGl = sem_open("/semGl", O_CREAT, 0777, 1)) == SEM_FAILED){
+		printf("sem failed\n");
+		perror(NULL);
+		server->gl.isStopped = true;
+		pthread_join(*server->sn.thread, NULL);
+		pthread_exit(NULL);
+	}
 
 	result = begin_listen(&socket, server->sn.port);
-    if(result != NO_ERROR){
-      pthread_exit(&result);
-    }
+	if(result != NO_ERROR){
+		pthread_exit(&result);
+	}
 
 	do{
-		pthread_mutex_lock(server->gl.stopMutex);
+
+		clientSocket = waitConnexion(socket, 1, 0);
+
+		if(clientSocket == INVALID_SOCKET){
+			#ifdef DEBUG
+			printf("No connected with the client\n");
+			#endif
+		}
+		else if(clientSocket == TIMEOUT){
+			#ifdef DEBUG
+			//printf("Timeout\n");
+			#endif
+		}
+		else{
+			#ifdef DEBUG
+			printf("Client connected\n");
+			#endif
+		}
+
+
+		sem_wait(closeGl);
 		stopServer = server->gl.isStopped;
-		pthread_mutex_unlock(server->gl.stopMutex);
+		sem_post(closeGl);
 		usleep(50);
 	}while(!stopServer);
 
@@ -73,4 +102,30 @@ int begin_listen(SOCKET* server, int port){
 	#endif
 
 	return NO_ERROR;
+}
+
+SOCKET waitConnexion(SOCKET server, int secTimeout, int uSecTimeout){
+	SOCKADDR_IN info;
+	int infoSize, iResult;
+	fd_set rfds;
+	struct timeval tv;
+
+	FD_ZERO(&rfds);
+	FD_SET(server, &rfds);
+
+	tv.tv_sec = (long) secTimeout;
+	tv.tv_usec = (long) uSecTimeout;
+
+	infoSize = sizeof(info);
+
+	iResult = select(server + 1, &rfds, (fd_set *) 0, (fd_set *) 0, &tv);
+	if(iResult > 0)
+	{
+		return accept(server, (SOCKADDR *) &info, (socklen_t*) &infoSize);
+	}
+	else
+	{
+		return TIMEOUT;
+	}
+
 }

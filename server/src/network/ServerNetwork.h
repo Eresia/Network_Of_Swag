@@ -7,6 +7,8 @@
 
 #define NB_CLIENT_MAX 100
 
+#define TIMEOUT -5
+
 typedef struct ServerNetwork ServerNetwork;
 struct ServerNetwork{
 	int port;
@@ -26,6 +28,7 @@ void* serverIsFull(void* client);*/
 
 //sockets
 int begin_listen(SOCKET*, int);
+SOCKET waitConnexion(SOCKET, int, int);
 
 
 

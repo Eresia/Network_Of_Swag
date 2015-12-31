@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "map.h"
 
-int main(int argc, char const *argv[]) {
+/*int main(int argc, char const *argv[]) {
 
 	int player[2] = {68, 50};
 	block **map = getMapFromFile("static.map");
@@ -13,7 +13,7 @@ int main(int argc, char const *argv[]) {
 	}
 
 	return 0;
-}
+}*/
 
 block **getMapFromFile(char *filePath) {
 
