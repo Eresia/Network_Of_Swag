@@ -3,7 +3,7 @@
 #include "../../../data/src/map/Map.h"
 #include "Server.h"
 
-/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent)
+/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent) 
 int main(int argc, char const *argv[]) {
 
 	int player[2] = {60, 44};
