@@ -1,9 +1,9 @@
 #include "ListClient.h"
 
-ListClient createList(){
-	ListClient list;
-	list.nb = 0;
-	list.firstItem = NULL;
+ListClient* createList(){
+	ListClient* list = malloc(sizeof(ListClient));
+	list->nb = 0;
+	list->firstItem = NULL;
 	return list;
 }
 
@@ -14,56 +14,68 @@ ItemList createElement(ClientNetwork* client){
 	return Elt;
 }
 
-void addClient(ListClient list, ClientNetwork* client){
-	if(list.firstItem == NULL){
-		list.firstItem = createElement(client);
-		list.nb++;
+void addClient(ListClient* list, ClientNetwork* client){
+	if(list->firstItem == NULL){
+		list->firstItem = createElement(client);
+		list->nb++;
+		#ifdef DEBUG
+			printf("Client added\n");
+		#endif
+
 	}
-	else if(list.firstItem->client != client){
+	else if(list->firstItem->client != client){
 		#ifdef DEBUG
 			printf("Client already exist\n");
 		#endif
 	}
 	else{
-		if(addClient_Item(list.firstItem, client) == NO_ERROR){
-			list.nb++;
+		if(addClient_Item(list->firstItem, client) == NO_ERROR){
+			list->nb++;
+			#ifdef DEBUG
+				printf("Client added\n");
+			#endif
 		}
 	}
 }
 
-void removeClient(ListClient list, ClientNetwork* client){
+void removeClient(ListClient* list, ClientNetwork* client){
 	return removeClientById(list, client->id);
 }
 
-void removeClientById(ListClient list, int id){
-	if(list.firstItem == NULL){
+void removeClientById(ListClient* list, int id){
+	if(list->firstItem == NULL){
 		#ifdef DEBUG
-		printf("Remove - No client\n")
+			printf("Remove - No client\n");
 		#endif
 	}
-	else if(list.firstItem->client->id == id){
-		free(list.firstItem->client);
-		free(list.firstItem);
-		list.firstItem = NULL;
-		list.nb--;
+	else if(list->firstItem->client->id == id){
+		closesocket(list->firstItem->client->socket_tcp);
+		closesocket(list->firstItem->client->socket_udp);
+		free(list->firstItem);
+		list->firstItem = NULL;
+		list->nb--;
 	}
 	else{
-		if(removeClientById_Item(list.firstItem, id) == NO_ERROR){
-			list.nb--;
+		if(removeClientById_Item(list->firstItem, id) == NO_ERROR){
+			list->nb--;
 		}
 	}
 }
 
-ClientNetwork* getClientById(ListClient list, int id){
-	return getClientById_Item(list.firstItem, id);
+ClientNetwork* getClientById(ListClient* list, int id){
+	return getClientById_Item(list->firstItem, id);
 }
 
-ClientNetwork* getLastClient(ListClient list){
-	return getLastClient_Item(list.firstItem);
+ClientNetwork* getLastClient(ListClient* list){
+	return getLastClient_Item(list->firstItem);
 }
 
-bool isInList(ListClient list, ClientNetwork* client){
-	return isInList_Item(list.firstItem, client);
+bool isInList(ListClient* list, ClientNetwork* client){
+	return isInList_Item(list->firstItem, client);
+}
+
+void closeAll(ListClient* list){
+	closeAll_Item(list->firstItem);
 }
 
 
@@ -93,7 +105,8 @@ int removeClientById_Item(ItemList item, int id){
 	}
 	else if(item->next->client->id == id){
 		ItemList next = item->next->next;
-		free(item->next->client);
+		closesocket(item->client->socket_tcp);
+		closesocket(item->client->socket_udp);
 		free(item->next);
 		item->next = next;
 		return NO_ERROR;
@@ -136,5 +149,21 @@ bool isInList_Item(ItemList item, ClientNetwork* client){
 	}
 	else{
 		return isInList_Item(item->next, client);
+	}
+}
+
+void closeAll_Item(ItemList item){
+	if(item == NULL){
+		#ifdef DEBUG
+			printf("List free\n");
+		#endif
+	}
+	else{
+		ItemList next = item->next;
+		closesocket(item->client->socket_tcp);
+		closesocket(item->client->socket_udp);
+		free(item->client);
+		free(item);
+		closeAll_Item(next);
 	}
 }

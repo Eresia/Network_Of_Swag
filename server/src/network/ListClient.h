@@ -23,18 +23,20 @@
 		ItemList firstItem;
 	};
 
-	ListClient createList();
-	void addClient(ListClient, ClientNetwork*);
-	void removeClient(ListClient, ClientNetwork*);
-	void removeClientById(ListClient, int);
-	ClientNetwork* getClientById(ListClient, int);
-	ClientNetwork* getLastClient(ListClient);
-	bool isInList(ListClient, ClientNetwork*);
+	ListClient* createList();
+	void addClient(ListClient*, ClientNetwork*);
+	void removeClient(ListClient*, ClientNetwork*);
+	void removeClientById(ListClient*, int);
+	ClientNetwork* getClientById(ListClient*, int);
+	ClientNetwork* getLastClient(ListClient*);
+	bool isInList(ListClient*, ClientNetwork*);
+	void closeAll(ListClient*);
 
 	int addClient_Item(ItemList, ClientNetwork*);
 	int removeClientById_Item(ItemList, int);
 	ClientNetwork* getClientById_Item(ItemList, int);
 	ClientNetwork* getLastClient_Item(ItemList);
 	bool isInList_Item(ItemList, ClientNetwork*);
+	void closeAll_Item(ItemList);
 
 #endif
