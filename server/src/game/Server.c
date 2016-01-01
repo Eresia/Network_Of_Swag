@@ -5,11 +5,10 @@
 
 #define MAX_LINE_SIZE 2000
 
-/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent) */
+/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent) 
 int main(int argc, char const *argv[]) {
 
-	//int player[2] = {60, 44};
- 	block **map = getMapFromFile("server/saves/static.map");
+	block **map = getMapFromFile("server/saves/static.map");
  	map = removeBlock(map, 64, 43);
  	block ironBlock = {IRON, CAVE};
  	map = addBlock(map, 64, 43, ironBlock);
@@ -31,21 +30,11 @@ int main(int argc, char const *argv[]) {
         printf("%s-%d\n", getBlockName(p1.inventory[i].desc.type), p1.inventory[i].number);
     }
 
-	/*
-	player *playerList = malloc(NB_CLIENT_MAX * sizeof(player*));
-	playerList[0] = p0;
+    //displayMap(map);
 
-	getFileFromPlayers(playerList, 1, "server/src/game/20151231.players");
-	*/
-	/*
- 	while(map[player[0]][player[1]+1].type == NONE) {
- 		player[1] ++;
- 		displayMapPlayer(map, player);
- 	}
-	*/
- 	//displayMap(map);
-	return 0;
+    return 0;
 }
+*/
 
 block **getMapFromFile(char *filePath) {
 
