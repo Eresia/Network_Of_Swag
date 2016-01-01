@@ -18,12 +18,15 @@
 #define OTHER_ERROR 3
 
 //Boolean utilisation
-typedef enum bool bool;
 enum bool{
 	false = 0, true = 1
 };
+typedef enum bool bool;
 
 //Clean a descriptor after a "fgets"
 void clean(const char *, FILE *);
+
+bool startsWith(const char *, const char *);
+char* take_begin(char*, int, char*, int);
 
 #endif
