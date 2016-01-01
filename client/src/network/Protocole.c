@@ -2,7 +2,7 @@
 
 	Traitement Protocoles Client -> Serveur
 
-	
+
 	Format du protocole : "[Type de requête],[Data en fonction de la requête (n bits)]"
 
 
@@ -19,7 +19,7 @@
 	Format Data en fonction des requêtes :
 
 
-	1 = Déplacement 
+	1 = Déplacement
 
 	[Direction]
 
@@ -33,7 +33,7 @@
 
 	[Position x],[Position y]
 
-	
+
 	4 = Message chat
 
 	[Message]
@@ -48,16 +48,9 @@
 **/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "Protocole.h"
 
-char* Requete_Deplacement_Envoi (int direction) ;
-char* Requete_Casse_Bloc (int x, int y) ;
-char* Requete_Pose_Bloc (int x, int y) ;
-char* Requete_Message (char* message) ;
-
-int main (int argc, char* argv[]) {
+/*int main (int argc, char* argv[]) {
 	char* req_deplacement ;
 	char* req_bloc ;
 	char* req_pose_bloc ;
@@ -71,12 +64,12 @@ int main (int argc, char* argv[]) {
 
 	req_pose_bloc = Requete_Pose_Bloc(24,1067);
 	printf("%s\n\n", req_pose_bloc) ;
-	
+
 	req_message = Requete_Message("Je suis un test du protocole d'envoi de message");
 	printf("%s\n\n", req_message) ;
 
 	return 0 ;
-}
+}*/
 
 /**
 	Protocole de déplacement (en fonction de la direction)
@@ -89,17 +82,17 @@ char* Requete_Deplacement_Envoi (int direction) {
 	char* Req ;
 	char req_dep[10] = "" ;
 	char c_direction[2] ;
-	
+
 	// On transforme le int en chaîne de caractères.
 	sprintf(c_direction, "%d", direction);
 
 	strcat(req_dep, "1,");
 	strcat(req_dep, c_direction);
-	
+
 	Req = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(Req, req_dep) ;
 
-	return Req ;	
+	return Req ;
 }
 
 char* Requete_Casse_Bloc (int x, int y) {
@@ -113,12 +106,12 @@ char* Requete_Casse_Bloc (int x, int y) {
 
 	// Récupération de y comme chaine de caractères.
 	sprintf(y_position, "%d", y);
-	
+
 	// On créé le datagramme
 	strcat(req, "2,") ;
 	strcat(req, x_position) ;
 	strcat(req, ",") ;
-	strcat(req, y_position) ;	
+	strcat(req, y_position) ;
 
 
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
@@ -139,12 +132,12 @@ char* Requete_Pose_Bloc (int x, int y) {
 
 	// Récupération de y comme chaine de caractères.
 	sprintf(y_position, "%d", y);
-	
+
 	// On créé le datagramme
 	strcat(req, "3,") ;
 	strcat(req, x_position) ;
 	strcat(req, ",") ;
-	strcat(req, y_position) ;	
+	strcat(req, y_position) ;
 
 
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
@@ -154,7 +147,7 @@ char* Requete_Pose_Bloc (int x, int y) {
 	return Requete ;
 }
 
-char* Requete_Message (char* message) {	
+char* Requete_Message (char* message) {
 	char* Requete ;
 	char req_mess[1503] = "" ;
 
