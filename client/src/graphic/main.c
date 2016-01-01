@@ -16,8 +16,11 @@ int main(){ //Main de test (Bruno)
       SDL_Event event;
       loadBmp();
 
-      block **map = getMapFromFile("./server/src/game/static.map"); //Map temporaire a partir des fonctions de vincent
-      printMap(window,map,37,27);
+      block **map = getMapFromFile("./server/saves/static2.map"); //Map temporaire a partir des fonctions de vincent
+      printMap(window,map,27,37); //Print de test
+
+      printPlayer(window, 550, 51);  //Only for test
+      SDL_UpdateWindowSurface(window); //Only for test
 
       while(quit == false){
         //Boucle principale

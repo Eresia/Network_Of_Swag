@@ -5,7 +5,7 @@
 #include "../../../server/src/game/Server.h" //A enlever dès que possible !
 #include "../../../data/src/usefull/Usefull.h"
 
-#define HEIGHT 1000 //Taille de la fenêtre
+#define HEIGHT 700 //Taille de la fenêtre
 #define WIDTH 1000
 
 #define XMAXMAP 2880 //Limite de la carte
@@ -30,6 +30,7 @@ typedef enum {BLUE=44, GREEN=42, GRAY=47, BROWN=43, ORANGE=41} Color;
 */
 
 void printBlock(SDL_Window* window, block blocValue, int x, int y);
+void printPlayer(SDL_Window* window, int x, int y);
 void printMap(SDL_Window* window,block **map, int x, int y);
 
 bool waitEvent(SDL_Event event, SDL_Window* window);

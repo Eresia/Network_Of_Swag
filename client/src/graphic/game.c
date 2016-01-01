@@ -5,6 +5,8 @@ SDL_Surface* dirtBmp;
 SDL_Surface* ironBmp;
 SDL_Surface* stoneBmp;
 SDL_Surface* woodBmp;
+SDL_Surface* caveBmp;
+SDL_Surface* playerBmp;
 
 void printMap(SDL_Window* window,block **map, int x, int y){
   int i,j;
@@ -28,7 +30,14 @@ void printBlock(SDL_Window* mw, block blocValue, int x, int y){
   SDL_Surface* surface = NULL;
   switch (blocValue.type) {
     case NONE:
-      surface = airBmp;
+      switch (blocValue.back) {
+        case SKY:
+          surface = airBmp;
+          break;
+        case CAVE:
+          surface = caveBmp;
+          break;
+      }
       break;
     case DIRT:
       surface = dirtBmp;
@@ -49,6 +58,11 @@ void printBlock(SDL_Window* mw, block blocValue, int x, int y){
   SDL_BlitSurface(surface,NULL,SDL_GetWindowSurface(mw), &block);
 }
 
+void printPlayer(SDL_Window* window, int x, int y){
+  SDL_Rect playerRect = {x, y, 24, 45};
+  SDL_BlitSurface(playerBmp,NULL,SDL_GetWindowSurface(window), &playerRect);
+}
+
 bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents évenement
   bool quit = false;
   int mouseX,mouseY;
@@ -59,6 +73,7 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
   block iron = {IRON, ORANGE, true};*/
 
   block air = {NONE, SKY, false};
+  block cave = {NONE, CAVE, false};
   //block dirt = {DIRT, SKY, true};
   //block stone = {STONE, CAVE, true};
   block wood = {WOOD, CAVE, true};
@@ -71,12 +86,12 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
           quit = true;
         }
       case SDL_MOUSEBUTTONUP:
-        if(event.button.button == SDL_BUTTON_LEFT){ //Ajout d'un bloc sur la map
+        if(event.button.button == SDL_BUTTON_LEFT){ //Ajout d'un bloc sur la map pour tester
           SDL_GetMouseState(&mouseX,&mouseY);
           printBlock(window,wood,mouseX,mouseY);
           SDL_UpdateWindowSurface(window);
         }
-        else if(event.button.button == SDL_BUTTON_RIGHT){ //Supression du bloc qui est remplacé par un bloc d'air
+        else if(event.button.button == SDL_BUTTON_RIGHT){ //Supression d'un bloc pour tester
         SDL_GetMouseState(&mouseX,&mouseY);
         printBlock(window,air,mouseX,mouseY);
         SDL_UpdateWindowSurface(window);
@@ -89,11 +104,15 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
 
 
 void loadBmp(){
-  airBmp = SDL_LoadBMP("./image/air.bmp");
-  dirtBmp = SDL_LoadBMP("./image/dirt.bmp");
-  ironBmp = SDL_LoadBMP("./image/iron.bmp");
-  stoneBmp = SDL_LoadBMP("./image/stone.bmp");
-  woodBmp = SDL_LoadBMP("./image/wood.bmp");
+  airBmp = SDL_LoadBMP("./client/src/graphic/image/air.bmp");
+  dirtBmp = SDL_LoadBMP("./client/src/graphic/image/dirt.bmp");
+  ironBmp = SDL_LoadBMP("./client/src/graphic/image/iron.bmp");
+  stoneBmp = SDL_LoadBMP("./client/src/graphic/image/stone.bmp");
+  woodBmp = SDL_LoadBMP("./client/src/graphic/image/wood.bmp");
+  caveBmp = SDL_LoadBMP("./client/src/graphic/image/cave.bmp");
+  playerBmp = SDL_LoadBMP("./client/src/graphic/image/player.bmp");
+  Uint32 colorkey = SDL_MapRGB(playerBmp->format, 0xFF, 0xFF, 0xFF);
+  SDL_SetColorKey(playerBmp,SDL_TRUE,colorkey);
 }
 
 void freeBmp(){
@@ -102,4 +121,6 @@ void freeBmp(){
   SDL_FreeSurface(ironBmp);
   SDL_FreeSurface(stoneBmp);
   SDL_FreeSurface(woodBmp);
+  SDL_FreeSurface(caveBmp);
+  SDL_FreeSurface(playerBmp);
 }
