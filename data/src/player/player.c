@@ -1,5 +1,26 @@
 #include "player.h"
 
+player createPlayer(char *playerName) {
+	player p;
+
+	p.name = playerName;
+	p.position[0] = 0;
+	p.position[1] = 0;
+
+	block b;
+	b.type = NONE;
+	invCase inv;
+	inv.desc = b;
+	inv.number = 0;
+
+	int i=0;
+	for(i=0 ; i<INV_SIZE ; i++) {
+		p.inventory[i] = inv;
+	}
+
+	return p;
+}
+
 // Ajoute un bloc à l'inventaire et retourne si ça a marché ou pas (envoyer &player dans les paramètres)
 bool addBlockToInv(player *player, block block) {
 	int index = caseNotFull(*player, block);

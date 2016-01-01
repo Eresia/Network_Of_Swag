@@ -11,14 +11,16 @@ typedef struct {
 	int number;
 } invCase;
 
-typedef struct {
+typedef struct player player;
+struct player {
 	char *name;
 	int position[2];
 	// 0 <= position[0] < 2880 -> correspond à x
 	// 0 <= position[1] < 2400 -> correspond à y
 	invCase inventory[INV_SIZE];
-} player;
+};
 
+player createPlayer(char *playerName);
 bool addBlockToInv(player *player, block block);
 int caseNotFull(player player, block block);
 int *inInventory(player player, block block);

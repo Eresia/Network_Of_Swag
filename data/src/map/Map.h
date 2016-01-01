@@ -16,5 +16,7 @@ typedef struct {
 block **removeBlock(block **map, int x, int y);
 block **addBlock(block **map, int x, int y, block newBlock);
 bool isBlockFree(block **map, int x, int y);
+char *getBlockName(BlockType type);
+BlockType getBlockType(char *name);
 
 #endif

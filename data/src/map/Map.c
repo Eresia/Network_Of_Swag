@@ -25,3 +25,55 @@ bool isBlockFree(block **map, int x, int y) {
 	}
 	return false;
 }
+
+char *getBlockName(BlockType type) {
+	char *name = malloc(20*sizeof(char));
+
+	switch(type) {
+		case NONE:
+			sprintf(name, "NONE");
+			break;
+		case IRON:
+			sprintf(name, "IRON");
+			break;
+		case DIRT:
+			sprintf(name, "DIRT");
+			break;
+		case WOOD:
+			sprintf(name, "WOOD");
+			break;
+		case STONE:
+			sprintf(name, "STONE");
+			break;
+		default:
+			sprintf(name, "NONE");
+			break;
+	}
+
+	return name;
+}
+
+BlockType getBlockType(char *name) {
+	BlockType type;
+
+	if(strcmp(name, "NONE") == 0) {
+		type = NONE;
+	}
+	else if(strcmp(name, "IRON") == 0) {
+		type = IRON;
+	}
+	else if(strcmp(name, "DIRT") == 0) {
+		type = DIRT;
+	}
+	else if(strcmp(name, "WOOD") == 0) {
+		type = WOOD;
+	}
+	else if(strcmp(name, "STONE") == 0) {
+		type = STONE;
+	}
+	else {
+		type = NONE;
+	}
+
+	return type;
+}

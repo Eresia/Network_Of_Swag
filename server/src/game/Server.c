@@ -1,8 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Server.h"
+#include "../network/ServerNetwork.h"
 
 #define MAX_LINE_SIZE 2000
+
+/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent) */
+int main(int argc, char const *argv[]) {
+
+	//int player[2] = {60, 44};
+ 	block **map = getMapFromFile("server/saves/static.map");
+ 	map = removeBlock(map, 64, 43);
+ 	block iron = {IRON, CAVE};
+ 	map = addBlock(map, 64, 43, iron);
+ 	getFileFromMap(map, "server/saves/static2.map");
+ 	map = getMapFromFile("server/saves/static2.map");
+
+	//player p0 = createPlayer("agurato");
+	//savePlayer(p0);
+    player p1 = loadPlayer("agurato");
+    printf("%d, %d\n%s-%d", p1.position[0], p1.position[1], getBlockName(p1.inventory[0].desc.type), p1.inventory[0].number);
+
+	/*
+	player *playerList = malloc(NB_CLIENT_MAX * sizeof(player*));
+	playerList[0] = p0;
+
+	getFileFromPlayers(playerList, 1, "server/src/game/20151231.players");
+	*/
+	/*
+ 	while(map[player[0]][player[1]+1].type == NONE) {
+ 		player[1] ++;
+ 		displayMapPlayer(map, player);
+ 	}
+	*/
+ 	//displayMap(map);
+	return 0;
+}
 
 block **getMapFromFile(char *filePath) {
 
@@ -122,105 +155,84 @@ void getFileFromMap(block **map, char *filePath) {
 	}
 }
 
-player getPlayerFromFile(char *name, char *filePath) {
-	player p;
+player loadPlayer(char *name) {
+    player p = createPlayer(name);
+
+    FILE *file;
+    char filePath[80];
+    sprintf(filePath, "server/saves/%s.player", name);
+    file = fopen(filePath, "r");
+
+    if(file != NULL) {
+        char line[25];
+        int i=0;
+
+        for(i=0 ; i<2 ; i++) {
+            if(fgets(line, 25, file) != NULL) {
+                p.position[i] =  atoi(line);
+            }
+            else {
+                p.position[i] = 0;
+            }
+        }
+        for(i=0 ; i<INV_SIZE ; i++) {
+            if(fgets(line, 25, file) != NULL) {
+                char *array[2];
+                int j=0;
+                char *split = strtok(line, "-");
+                while(split != NULL) {
+                    array[j++] = split;
+                    split = strtok(NULL, "-");
+                }
+                p.inventory[i].desc.type = getBlockType(array[0]);
+                p.inventory[i].number = atoi(array[1]);
+            }
+            else {
+                p.inventory[i].desc.type = NONE;
+                p.inventory[i].number = 0;
+            }
+        }
+
+        fclose(file);
+    }
+
+    return p;
+}
+
+bool savePlayer(player p) {
 
 	FILE *file;
-	char playerLine[MAX_LINE_SIZE] = "";
-	bool playerFound = false;
-
-	char *nameAccol = malloc(strlen(name)+2);
-	strcpy(nameAccol, name);
-	strcat(nameAccol, "{");
-
-	file = fopen(filePath, "r");
+	char filePath[80];
+	sprintf(filePath, "server/saves/%s.player", p.name);
+	file = fopen(filePath, "w+");
 
 	if(file != NULL) {
-		while(fgets(playerLine, MAX_LINE_SIZE, file) != NULL) {
-			if(startsWith(playerLine, nameAccol)) {
-				playerFound = true;
-
-				int i=0;
-			}
+		fprintf(file, "%d\n%d\n", p.position[0], p.position[1]);
+		int i=0;
+		for(i=0 ; i<INV_SIZE ; i++) {
+			fprintf(file, "%s-%d\n", getBlockName(p.inventory[i].desc.type), p.inventory[i].number);
 		}
 
 		fclose(file);
+		return true;
 	}
 
-	if(! playerFound) {
-
-	}
-
-	return p;
+	return false;
 }
 
-void getFileFromPlayers(player *p, int nbPlayers, char *filePath) {
+bool savePlayers(player *p, int nbPlayers) {
+    int i=0;
+    int savesOk=0;
+    for(i=0 ; i<nbPlayers ; i++) {
+        if(savePlayer(p[i])) {
+            savesOk ++;
+        }
+    }
 
-	int i=0;
-	FILE *oldFile, *newFile;
-	char playerLine[MAX_LINE_SIZE] = "";
-	oldFile = fopen(filePath, "r");
-	newFile = fopen("server/src/game/temp.players", "a");
-
-	bool playerFound = false;
-
-	char **nameAccol;
-	nameAccol = malloc(nbPlayers * sizeof(char*));
-
-	for(i=0 ; i<nbPlayers ; i++) {
-		nameAccol[i] = malloc(strlen(p[i].name) * sizeof(char));
-		strcpy(nameAccol[i], p[i].name);
-		strcat(nameAccol[i], "{");
-	}
-
-	if(oldFile != NULL && newFile != NULL) {
-		while(fgets(playerLine, MAX_LINE_SIZE, oldFile) != NULL) {
-			playerFound = false;
-			for(i=0 ; (i<nbPlayers) && (!playerFound); i++) {
-				if(startsWith(playerLine, nameAccol[i])) {
-					playerFound = true;
-					player playerAdd = p[i];
-					fprintf(newFile, "%s(%d,%d)(", nameAccol[i], playerAdd.position[0], playerAdd.position[1]);
-
-					int j=0;
-					for(j=0 ; j<INV_SIZE ; j++) {
-						invCase inv = playerAdd.inventory[j];
-						if(inv.number != 0) {
-							switch(inv.desc.type) {
-								case IRON:
-									fprintf(newFile, "IRON");
-									break;
-								case WOOD:
-									fprintf(newFile, "WOOD");
-									break;
-								case DIRT:
-									fprintf(newFile, "DIRT");
-									break;
-								case STONE:
-									fprintf(newFile, "STONE");
-									break;
-								default:
-									fprintf(newFile, "NONE");
-									break;
-							}
-							fprintf(newFile, "-%d", inv.number);
-						}
-						if(j != INV_SIZE-1) {
-							fprintf(newFile, ",");
-						}
-					}
-
-					fprintf(newFile, ")}\n");
-				}
-			}
-			if(! playerFound) {
-				fputs(playerLine, newFile);
-			}
-		}
-
-		fclose(oldFile);
-		fclose(newFile);
-	}
+    if(savesOk == nbPlayers) {
+        return true;
+    }
+    return false;
 }
 
 void displayMap(block **map) {
