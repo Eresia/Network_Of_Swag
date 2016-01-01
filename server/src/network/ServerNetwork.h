@@ -8,7 +8,6 @@
 #include "CheckClient.h"
 
 #define NB_CLIENT_MAX 100
-#define SIZE_MESSAGE_MAX 1500
 
 #define TIMEOUT -5
 

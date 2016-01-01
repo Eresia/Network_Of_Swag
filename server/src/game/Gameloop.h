@@ -12,15 +12,18 @@
 #include "../../../data/src/player/ListPlayer.h"
 #include "../../../data/src/map/Map.h"
 
+#define SIZE_MESSAGE_MAX 1500
+
 typedef struct Gameloop Gameloop;
 struct Gameloop{
 	bool isStopped;
 	pthread_t* thread;
 	pthread_mutex_t* stopMutex;
+	int* desc;
 	ListPlayer* listPlayer;
+	block** map;
 };
 
 void* launch_gameloop(void*);
-void makeCommand(char*);
 
 #endif

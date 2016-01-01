@@ -67,6 +67,10 @@ ClientNetwork* getClientByName(ListClient* list, char* name){
 	return getClientByName_Item(list->firstItem, name);
 }
 
+ClientNetwork* getClientByInfo(ListClient* list, SOCKADDR_IN* info){
+	return getClientByInfo_Item(list->firstItem, info);
+}
+
 ClientNetwork* getLastClient(ListClient* list){
 	return getLastClient_Item(list->firstItem);
 }
@@ -134,6 +138,18 @@ ClientNetwork* getClientByName_Item(ItemList item, char* name){
 	}
 	else{
 		return getClientByName_Item(item->next, name);
+	}
+}
+
+ClientNetwork* getClientByInfo_Item(ItemList item, SOCKADDR_IN* info){
+	if(item == NULL){
+		return NULL;
+	}
+	else if((item->client->info->sin_addr.s_addr == info->sin_addr.s_addr) && (item->client->info->sin_port == info->sin_port)){
+		return item->client;
+	}
+	else{
+		return getClientByInfo_Item(item->next, info);
 	}
 }
 
