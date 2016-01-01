@@ -15,13 +15,13 @@ void* begin_communication(void* client_void){
 
 		strcpy(buf, "test\n");
 
-		/*if(sendto(cn->socket, buf, strlen(buf), 0, (SOCKADDR *)cn->info, (socklen_t) size) < 0)
+		if(sendto(cn->socket, buf, strlen(buf), 0, (SOCKADDR *)cn->info, (socklen_t) size) < 0)
 		{
 			printf("Message not send\n");
 		}
 		else{
 			printf("Message send\n");
-		}*/
+		}
 
 		pthread_mutex_lock(cn->closeMutex);
 		isClosed = cn->isClosed;
