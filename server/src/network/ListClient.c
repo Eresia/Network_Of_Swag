@@ -49,10 +49,11 @@ void removeClientById(ListClient* list, int id){
 		#endif
 	}
 	else if(list->firstItem->client->id == id){
+		ItemList next = list->firstItem->next;
 		closesocket(list->firstItem->client->socket_tcp);
-		closesocket(list->firstItem->client->socket_udp);
+		//closesocket(list->firstItem->client->socket_udp);
 		free(list->firstItem);
-		list->firstItem = NULL;
+		list->firstItem = next;
 		list->nb--;
 	}
 	else{
@@ -106,7 +107,7 @@ int removeClientById_Item(ItemList item, int id){
 	else if(item->next->client->id == id){
 		ItemList next = item->next->next;
 		closesocket(item->client->socket_tcp);
-		closesocket(item->client->socket_udp);
+		//closesocket(item->client->socket_udp);
 		free(item->next);
 		item->next = next;
 		return NO_ERROR;
