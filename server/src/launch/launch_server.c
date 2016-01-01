@@ -28,7 +28,6 @@ int main(int argc, char** argv){
 	gl.thread = &thread_gameloop;
 	gl.stopMutex = &glMutex;
 
-	sn.connectedClient = 0;
 	sn.thread = &thread_network;
 
 	//server = malloc(sizeof(Server));

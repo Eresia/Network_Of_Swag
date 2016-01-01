@@ -8,13 +8,13 @@
 #include "CheckClient.h"
 
 #define NB_CLIENT_MAX 100
-#define SIZE_MESSAGE_MAX 1500
 
 #define TIMEOUT -5
 
 typedef struct ServerNetwork ServerNetwork;
 struct ServerNetwork{
 	int port;
+	int connectedClient;
 	ListClient* clients;
 	pthread_t* thread;
 };
@@ -27,8 +27,8 @@ void* testClientConnexion(void* );
 void* serverIsFull(void* client);*/
 
 //sockets
-int begin_listen(SOCKET*, int);
-SOCKADDR_IN* waitConnexion(SOCKET, char*, int, int);
+int begin_listen(SOCKET*, SOCKET*, int);
+SOCKET waitConnexion(SOCKET, SOCKADDR_IN*, int, int);
 
 
 

@@ -26,17 +26,20 @@
 	ListClient* createList();
 	void addClient(ListClient*, ClientNetwork*);
 	void removeClient(ListClient*, ClientNetwork*);
-	void removeClientById(ListClient*, int);
-	ClientNetwork* getClientById(ListClient*, int);
+	void removeClientByName(ListClient*, char*);
+	ClientNetwork* getClientByName(ListClient*, char*);
 	ClientNetwork* getLastClient(ListClient*);
 	bool isInList(ListClient*, ClientNetwork*);
+	bool isInListByName(ListClient*, char*);
+	bool isInListByInfo(ListClient*, SOCKADDR_IN*);
 	void closeAll(ListClient*);
 
 	int addClient_Item(ItemList, ClientNetwork*);
-	int removeClientById_Item(ItemList, int);
-	ClientNetwork* getClientById_Item(ItemList, int);
+	int removeClientByName_Item(ItemList, char*);
+	ClientNetwork* getClientByName_Item(ItemList, char*);
 	ClientNetwork* getLastClient_Item(ItemList);
-	bool isInList_Item(ItemList, ClientNetwork*);
+	bool isInListByName_Item(ItemList, char*);
+	bool isInListByInfo_Item(ItemList, SOCKADDR_IN*);
 	void closeAll_Item(ItemList);
 
 #endif

@@ -2,14 +2,14 @@
 #define CLIENT_NETWORK
 
 #include "../../../data/src/usefull/Usefull.h"
-#include "../../../data/src/player/player.h"
 #include "DefineNetwork.h"
 
 
 typedef struct ClientNetwork ClientNetwork;
 struct ClientNetwork{
-	SOCKET socket;
-	char* name;
+	SOCKET socket_tcp;
+	SOCKET socket_udp;
+	int id;
 	bool isClosed;
 	SOCKADDR_IN* info;
 	pthread_t *thread;
@@ -19,5 +19,6 @@ struct ClientNetwork{
 //#include "CheckClient.h"
 
 void* begin_communication(void*);
+void* speak_to_client(void*);
 
 #endif
