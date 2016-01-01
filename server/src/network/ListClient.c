@@ -8,10 +8,10 @@ ListClient* createList(){
 }
 
 ItemList createElement(ClientNetwork* client){
-	ItemList Elt = malloc(sizeof(struct ListPart));
-	Elt->client = client;
-	Elt->next = NULL;
-	return Elt;
+	ItemList elt = malloc(sizeof(struct ListPart));
+	elt->client = client;
+	elt->next = NULL;
+	return elt;
 }
 
 void addClient(ListClient* list, ClientNetwork* client){
@@ -95,7 +95,7 @@ int addClient_Item(ItemList item, ClientNetwork* client){
 		return OTHER;
 	}
 	else if(item->next != NULL){
-		if(item->next->client == client){
+		if(strcmp(item->next->client->name,client->name) > 0){
 			return ELM_ALREADY_EXIST;
 		}
 		else{

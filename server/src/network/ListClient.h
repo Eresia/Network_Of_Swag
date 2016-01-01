@@ -24,6 +24,7 @@
 	};
 
 	ListClient* createList();
+	ItemList createElement(ClientNetwork*);
 	void addClient(ListClient*, ClientNetwork*);
 	void removeClient(ListClient*, ClientNetwork*);
 	void removeClientByName(ListClient*, char*);
