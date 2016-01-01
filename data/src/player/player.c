@@ -43,6 +43,22 @@ bool addBlockToInv(player *player, block block) {
 	return false;
 }
 
+bool removeBlockFromInv(player *player, int index) {
+	if(player->inventory[index].number > 1) {
+		player->inventory[index].number --;
+		return true;
+	}
+
+	if(player->inventory[index].number > 0) {
+		block noneBlock = {NONE, SKY};
+		player->inventory[index].number = 0;
+		player->inventory[index].desc = noneBlock;
+		return true;
+	}
+	
+	return false;
+}
+
 // Retourne l'index d'une case non pleine du bloc correspondant
 int caseNotFull(player player, block block) {
 	int i=0;

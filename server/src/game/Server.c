@@ -11,15 +11,25 @@ int main(int argc, char const *argv[]) {
 	//int player[2] = {60, 44};
  	block **map = getMapFromFile("server/saves/static.map");
  	map = removeBlock(map, 64, 43);
- 	block iron = {IRON, CAVE};
- 	map = addBlock(map, 64, 43, iron);
+ 	block ironBlock = {IRON, CAVE};
+ 	map = addBlock(map, 64, 43, ironBlock);
  	getFileFromMap(map, "server/saves/static2.map");
  	map = getMapFromFile("server/saves/static2.map");
 
 	//player p0 = createPlayer("agurato");
 	//savePlayer(p0);
     player p1 = loadPlayer("agurato");
-    printf("%d, %d\n%s-%d", p1.position[0], p1.position[1], getBlockName(p1.inventory[0].desc.type), p1.inventory[0].number);
+    block woodBlock = {WOOD, SKY};
+    addBlockToInv(&p1, ironBlock);
+    addBlockToInv(&p1, woodBlock);
+    removeBlockFromInv(&p1, 0);
+    removeBlockFromInv(&p1, 1);
+    int i=0;
+
+    printf("%d, %d\n", p1.position[0], p1.position[1]);
+    for(i=0 ; i<INV_SIZE ; i++) {
+        printf("%s-%d\n", getBlockName(p1.inventory[i].desc.type), p1.inventory[i].number);
+    }
 
 	/*
 	player *playerList = malloc(NB_CLIENT_MAX * sizeof(player*));

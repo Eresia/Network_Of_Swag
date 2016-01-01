@@ -6,10 +6,11 @@
 #define INV_SIZE 20
 #define PIX_PER_BLOCK 24
 
-typedef struct {
+typedef struct invCase invCase;
+struct invCase {
 	block desc;
 	int number;
-} invCase;
+};
 
 typedef struct player player;
 struct player {
@@ -22,6 +23,7 @@ struct player {
 
 player createPlayer(char *playerName);
 bool addBlockToInv(player *player, block block);
+bool removeBlockFromInv(player *player, int index);
 int caseNotFull(player player, block block);
 int *inInventory(player player, block block);
 
