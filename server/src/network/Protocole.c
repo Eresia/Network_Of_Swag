@@ -1,27 +1,8 @@
-/**
-
-	[SERVEUR]
-	Fonctions qui parse un datagramme pour en ressortir les données.
-
-**/
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-void Parse_Protocole (char* datagramme) ;
-
-int main () {
-
-	Parse_Protocole("2,324,758") ;
-
-
-	return 0 ;
-}
+#include "Protocole.h"
 
 void Parse_Protocole (char* datagramme) {
 	int taille_data = 0 ;
-	
+
 	// Calcul de la taille de datagramme ;
 	taille_data = strlen(datagramme) ;
 
