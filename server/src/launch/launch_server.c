@@ -10,6 +10,7 @@ int main(int argc, char** argv){
 	Gameloop gl;
 	ServerNetwork sn;
 	pthread_t thread_gameloop, thread_network, thread_shell;
+	pthread_mutex_t glMutex = PTHREAD_MUTEX_INITIALIZER;
 
 	if(argc != 2){
 		printf("Not expected arguments\n");
@@ -25,9 +26,8 @@ int main(int argc, char** argv){
 
 	gl.isStopped = false;
 	gl.thread = &thread_gameloop;
+	gl.stopMutex = &glMutex;
 
-	sn.connectedClient = 0;
-	sn.clients = malloc(NB_CLIENT_MAX*sizeof(ClientNetwork*));
 	sn.thread = &thread_network;
 
 	//server = malloc(sizeof(Server));

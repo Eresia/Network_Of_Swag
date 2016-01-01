@@ -15,8 +15,9 @@ struct Server{
 
 block **getMapFromFile(char *filePath);
 void getFileFromMap(block **map, char *filePath);
-player getPlayerFromFile(char *name, char *filePath);
-void getFileFromPlayers(player *p, int nbPlayers, char *filePath);
+player loadPlayer(char *name);
+bool savePlayer(player p);
+bool savePlayers(player *p, int nbPlayers);
 
 /* Les 2 fonctions peuvent être utiles pour le jeu final, mais pas sûr */
 void displayMap(block **map);

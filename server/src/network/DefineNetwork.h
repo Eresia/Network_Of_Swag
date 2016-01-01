@@ -7,11 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
-//Threads/Semaphores include
+//Threads include
 #include <pthread.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <semaphore.h>
 
 //Socket include
 #include <sys/types.h>
