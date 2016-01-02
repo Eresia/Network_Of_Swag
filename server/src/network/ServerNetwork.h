@@ -2,6 +2,7 @@
 #define SERVER_NETWORK
 
 #include "../../../data/src/usefull/Usefull.h"
+#include "../game/Protocole.h"
 #include "DefineNetwork.h"
 #include "ClientNetwork.h"
 #include "ListClient.h"
@@ -16,6 +17,7 @@ struct ServerNetwork{
 	int port;
 	ListClient* clients;
 	pthread_t* thread;
+	int* desc;
 };
 
 //server-client

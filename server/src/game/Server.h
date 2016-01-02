@@ -5,7 +5,7 @@
 #include "Gameloop.h"
 #include "../network/ServerNetwork.h"
 #include "../../../data/src/map/Map.h"
-#include "../../../data/src/player/player.h"
+#include "../../../data/src/player/Player.h"
 
 typedef struct Server Server;
 struct Server{
@@ -13,11 +13,11 @@ struct Server{
 	ServerNetwork sn;
 };
 
-block **getMapFromFile(char *filePath);
-void getFileFromMap(block **map, char *filePath);
-player loadPlayer(char *name);
-bool savePlayer(player p);
-bool savePlayers(player *p, int nbPlayers);
+Map* getMapFromFile(char *filePath);
+void getFileFromMap(Map map, char *filePath);
+Player* loadPlayer(char *name);
+bool savePlayer(Player p);
+bool savePlayers(Player *p, int nbPlayers);
 
 /* Les 2 fonctions peuvent être utiles pour le jeu final, mais pas sûr */
 void displayMap(block **map);

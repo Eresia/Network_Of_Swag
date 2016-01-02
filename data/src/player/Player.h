@@ -12,19 +12,19 @@ struct invCase {
 	int number;
 };
 
-typedef struct player player;
-struct player {
+typedef struct Player Player;
+struct Player {
 	char *name;
-	int position[2];
+	int* position;
 	// 0 <= position[0] < 2880 -> correspond à x
 	// 0 <= position[1] < 2400 -> correspond à y
 	invCase inventory[INV_SIZE];
 };
 
-player createPlayer(char *playerName);
-bool addBlockToInv(player *player, block block);
-bool removeBlockFromInv(player *player, int index);
-int caseNotFull(player player, block block);
-int *inInventory(player player, block block);
+Player* createPlayer(char *playerName);
+bool addBlockToInv(Player *player, block block);
+bool removeBlockFromInv(Player *player, int index);
+int caseNotFull(Player player, block block);
+int *inInventory(Player player, block block);
 
 #endif

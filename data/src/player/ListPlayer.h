@@ -3,9 +3,10 @@
 
 	#include <stdlib.h>
 	#include <stdio.h>
+	#include <pthread.h>
 
 	#include "../../../data/src/usefull/Usefull.h"
-	#include "player.h"
+	#include "Player.h"
 
 	#define ELM_ALREADY_EXIST 1
 	#define ELM_NOT_EXIST 2
@@ -13,7 +14,7 @@
 
 	typedef struct ListPartPlayer* ItemListPlayer;
 	struct ListPartPlayer{
-		player* player;
+		Player* player;
 		struct ListPartPlayer* next;
 	};
 
@@ -24,20 +25,20 @@
 	};
 
 	ListPlayer* createListPlayer();
-	ItemListPlayer createElementPlayer(player*);
-	void addPlayer(ListPlayer*, player*);
-	void removePlayer(ListPlayer*, player*);
+	ItemListPlayer createElementPlayer(Player*);
+	int addPlayer(ListPlayer*, Player*);
+	void removePlayer(ListPlayer*, Player*);
 	void removePlayerByName(ListPlayer*, char*);
-	player* getPlayerByName(ListPlayer*, char*);
-	player* getLastPlayer(ListPlayer*);
-	bool isPlayerInList(ListPlayer*, player*);
+	Player* getPlayerByName(ListPlayer*, char*);
+	Player* getLastPlayer(ListPlayer*);
+	bool isPlayerInList(ListPlayer*, Player*);
 	bool isPlayerInListByName(ListPlayer*, char*);
 	void closeAllPlayer(ListPlayer*);
 
-	int addPlayer_Item(ItemListPlayer, player*);
+	int addPlayer_Item(ItemListPlayer, Player*);
 	int removePlayerByName_Item(ItemListPlayer, char*);
-	player* getPlayerByName_Item(ItemListPlayer, char*);
-	player* getLastPlayer_Item(ItemListPlayer);
+	Player* getPlayerByName_Item(ItemListPlayer, char*);
+	Player* getLastPlayer_Item(ItemListPlayer);
 	bool isPlayerInListByName_Item(ItemListPlayer, char*);
 	void closeAllPlayer_Item(ItemListPlayer);
 

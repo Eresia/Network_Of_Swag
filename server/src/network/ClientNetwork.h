@@ -2,7 +2,8 @@
 #define CLIENT_NETWORK
 
 #include "../../../data/src/usefull/Usefull.h"
-#include "../../../data/src/player/player.h"
+#include "../../../data/src/player/Player.h"
+#include "../game/Protocole.h"
 #include "DefineNetwork.h"
 
 
@@ -14,6 +15,8 @@ struct ClientNetwork{
 	SOCKADDR_IN* info;
 	pthread_t *thread;
 	pthread_mutex_t *closeMutex;
+	Map* map;
+	Player* player;
 };
 
 //#include "CheckClient.h"

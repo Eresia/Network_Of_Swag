@@ -7,38 +7,42 @@ ListPlayer* createListPlayer(){
 	return list;
 }
 
-ItemListPlayer createElementPlayer(player* player){
+ItemListPlayer createElementPlayer(Player* player){
 	ItemListPlayer elt = malloc(sizeof(struct ListPartPlayer));
 	elt->player = player;
 	elt->next = NULL;
 	return elt;
 }
 
-void addPlayer(ListPlayer* list, player* player){
+int addPlayer(ListPlayer* list, Player* player){
+	int result;
 	if(list->firstItem == NULL){
 		list->firstItem = createElementPlayer(player);
 		list->nb++;
 		#ifdef DEBUG
 			printf("Client added\n");
 		#endif
-
+		result = NO_ERROR;
 	}
 	else if(list->firstItem->player == player){
 		#ifdef DEBUG
 			printf("Client already exist\n");
 		#endif
+		result = ELM_ALREADY_EXIST;
 	}
 	else{
-		if(addPlayer_Item(list->firstItem, player) == NO_ERROR){
+		result = addPlayer_Item(list->firstItem, player);
+		if(result == NO_ERROR){
 			list->nb++;
 			#ifdef DEBUG
 				printf("Client added\n");
 			#endif
 		}
 	}
+	return result;
 }
 
-void removePlayer(ListPlayer* list, player* player){
+void removePlayer(ListPlayer* list, Player* player){
 	return removePlayerByName(list, player->name);
 }
 
@@ -63,20 +67,26 @@ void removePlayerByName(ListPlayer* list, char* name){
 	}
 }
 
-player* getPlayerByName(ListPlayer* list, char* name){
+Player* getPlayerByName(ListPlayer* list, char* name){
 	return getPlayerByName_Item(list->firstItem, name);
 }
 
-player* getLastPlayer(ListPlayer* list){
-	return getLastPlayer_Item(list->firstItem);
+Player* getLastPlayer(ListPlayer* list){
+	Player* result;
+	result = getLastPlayer_Item(list->firstItem);
+	return result;
 }
 
-bool isPlayerInList(ListPlayer* list, player* player){
-	return isPlayerInListByName(list, player->name);
+bool isPlayerInList(ListPlayer* list, Player* player){
+	bool result;
+	result = isPlayerInListByName(list, player->name);
+	return result;
 }
 
 bool isPlayerInListByName(ListPlayer* list, char* name){
-	return isPlayerInListByName_Item(list->firstItem, name);
+	bool result;
+	result = isPlayerInListByName_Item(list->firstItem, name);
+	return result;
 }
 
 void closeAllPlayer(ListPlayer* list){
@@ -86,7 +96,7 @@ void closeAllPlayer(ListPlayer* list){
 
 
 
-int addPlayer_Item(ItemListPlayer item, player* player){
+int addPlayer_Item(ItemListPlayer item, Player* player){
 	if(item == NULL){
 		return OTHER;
 	}
@@ -121,7 +131,7 @@ int removePlayerByName_Item(ItemListPlayer item, char* name){
 	}
 }
 
-player* getPlayerByName_Item(ItemListPlayer item, char* name){
+Player* getPlayerByName_Item(ItemListPlayer item, char* name){
 	if(item == NULL){
 		return NULL;
 	}
@@ -133,7 +143,7 @@ player* getPlayerByName_Item(ItemListPlayer item, char* name){
 	}
 }
 
-player* getLastPlayer_Item(ItemListPlayer item){
+Player* getLastPlayer_Item(ItemListPlayer item){
 	if(item == NULL){
 		return NULL;
 	}

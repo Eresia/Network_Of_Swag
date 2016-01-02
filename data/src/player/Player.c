@@ -1,11 +1,12 @@
-#include "player.h"
+#include "Player.h"
 
-player createPlayer(char *playerName) {
-	player p;
+Player* createPlayer(char *playerName) {
+	Player* p = malloc(sizeof(Player));
 
-	p.name = playerName;
-	p.position[0] = 0;
-	p.position[1] = 0;
+	p->name = playerName;
+	p->position = malloc(2*sizeof(int));
+	p->position[0] = 0;
+	p->position[1] = 0;
 
 	block b;
 	b.type = NONE;
@@ -15,14 +16,14 @@ player createPlayer(char *playerName) {
 
 	int i=0;
 	for(i=0 ; i<INV_SIZE ; i++) {
-		p.inventory[i] = inv;
+		p->inventory[i] = inv;
 	}
 
 	return p;
 }
 
 // Ajoute un bloc à l'inventaire et retourne si ça a marché ou pas (envoyer &player dans les paramètres)
-bool addBlockToInv(player *player, block block) {
+bool addBlockToInv(Player *player, block block) {
 	int index = caseNotFull(*player, block);
 
 	if(index != -1) {
@@ -43,7 +44,7 @@ bool addBlockToInv(player *player, block block) {
 	return false;
 }
 
-bool removeBlockFromInv(player *player, int index) {
+bool removeBlockFromInv(Player *player, int index) {
 	if(player->inventory[index].number > 1) {
 		player->inventory[index].number --;
 		return true;
@@ -55,12 +56,12 @@ bool removeBlockFromInv(player *player, int index) {
 		player->inventory[index].desc = noneBlock;
 		return true;
 	}
-	
+
 	return false;
 }
 
 // Retourne l'index d'une case non pleine du bloc correspondant
-int caseNotFull(player player, block block) {
+int caseNotFull(Player player, block block) {
 	int i=0;
 
 	int *inventoryBlock = inInventory(player, block);
@@ -75,7 +76,7 @@ int caseNotFull(player player, block block) {
 }
 
 // Retourne un tableau du nombre de bloc (dont le type est celui passé en paramètre) par case de l'inventaire
-int *inInventory(player player, block block) {
+int *inInventory(Player player, block block) {
 	int i=0;
 	int *indexTab = malloc(INV_SIZE * sizeof(int));
 
