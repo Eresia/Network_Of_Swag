@@ -86,24 +86,27 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 }
 
 // Fonction qui créé le datagramme à envoyer à un joueur.
-char* Requete_Maj (Player* player, Map* fullMap) {
+char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	//printf("Spawn : %d, %d\n", fullMap->spawn[0], fullMap->spawn[1]);
 	block** map = fullMap->map;
 	char* requete ;
 	char* req_dep = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
-	char* x_position = calloc(10, sizeof(char));
-	char* y_position = calloc(10, sizeof(char));
 	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
 	char* map_char = calloc(1400, sizeof(char));
 	char* chiffre = calloc(1400, sizeof(char));
+	char* posPlayers = calloc(1400, sizeof(char));
 	int i = 0 ;
 	int j = 0 ;
 
-	// Récupération de x comme chaine de caractères.
-	sprintf(x_position, "%d", player->position[0]);
+	Player* player = getPlayerByName(players, pseudo);
 
-	// Récupération de y comme chaine de caractères.
-	sprintf(y_position, "%d", player->position[1]);
+	ItemListPlayer item = players->firstItem;
+	while(item != NULL){
+		if(playerIsVisible(player, item->player)){
+			sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
+		}
+		item = item->next;
+	}
 
 	for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
 		for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
@@ -121,7 +124,7 @@ char* Requete_Maj (Player* player, Map* fullMap) {
 	}
 
 	// On créé le datagramme
-	sprintf(req_dep, "%s%s%s%c%s%c%s", req_dep, "1,", x_position, ',', y_position, ',', map_char);
+	sprintf(req_dep, "%s%s%s%c%s", req_dep, "1,", map_char, ',', posPlayers);
 
 	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(requete, req_dep) ;
@@ -142,4 +145,20 @@ char* Requete_Message (char* message) {
 	strcpy(Requete, req_mess) ;
 
 	return Requete ;
+}
+
+bool playerIsVisible(Player* player, Player* other){
+	if(other->position[0] < player->position[0]-((NB_LIGNE+2*MARGE)/2)){
+		return false;
+	}
+	if(other->position[0] >= player->position[0]+((NB_LIGNE+2*MARGE)/2)){
+		return false;
+	}
+	if(other->position[1] < player->position[1]-((NB_COLONNE+2*MARGE)/2)){
+		return false;
+	}
+	if(other->position[1] >= player->position[1]+((NB_COLONNE+2*MARGE)/2)){
+		return false;
+	}
+	return true;
 }

@@ -77,7 +77,7 @@ void* launch_network(void* server_void){
 							cn->closeMutex = &mutex;
 							cn->thread = thread_com;
 							cn->map = server->gl.map;
-							cn->player = NULL;
+							cn->players = server->gl.listPlayer;
 
 							if(pthread_create(thread_com, NULL, begin_communication, cn) != 0){
 								#ifdef DEBUG
@@ -101,9 +101,6 @@ void* launch_network(void* server_void){
 						              printf("Network - Player not added in Gameloop\n");
 						            #endif
 									removeClient(server->sn.clients, cn);
-								}
-								else{
-									cn->player = *player;
 								}
 							}
 						}

@@ -22,7 +22,8 @@
 #define FORBIDEN_CHAR " \n"
 
 void parse_Protocole (char*, char*, Gameloop*, int) ;
-char* Requete_Maj (Player*, Map*) ;
+char* Requete_Maj (char*, ListPlayer*, Map*) ;
 char* Requete_Chat (char* messages) ;
+bool playerIsVisible(Player*, Player*);
 
 #endif

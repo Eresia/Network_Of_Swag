@@ -16,7 +16,7 @@ struct ClientNetwork{
 	pthread_t *thread;
 	pthread_mutex_t *closeMutex;
 	Map* map;
-	Player* player;
+	ListPlayer* players;
 };
 
 //#include "CheckClient.h"
