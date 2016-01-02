@@ -37,6 +37,8 @@ int main(int argc, char** argv){
 	gl.stopMutex = &glStopMutex;
 	gl.mapMutex = &glMapMutex;
 	gl.desc = descGl;
+	gl.map = getMapFromFile("server/saves/static.map");
+	gl.listPlayer = createListPlayer();
 
 	sn.thread = &thread_network;
 	sn.desc = descSn;
