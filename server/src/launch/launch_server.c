@@ -11,6 +11,7 @@ int main(int argc, char** argv){
 	ServerNetwork sn;
 	pthread_t thread_gameloop, thread_network, thread_shell;
 	pthread_mutex_t glMutex = PTHREAD_MUTEX_INITIALIZER;
+	int* desc = malloc(2*sizeof(int));
 
 	if(argc != 2){
 		printf("Not expected arguments\n");
@@ -24,9 +25,12 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
+	pipe(desc);
+
 	gl.isStopped = false;
 	gl.thread = &thread_gameloop;
 	gl.stopMutex = &glMutex;
+	gl.desc = desc;
 
 	sn.thread = &thread_network;
 
