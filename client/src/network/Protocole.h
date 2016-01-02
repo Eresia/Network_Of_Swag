@@ -54,9 +54,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define NB_LIGNE 3
+#define NB_COLONNE 3
+#define MARGE 3
+
 char* Requete_Deplacement_Envoi (int direction) ;
 char* Requete_Casse_Bloc (int x, int y) ;
 char* Requete_Pose_Bloc (int x, int y) ;
 char* Requete_Message (char* message) ;
+void parse_Protocole (char* datagramme) ;
 
 #endif
