@@ -60,5 +60,6 @@ char* Requete_Deplacement_Envoi (int) ;
 char* Requete_Casse_Bloc (int, int) ;
 char* Requete_Pose_Bloc (int, int, int) ;
 char* Requete_Message (char*) ;
+void parse_Protocole (char* datagramme) ;
 
 #endif
