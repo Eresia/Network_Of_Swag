@@ -54,6 +54,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../../../data/src/commonProtocol/CommonProtocol.h"
+
 char* Requete_Deplacement_Envoi (int direction) ;
 char* Requete_Casse_Bloc (int x, int y) ;
 char* Requete_Pose_Bloc (int x, int y) ;

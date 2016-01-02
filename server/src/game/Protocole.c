@@ -45,43 +45,111 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 		}
 	}
 	// Déplacement
-	else if (!strcmp(type, "1")) {
-		char* direction = strtok(NULL, ",");
+	else{
+		Player* player = getPlayerByName(gl->listPlayer, pseudo);
+		if(player == NULL){
+			#ifdef DEBUG
+			printf("Bad player\n") ;
+			#endif
+		}
+		if (!strcmp(type, "1")) {
+			#ifdef DEBUG
+			printf("C'est un déplacement vers : %s\n", datagramme_b) ;
+			#endif
+			int direction = atoi(datagramme_b);
 
-		#ifdef DEBUG
-		printf("C'est un déplacement vers : %s\n", direction) ;
-		#endif
-	}
-	// Casse bloc
-	else if (!strcmp(type, "2")) {
-		char* position_x_bloc = strtok(NULL, ",") ;
-		char* position_y_bloc = strtok(NULL, ",") ;
+			switch(direction){
+				/*case BOT:
+					if(gl->map->map[player->position[0]][player->position[1]+1].type == NONE){
+						player->position[1]++;
+					}
+					else{
+						#ifdef DEBUG
+						printf("Bot direction not possible\n");
+						#endif
+					}
+					break;*/
+				case RIGHT:
+					if(gl->map->map[player->position[0]+1][player->position[1]].type == NONE){
+						player->position[0]++;
+					}
+					else{
+						#ifdef DEBUG
+						printf("Right direction not possible\n");
+						#endif
+					}
+					break;
+				case LEFT:
+					if(gl->map->map[player->position[0]-1][player->position[1]].type == NONE){
+						player->position[0]--;
+					}
+					else{
+						#ifdef DEBUG
+						printf("Left direction not possible\n");
+						#endif
+					}
+					break;
+				case TOP:
+					if(!player->falling && (gl->map->map[player->position[0]][player->position[1]-1].type == NONE)){
+						player->position[1]--;
+					}
+					else{
+						#ifdef DEBUG
+						printf("Top direction not possible\n");
+						#endif
+					}
+					break;
+				default:
+					#ifdef DEBUG
+					printf("Direction not know\n");
+					#endif
+					break;
+			}
+			if(!player->falling && (gl->map->map[player->position[0]][player->position[1]+1].type == NONE)){
+				pthread_t thread;
+				FallData* data = malloc(sizeof(FallData));
+				data->player = player;
+				data->map = gl->map->map;
+				player->falling = true;
+				pthread_create(&thread, NULL, fall, data);
+			}
 
-		#ifdef DEBUG
-		printf("C'est un cassage du bloc de position x : %s, position y : %s\n", position_x_bloc, position_y_bloc) ;
-		#endif
-	}
-	// Pose bloc
-	else if (!strcmp(type, "3")) {
-		char* position_x_bloc = strtok(NULL, ",") ;
-		char* position_y_bloc = strtok(NULL, ",") ;
+		}
+		// Casse bloc
+		else if (!strcmp(type, "2")) {
+			int position_x_bloc = atoi(strtok(NULL, ","));
+			int position_y_bloc = atoi(strtok(NULL, ","));
 
-		#ifdef DEBUG
-		printf("C'est un posage du bloc de position x : %s, position y : %s\n", position_x_bloc, position_y_bloc) ;
-		#endif
-	}
-	// Message
-	else if (!strcmp(type, "4")) {
-		char* message = strtok(NULL, ",");
+			if((abs(player->position[0] - position_x_bloc) <= 1) && (abs(player->position[1] - position_y_bloc) <= 1)){
+				
+			}
 
-		#ifdef DEBUG
-		printf("C'est un message chat : %s\n", message) ;
-		#endif
-	}
-	else {
-		#ifdef DEBUG
-		printf("Erreur, type de requête inconnu\n") ;
-		#endif
+			#ifdef DEBUG
+			printf("C'est un cassage du bloc de position x : %d, position y : %d\n", position_x_bloc, position_y_bloc) ;
+			#endif
+		}
+		// Pose bloc
+		else if (!strcmp(type, "3")) {
+			char* position_x_bloc = strtok(NULL, ",") ;
+			char* position_y_bloc = strtok(NULL, ",") ;
+
+			#ifdef DEBUG
+			printf("C'est un posage du bloc de position x : %s, position y : %s\n", position_x_bloc, position_y_bloc) ;
+			#endif
+		}
+		// Message
+		else if (!strcmp(type, "4")) {
+			char* message = strtok(NULL, ",");
+
+			#ifdef DEBUG
+			printf("C'est un message chat : %s\n", message) ;
+			#endif
+		}
+		else {
+			#ifdef DEBUG
+			printf("Erreur, type de requête inconnu\n") ;
+			#endif
+		}
 	}
 }
 
@@ -161,4 +229,21 @@ bool playerIsVisible(Player* player, Player* other){
 		return false;
 	}
 	return true;
+}
+
+void* fall(void* player_void){
+	FallData* data = (FallData*) player_void;
+	Player* player = data->player;
+	block** map = data->map;
+	do{
+		usleep(500);
+		if(map[player->position[0]][player->position[1]+1].type == NONE){
+			player->position[1]++;
+			if(map[player->position[0]][player->position[1]+1].type != NONE){
+				player->falling = false;
+			}
+		}
+	}while(player->falling);
+
+	pthread_exit(NULL);
 }

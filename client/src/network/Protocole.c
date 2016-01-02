@@ -70,14 +70,6 @@
 
 	return 0 ;
 }*/
-
-/**
-	Protocole de déplacement (en fonction de la direction)
-	2 : Bas
-	4 : Gauche
-	6 : Droite
-	8 : Haut
-**/
 char* Requete_Deplacement_Envoi (int direction) {
 	char* Req ;
 	char req_dep[10] = "" ;

@@ -7,6 +7,7 @@ Player* createPlayer(char *playerName) {
 	p->position = malloc(2*sizeof(int));
 	p->position[0] = 0;
 	p->position[1] = 0;
+	p->falling = false;
 
 	block b;
 	b.type = NONE;
