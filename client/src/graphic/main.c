@@ -9,14 +9,15 @@ int main(){ //Main de test (Bruno)
     SDL_Window* window = NULL;
 
     //Création d'une fenêtre en pleine écran à la résolution de l'ordinateur
-    window = SDL_CreateWindow("name", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT,NULL);
+    window = SDL_CreateWindow("name", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
 
     if(window){
       bool quit = false;
       SDL_Event event;
       loadBmp();
 
-      block **map = getMapFromFile("./server/saves/static2.map"); //Map temporaire a partir des fonctions de vincent
+      Map* fullMap = getMapFromFile("./server/saves/static2.map"); //Map temporaire a partir des fonctions de vincent
+	  block** map = fullMap->map;
       printMap(window,map,27,37); //Print de test
 
       printPlayer(window, 550, 51);  //Only for test

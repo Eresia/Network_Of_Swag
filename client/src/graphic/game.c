@@ -72,11 +72,11 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
   block wood = {WOOD, BROWN, true};
   block iron = {IRON, ORANGE, true};*/
 
-  block air = {NONE, SKY, false};
-  block cave = {NONE, CAVE, false};
+  block air = {NONE, SKY};
+  //block cave = {NONE, CAVE};
   //block dirt = {DIRT, SKY, true};
   //block stone = {STONE, CAVE, true};
-  block wood = {WOOD, CAVE, true};
+  block wood = {WOOD, CAVE};
   //block iron = {IRON, CAVE, true};
 
   if(SDL_PollEvent(&event)){
