@@ -10,8 +10,10 @@ int main(int argc, char** argv){
 	Gameloop gl;
 	ServerNetwork sn;
 	pthread_t thread_gameloop, thread_network, thread_shell;
-	pthread_mutex_t glMutex = PTHREAD_MUTEX_INITIALIZER;
-	int* desc = malloc(2*sizeof(int));
+	pthread_mutex_t glStopMutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t glMapMutex = PTHREAD_MUTEX_INITIALIZER;
+	int* descGl = malloc(2*sizeof(int));
+	int* descSn = malloc(2*sizeof(int));
 
 	if(argc != 2){
 		printf("Not expected arguments\n");
@@ -25,14 +27,19 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
-	pipe(desc);
+	if((pipe(descGl) != 0) || (pipe(descSn) != 0)){
+		printf("Error of pipe\n");
+		return OTHER;
+	}
 
 	gl.isStopped = false;
 	gl.thread = &thread_gameloop;
-	gl.stopMutex = &glMutex;
-	gl.desc = desc;
+	gl.stopMutex = &glStopMutex;
+	gl.mapMutex = &glMapMutex;
+	gl.desc = descGl;
 
 	sn.thread = &thread_network;
+	sn.desc = descSn;
 
 	//server = malloc(sizeof(Server));
 	server.gl = gl;

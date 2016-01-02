@@ -1,6 +1,7 @@
 #include "Protocole.h"
+#include "Server.h"
 
-void parse_Protocole (char* pseudo, char* datagramme) {
+void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 	int taille_data = 0 ;
 
 	#ifdef DEBUG
@@ -20,8 +21,31 @@ void parse_Protocole (char* pseudo, char* datagramme) {
 	printf("type : %s\n\n", datagramme_b) ;
 	#endif
 
+	// Nouveau joueur
+	if (!strcmp(type, "-1")) {
+		#ifdef DEBUG
+		printf("Parsing - New Player : %s\n", pseudo) ;
+		#endif
+		Player* newPlayer = loadPlayer(pseudo);
+		if(newPlayer->position == NULL){
+			int* position = malloc(2*sizeof(int));
+			position[0] = gl->map->spawn[0];
+			position[1] = gl->map->spawn[1];
+			newPlayer->position = position;
+		}
+
+		if(addPlayer(gl->listPlayer, newPlayer) == NO_ERROR){
+			#ifdef DEBUG
+			printf("Parsing - New player added\n") ;
+			#endif
+			write(desc, &newPlayer, sizeof(newPlayer));
+		}
+		else{
+			write(desc, NULL, sizeof(NULL));
+		}
+	}
 	// Déplacement
-	if (!strcmp(type, "1")) {
+	else if (!strcmp(type, "1")) {
 		char* direction = strtok(NULL, ",");
 
 		#ifdef DEBUG
@@ -61,88 +85,48 @@ void parse_Protocole (char* pseudo, char* datagramme) {
 	}
 }
 
-void* processing(void* gl_void){
-	Gameloop* gl = (Gameloop*) gl_void;
-	char* buff;
-	bool stopServer;
-
-	do{
-		buff = waitMessage(gl->desc[0], 1, 0);
-
-		if(buff != NULL){
-			char* pseudo = calloc(11, sizeof(char));
-			char* cmd = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
-			pseudo = strtok(buff, ",");
-			if(pseudo == NULL){
-				#ifdef DEBUG
-				printf("Bad string - pseudo (Gameloop)\n") ;
-				#endif
-			}
-			else{
-				cmd = strtok(NULL, "");
-				if(cmd == NULL){
-					#ifdef DEBUG
-					printf("Bad string - cmd (Gameloop)\n") ;
-					#endif
-				}
-				else{
-					parse_Protocole(pseudo, cmd);
-				}
-			}
-		}
-
-		pthread_mutex_lock(gl->stopMutex);
-		stopServer = gl->isStopped;
-		pthread_mutex_unlock(gl->stopMutex);
-		usleep(50);
-	}while(!stopServer);
-
-	pthread_exit(NULL);
-}
-
 // Fonction qui créé le datagramme à envoyer à un joueur.
-char* Requete_Maj (int x, int y, int Map[NB_LIGNE+2*MARGE][NB_COLONNE+2*MARGE]) {
-	char* Requete ;
-	char req_dep[1500] = "" ;
-	char x_position[10] ;
-	char y_position[10] ;
+char* Requete_Maj (Player* player, Map* fullMap) {
+	//printf("Spawn : %d, %d\n", fullMap->spawn[0], fullMap->spawn[1]);
+	block** map = fullMap->map;
+	char* requete ;
+	char* req_dep = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
+	char* x_position = calloc(10, sizeof(char));
+	char* y_position = calloc(10, sizeof(char));
 	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
-	char map_char[1400] ;
-	char chiffre[1400] ;
+	char* map_char = calloc(1400, sizeof(char));
+	char* chiffre = calloc(1400, sizeof(char));
 	int i = 0 ;
 	int j = 0 ;
 
 	// Récupération de x comme chaine de caractères.
-	sprintf(x_position, "%d", x);
+	sprintf(x_position, "%d", player->position[0]);
 
 	// Récupération de y comme chaine de caractères.
-	sprintf(y_position, "%d", y);
+	sprintf(y_position, "%d", player->position[1]);
 
-	for (i = 0 ; i < (NB_LIGNE+2*MARGE) ; i++) {
-		for (j = 0 ; j < (NB_COLONNE+2*MARGE) ; j++) {
-			sprintf(chiffre, "%d", Map[i][j]);
+	for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
+		for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
+			if((i >= 0) && (i < SIZE_MAX_X) && (j >= 0) && (j < SIZE_MAX_Y)){
+				sprintf(chiffre, "%d", map[i][j].type);
 
-			strcat(map_char, chiffre) ;
+				strcat(map_char, chiffre) ;
 
-			// On ajoute "-" après le chiffre sauf pour le dernier
-			if (i+j != (((NB_LIGNE+2*MARGE)*2)-2)) {
-				strcat(map_char, "-") ;
+				// On ajoute "-" après le chiffre sauf pour le dernier
+				if (i+j != (((NB_LIGNE+2*MARGE)*2)-2)) {
+					strcat(map_char, "-") ;
+				}
 			}
 		}
 	}
 
 	// On créé le datagramme
-	strcat(req_dep, "1,");
-	strcat(req_dep, x_position);
-	strcat(req_dep, ",");
-	strcat(req_dep, y_position);
-	strcat(req_dep, ",");
-	strcat(req_dep, map_char) ;
+	sprintf(req_dep, "%s%s%s%c%s%c%s", req_dep, "1,", x_position, ',', y_position, ',', map_char);
 
-	Requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
-	strcpy(Requete, req_dep) ;
+	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
+	strcpy(requete, req_dep) ;
 
-	return Requete ;
+	return requete ;
 }
 
 // Fonction qui envoie le chat.
@@ -158,40 +142,4 @@ char* Requete_Message (char* message) {
 	strcpy(Requete, req_mess) ;
 
 	return Requete ;
-}
-
-char* waitMessage(int out, int secTimeout, int uSecTimeout){
-	int iResult;
-	fd_set rfds;
-	struct timeval tv;
-	int n;
-	char* buff = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
-
-	FD_ZERO(&rfds);
-	FD_SET(out, &rfds);
-
-	tv.tv_sec = (long) secTimeout;
-	tv.tv_usec = (long) uSecTimeout;
-
-	iResult = select(out + 1, &rfds, (fd_set *) 0, (fd_set *) 0, &tv);
-	if(iResult > 0)
-	{
-		if((n = read(out, buff, SIZE_MESSAGE_MAX + 11)) < 0){
-			#ifdef DEBUG
-			printf("Gameloop : Message not received\n");
-			#endif
-			return NULL;
-		}
-		else{
-			buff[n] = '\0';
-			#ifdef DEBUG
-			printf("Gameloop : Messages : %s\n", buff);
-			#endif
-			return buff;
-		}
-	}
-	else
-	{
-		return NULL;
-	}
 }

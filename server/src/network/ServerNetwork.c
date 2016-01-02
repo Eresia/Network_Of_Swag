@@ -34,7 +34,12 @@ void* launch_network(void* server_void){
 				#ifdef DEBUG
 				printf("Nouveau client : %s\n", buff);
 				#endif
-				if(isInListByInfo(server->sn.clients, clientInfo)){
+				if(server->sn.clients->nb >= NB_CLIENT_MAX){
+					#ifdef DEBUG
+					printf("Server is full\n");
+					#endif
+				}
+				else if(isInListByInfo(server->sn.clients, clientInfo)){
 					#ifdef DEBUG
 					printf("Client already connect\n");
 					#endif
@@ -42,7 +47,7 @@ void* launch_network(void* server_void){
 				else{
 					char* pseudo = malloc(11*sizeof(char));
 					strncat(pseudo, strtok(NULL, ""), 11);
-					pseudo = take_begin(pseudo, 11, " \n", 2);
+					pseudo = take_begin(pseudo, 11, FORBIDEN_CHAR, strlen(FORBIDEN_CHAR));
 					if(strlen(pseudo) == 0){
 						#ifdef DEBUG
 						printf("Bad pseudo\n");
@@ -59,7 +64,6 @@ void* launch_network(void* server_void){
 						}
 						else{
 							ClientNetwork* cn = malloc(sizeof(ClientNetwork));
-							CheckClient* cc = malloc(sizeof(CheckClient));
 							pthread_t* thread_com, *thread_check;
 							pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -72,22 +76,35 @@ void* launch_network(void* server_void){
 							cn->info = clientInfo;
 							cn->closeMutex = &mutex;
 							cn->thread = thread_com;
+							cn->map = server->gl.map;
+							cn->player = NULL;
 
-							cc->client = cn;
-							cc->list = server->sn.clients;
-
-							if(pthread_create(thread_com, NULL, begin_communication, cc) != 0){
+							if(pthread_create(thread_com, NULL, begin_communication, cn) != 0){
 								#ifdef DEBUG
 					              printf("Threads com not created\n");
 					            #endif
 							}
-							else if(pthread_create(thread_check, NULL, checkIfClientIsConnected, cc) != 0){
+							else if(pthread_create(thread_check, NULL, checkIfClientIsConnected, cn) != 0){
 								#ifdef DEBUG
 					              printf("Threads check not created\n");
 					            #endif
 							}
 							else{
 								addClient(server->sn.clients, cn);
+								char* string = calloc(4 + strlen(pseudo) + 1, sizeof(char));
+								sprintf(string, "%s%s", pseudo, ",-1");
+								write(server->gl.desc[1], string, strlen(string));
+								Player** player = malloc(sizeof(Player*));
+								read(server->sn.desc[0], player, sizeof(Player*));
+								if(player == NULL){
+									#ifdef DEBUG
+						              printf("Network - Player not added in Gameloop\n");
+						            #endif
+									removeClient(server->sn.clients, cn);
+								}
+								else{
+									cn->player = *player;
+								}
 							}
 						}
 					}
@@ -102,7 +119,7 @@ void* launch_network(void* server_void){
 				}
 				else{
 					char* string = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
-					sprintf(string, "%s%c%s", cn->name, ',', buff);
+					sprintf(string, "%s%c%s", cn->name, ',', take_begin(buff, strlen(buff), FORBIDEN_CHAR, strlen(FORBIDEN_CHAR)));
 					write(server->gl.desc[1], string, strlen(string));
 				}
 			}

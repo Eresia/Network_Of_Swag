@@ -118,8 +118,7 @@ int removeClientByName_Item(ItemList item, char* name){
 	}
 	else if(strcmp(item->next->client->name, name) == 0){
 		ItemList next = item->next->next;
-		//closesocket(item->client->socket_tcp);
-		//closesocket(item->client->socket_udp);
+		item->next->client->isClosed = true;
 		free(item->next);
 		item->next = next;
 		return NO_ERROR;

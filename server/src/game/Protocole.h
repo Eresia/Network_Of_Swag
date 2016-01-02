@@ -10,16 +10,19 @@
 #include <pthread.h>
 
 #include "../../../data/src/usefull/Usefull.h"
+#include "../../../data/src/map/Map.h"
+#include "../../../data/src/player/ListPlayer.h"
 #include "Gameloop.h"
 
 #define NB_LIGNE 3
 #define NB_COLONNE 3
 #define MARGE 3
 
-void parse_Protocole (char*, char*) ;
-char* Requete_Maj (int x, int y, int Map[NB_LIGNE+2*MARGE][NB_COLONNE+2*MARGE]) ;
+#define SIZE_MESSAGE_MAX 1500
+#define FORBIDEN_CHAR " \n"
+
+void parse_Protocole (char*, char*, Gameloop*, int) ;
+char* Requete_Maj (Player*, Map*) ;
 char* Requete_Chat (char* messages) ;
-void* processing(void*);
-char* waitMessage(int, int, int);
 
 #endif
