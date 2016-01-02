@@ -27,7 +27,9 @@ void* launch_network(void* server_void){
 			#ifdef DEBUG
 			printf("Message received : %s\n", buff);
 			#endif
-			char* result = strtok(buff, ",");
+			char* result = calloc(strlen(buff) + 1, sizeof(char));
+			strcpy(result, buff);
+			result = strtok(result, ",");
 			if(strcmp(result, "new") == 0){
 				#ifdef DEBUG
 				printf("Nouveau client : %s\n", buff);
@@ -92,7 +94,17 @@ void* launch_network(void* server_void){
 				}
 			}
 			else{
-				printf("Message : %s\n", buff);
+				ClientNetwork* cn = getClientByInfo(server->sn.clients, clientInfo);
+				if(cn == NULL){
+					#ifdef DEBUG
+					  printf("Unknow client\n");
+					#endif
+				}
+				else{
+					char* string = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
+					sprintf(string, "%s%c%s", cn->name, ',', buff);
+					write(server->gl.desc[1], string, strlen(string));
+				}
 			}
 
 		}

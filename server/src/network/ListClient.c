@@ -8,10 +8,10 @@ ListClient* createList(){
 }
 
 ItemList createElement(ClientNetwork* client){
-	ItemList Elt = malloc(sizeof(struct ListPart));
-	Elt->client = client;
-	Elt->next = NULL;
-	return Elt;
+	ItemList elt = malloc(sizeof(struct ListPart));
+	elt->client = client;
+	elt->next = NULL;
+	return elt;
 }
 
 void addClient(ListClient* list, ClientNetwork* client){
@@ -67,6 +67,10 @@ ClientNetwork* getClientByName(ListClient* list, char* name){
 	return getClientByName_Item(list->firstItem, name);
 }
 
+ClientNetwork* getClientByInfo(ListClient* list, SOCKADDR_IN* info){
+	return getClientByInfo_Item(list->firstItem, info);
+}
+
 ClientNetwork* getLastClient(ListClient* list){
 	return getLastClient_Item(list->firstItem);
 }
@@ -95,7 +99,7 @@ int addClient_Item(ItemList item, ClientNetwork* client){
 		return OTHER;
 	}
 	else if(item->next != NULL){
-		if(item->next->client == client){
+		if(strcmp(item->next->client->name,client->name) > 0){
 			return ELM_ALREADY_EXIST;
 		}
 		else{
@@ -134,6 +138,18 @@ ClientNetwork* getClientByName_Item(ItemList item, char* name){
 	}
 	else{
 		return getClientByName_Item(item->next, name);
+	}
+}
+
+ClientNetwork* getClientByInfo_Item(ItemList item, SOCKADDR_IN* info){
+	if(item == NULL){
+		return NULL;
+	}
+	else if((item->client->info->sin_addr.s_addr == info->sin_addr.s_addr) && (item->client->info->sin_port == info->sin_port)){
+		return item->client;
+	}
+	else{
+		return getClientByInfo_Item(item->next, info);
 	}
 }
 
