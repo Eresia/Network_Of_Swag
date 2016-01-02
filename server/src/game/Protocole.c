@@ -100,6 +100,66 @@ void* processing(void* gl_void){
 	pthread_exit(NULL);
 }
 
+// Fonction qui créé le datagramme à envoyer à un joueur.
+char* Requete_Maj (int x, int y, int Map[NB_LIGNE+2*MARGE][NB_COLONNE+2*MARGE]) {
+	char* Requete ;
+	char req_dep[1500] = "" ;
+	char x_position[10] ;
+	char y_position[10] ;
+	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
+	char map_char[1400] ;
+	char chiffre[1400] ;
+	int i = 0 ;
+	int j = 0 ;
+
+	// Récupération de x comme chaine de caractères.
+	sprintf(x_position, "%d", x);
+
+	// Récupération de y comme chaine de caractères.
+	sprintf(y_position, "%d", y);
+
+	for (i = 0 ; i < (NB_LIGNE+2*MARGE) ; i++) {
+		for (j = 0 ; j < (NB_COLONNE+2*MARGE) ; j++) {
+			sprintf(chiffre, "%d", Map[i][j]);
+
+			strcat(map_char, chiffre) ;
+
+			// On ajoute "-" après le chiffre sauf pour le dernier
+			if (i+j != (((NB_LIGNE+2*MARGE)*2)-2)) {
+				strcat(map_char, "-") ;
+			}
+		}
+	}
+
+	// On créé le datagramme
+	strcat(req_dep, "1,");
+	strcat(req_dep, x_position);
+	strcat(req_dep, ",");
+	strcat(req_dep, y_position);
+	strcat(req_dep, ",");
+	strcat(req_dep, map_char) ;
+
+	Requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
+	strcpy(Requete, req_dep) ;
+
+	return Requete ;
+}
+
+// Fonction qui envoie le chat.
+char* Requete_Message (char* message) {
+	char* Requete ;
+	char req_mess[1503] = "" ;
+
+	// On créé le protocole.
+	strcat(req_mess, "4,");
+	strcat(req_mess, message) ;
+
+	Requete = calloc((strlen(req_mess)+1), sizeof(char)) ;
+	strcpy(Requete, req_mess) ;
+
+	return Requete ;
+}
+
 char* waitMessage(int out, int secTimeout, int uSecTimeout){
 	int iResult;
 	fd_set rfds;
