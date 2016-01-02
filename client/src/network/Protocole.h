@@ -56,9 +56,9 @@
 
 #include "../../../data/src/commonProtocol/CommonProtocol.h"
 
-char* Requete_Deplacement_Envoi (int direction) ;
-char* Requete_Casse_Bloc (int x, int y) ;
-char* Requete_Pose_Bloc (int x, int y) ;
-char* Requete_Message (char* message) ;
+char* Requete_Deplacement_Envoi (int) ;
+char* Requete_Casse_Bloc (int, int) ;
+char* Requete_Pose_Bloc (int, int, int) ;
+char* Requete_Message (char*) ;
 
 #endif

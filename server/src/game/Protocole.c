@@ -120,22 +120,28 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			int position_x_bloc = atoi(strtok(NULL, ","));
 			int position_y_bloc = atoi(strtok(NULL, ","));
 
-			if((abs(player->position[0] - position_x_bloc) <= 1) && (abs(player->position[1] - position_y_bloc) <= 1)){
-				
-			}
-
 			#ifdef DEBUG
 			printf("C'est un cassage du bloc de position x : %d, position y : %d\n", position_x_bloc, position_y_bloc) ;
 			#endif
+
+			if((abs(player->position[0] - position_x_bloc) <= 1) && (abs(player->position[1] - position_y_bloc) <= 1) && (gl->map->map[position_x_bloc][position_y_bloc].type != NONE)){
+				block b = gl->map->map[position_x_bloc][position_y_bloc];
+				addBlockToInv(player, b);
+			}
 		}
 		// Pose bloc
 		else if (!strcmp(type, "3")) {
-			char* position_x_bloc = strtok(NULL, ",") ;
-			char* position_y_bloc = strtok(NULL, ",") ;
+			int position_x_bloc = atoi(strtok(NULL, ","));
+			int position_y_bloc = atoi(strtok(NULL, ","));
+			int index = atoi(strtok(NULL, ","));
 
 			#ifdef DEBUG
-			printf("C'est un posage du bloc de position x : %s, position y : %s\n", position_x_bloc, position_y_bloc) ;
+			printf("C'est un posage du bloc d'index %d à la position x : %d, position y : %d\n", index, position_x_bloc, position_y_bloc) ;
 			#endif
+
+			if((abs(player->position[0] - position_x_bloc) <= 1) && (abs(player->position[1] - position_y_bloc) <= 1) && (gl->map->map[position_x_bloc][position_y_bloc].type == NONE)){
+				removeBlockFromInv(player, index);
+			}
 		}
 		// Message
 		else if (!strcmp(type, "4")) {

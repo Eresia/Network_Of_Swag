@@ -89,21 +89,9 @@ char* Requete_Deplacement_Envoi (int direction) {
 
 char* Requete_Casse_Bloc (int x, int y) {
 	char* Requete ;
-	char req[30] = "" ;
-	char x_position[10] ;
-	char y_position[10] ;
+	char* req = calloc(30, sizeof(char)) ;
 
-	// Récupération de x comme chaine de caractères.
-	sprintf(x_position, "%d", x);
-
-	// Récupération de y comme chaine de caractères.
-	sprintf(y_position, "%d", y);
-
-	// On créé le datagramme
-	strcat(req, "2,") ;
-	strcat(req, x_position) ;
-	strcat(req, ",") ;
-	strcat(req, y_position) ;
+	sprintf(req, "%s%d%c%d", "2,", x, ',', y);
 
 
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
@@ -113,23 +101,12 @@ char* Requete_Casse_Bloc (int x, int y) {
 	return Requete ;
 }
 
-char* Requete_Pose_Bloc (int x, int y) {
+char* Requete_Pose_Bloc (int x, int y, int index) {
 	char* Requete ;
-	char req[30] = "" ;
-	char x_position[10] ;
-	char y_position[10] ;
-
-	// Récupération de x comme chaine de caractères.
-	sprintf(x_position, "%d", x);
-
-	// Récupération de y comme chaine de caractères.
-	sprintf(y_position, "%d", y);
+	char* req = calloc(30, sizeof(char)) ;
 
 	// On créé le datagramme
-	strcat(req, "3,") ;
-	strcat(req, x_position) ;
-	strcat(req, ",") ;
-	strcat(req, y_position) ;
+	sprintf(req, "%s%d%c%d%c%d", "3,", x, ',', y, ',', index);
 
 
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
