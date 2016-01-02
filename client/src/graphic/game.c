@@ -58,10 +58,10 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
   block wood = {WOOD, BROWN, true};
   block iron = {IRON, ORANGE, true};*/
 
-  block air = {NONE, SKY, false};
+  block air = {NONE, SKY};
   //block dirt = {DIRT, SKY, true};
   //block stone = {STONE, CAVE, true};
-  block wood = {WOOD, CAVE, true};
+  block wood = {WOOD, CAVE};
   //block iron = {IRON, CAVE, true};
 
   if(SDL_PollEvent(&event)){
@@ -89,11 +89,11 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
 
 
 void loadBmp(){
-  airBmp = SDL_LoadBMP("./image/air.bmp");
-  dirtBmp = SDL_LoadBMP("./image/dirt.bmp");
-  ironBmp = SDL_LoadBMP("./image/iron.bmp");
-  stoneBmp = SDL_LoadBMP("./image/stone.bmp");
-  woodBmp = SDL_LoadBMP("./image/wood.bmp");
+  airBmp = SDL_LoadBMP("client/src/graphic/image/air.bmp");
+  dirtBmp = SDL_LoadBMP("client/src/graphic/image/dirt.bmp");
+  ironBmp = SDL_LoadBMP("client/src/graphic/image/iron.bmp");
+  stoneBmp = SDL_LoadBMP("client/src/graphic/image/stone.bmp");
+  woodBmp = SDL_LoadBMP("client/src/graphic/image/wood.bmp");
 }
 
 void freeBmp(){

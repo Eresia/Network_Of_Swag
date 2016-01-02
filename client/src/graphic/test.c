@@ -1,17 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../server/src/game/Server.h"
-block **getMapFromFile(char *filePath) {
+
+
+Map* getMapFromFile(char *filePath) {
 
 	char mapBlock;
 	FILE *mapFile;
 	block **map;
+	Map* endMap = malloc(sizeof(Map));
 	int x=0, y=0;
+	int* spawn = malloc(2*sizeof(int));
 
-	map = malloc(120 * sizeof(block *));
+	map = malloc(SIZE_MAX_X * sizeof(block *));
 	if(map != NULL) {
-		for(x=0 ; x<120 ; x++) {
-			map[x] = malloc(100 * sizeof(block));
+		for(x=0 ; x<SIZE_MAX_X ; x++) {
+			map[x] = malloc(SIZE_MAX_Y * sizeof(block));
 			if(map[x] == NULL) {
 				printf("Error loading the map %s", filePath);
 				return NULL;
@@ -33,8 +37,8 @@ block **getMapFromFile(char *filePath) {
 	mapFile = fopen(filePath, "r");
 
 	if(mapFile != NULL) {
-		for(y=0 ; y<100 ; y++) {
-			for(x=0 ; x<120 ; x++) {
+		for(y=0 ; y<SIZE_MAX_Y ; y++) {
+			for(x=0 ; x<SIZE_MAX_X ; x++) {
 				mapBlock = fgetc(mapFile);
 				switch(mapBlock) {
 					case '0':
@@ -55,6 +59,14 @@ block **getMapFromFile(char *filePath) {
 					case '5':
 						map[x][y] = cave;
 						break;
+					case '9':
+						#ifdef DEBUG
+						printf("Spawn : %d, %d\n", x, y);
+						#endif
+						map[x][y] = sky;
+						spawn[0] = x;
+						spawn[1] = y;
+						break;
 					default:
 						map[x][y] = sky;
 						break;
@@ -65,8 +77,13 @@ block **getMapFromFile(char *filePath) {
 
 		fclose(mapFile);
 	}
+	else{
+		printf("Problem with map file\n");
+	}
 
-	return map;
+	endMap->map = map;
+	endMap->spawn = spawn;
+	return endMap;
 }
 
 /*block **getMapFromFile(char* filePath);
