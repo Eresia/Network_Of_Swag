@@ -129,7 +129,8 @@ char* Requete_Message (char* message) {
 	return Requete ;
 }
 
-void parse_Protocole (char* datagramme) {
+void parse_Protocole (Process* p, char* datagramme) {
+	Player* player = p->player;
 	int taille_data = 0 ;
 	char* saveptr1 ;
 
@@ -181,10 +182,10 @@ void parse_Protocole (char* datagramme) {
 		char* pseudo ;
 		int pos_X ;
 		int pos_Y ;
-		char* player = strtok_r(NULL, "-", &saveptr1) ;
+		char* p = strtok_r(NULL, "-", &saveptr1) ;
 
 		do {
-			pseudo = strtok(player, "_") ;
+			pseudo = strtok(p, "_") ;
 			pos_X = atoi(strtok(NULL, "_")) ;
 			pos_Y = atoi(strtok(NULL, "_")) ;
 
@@ -192,8 +193,20 @@ void parse_Protocole (char* datagramme) {
 			printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
 			#endif
 
-			player = strtok_r(NULL, ",", &saveptr1) ;
-		}while (player != NULL);
+			p = strtok_r(NULL, ",", &saveptr1) ;
+		}while (p != NULL);
+
+		for(i = 0; i < INV_SIZE; i++){
+			char* caseS = strtok_r(NULL, ",", &saveptr1) ;
+			block b;
+			b.type = atoi(strtok(caseS, "_")) ;
+			invCase c;
+			c.desc = b;
+			c.number = atoi(strtok(NULL, "-")) ;
+			player->inventory[i] = c;
+		}
+
+		player->falling = atoi(strtok_r(NULL, ",", &saveptr1));
 
 	}
 	// Chat

@@ -1,9 +1,12 @@
+#ifndef GRAPHIC
+#define GRAPHIC
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include "../../../data/src/map/Map.h"
 #include "../../../data/src/player/Player.h"
-#include "../../../server/src/game/Server.h" //A enlever dès que possible !
+//#include "../../../server/src/game/Server.h" //A enlever dès que possible !
 #include "../../../data/src/usefull/Usefull.h"
 
 #define HEIGHT 700 //Taille de la fenêtre
@@ -39,3 +42,5 @@ bool waitEvent(SDL_Event event, SDL_Window* window,int* selectedItem, Player* pl
 
 void loadBmp();
 void freeBmp();
+
+#endif

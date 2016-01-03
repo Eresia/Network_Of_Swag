@@ -1,18 +1,6 @@
 #ifndef DEFINE_CLIENT
 #define DEFINE_CLIENT
 
-	/*Returns and errors :
-		0 : No error
-		1 : Bad number of arguments
-		2 : Incorrect arguments
-		3 : Other
-
-	*/
-	#define NO_ERROR 0
-	#define BAD_NUMBER_OF_ARGUMENTS 1
-	#define INCORRECT_ARGUMENT 2
-	#define OTHER_ERROR
-
 	//General includes
 	#include <stdlib.h>
 	#include <stdio.h>
@@ -52,11 +40,9 @@
 
 	#endif
 
-	//Boolean utilisation
-	typedef enum bool bool;
-	enum bool{
-		false = 0, true = 1
-	};
+	#include "../../../data/src/usefull/Usefull.h"
+
+	void* launch_network(void*);
 
 
 #endif

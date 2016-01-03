@@ -29,7 +29,7 @@ int main(int argc, char** argv){
 
 	if((pipe(descGl) != 0) || (pipe(descSn) != 0)){
 		printf("Error of pipe\n");
-		return OTHER;
+		return OTHER_ERROR;
 	}
 
 	gl.isStopped = false;
