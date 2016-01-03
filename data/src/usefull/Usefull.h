@@ -17,6 +17,12 @@
 #define INCORRECT_ARGUMENT 2
 #define OTHER_ERROR 3
 
+#define HEIGHT 700 //Taille de la fenêtre
+#define WIDTH 1000
+
+#define NB_LIGNE WIDTH/24 +1
+#define NB_COLONNE HEIGHT/24 + 1
+
 //Boolean utilisation
 enum bool{
 	false = 0, true = 1

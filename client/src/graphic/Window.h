@@ -12,6 +12,15 @@
 #include "Graphic.h"
 #include "../game/Process.h"
 
-void* launch_graphic(void *);
+typedef struct ScreenInfo ScreenInfo;
+struct ScreenInfo{
+	SDL_Window* win;
+	Process* process;
+	int* selectedItem;
+	bool* isClosed;
+};
+
+void* launch_graphic(void*);
+void* displayOnScreen(void*);
 
 #endif

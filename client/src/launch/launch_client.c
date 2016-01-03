@@ -24,7 +24,7 @@ int main(int argc, char** argv){
 		return OTHER_ERROR;
 	}
 
-	process.map = NULL;
+	process.map = createVoidMap();
 	process.players = NULL;
 	process.desc = descProc;
 	process.nbPlayers = 0;
@@ -33,6 +33,7 @@ int main(int argc, char** argv){
 	client.process = &process;
 	client.ip = argv[2];
 	client.port = port;
+	client.isClosed = false;
 
 	pthread_create(&graphic, NULL, launch_graphic, &client);
 	pthread_create(&network, NULL, launch_network, &client);

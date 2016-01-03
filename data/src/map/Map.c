@@ -3,6 +3,21 @@
 #include "Map.h"
 #include "../usefull/Usefull.h"
 
+block** createVoidMap(){
+	block** map = malloc(SIZE_MAX_X*sizeof(block*));
+	int i, j;
+	for(i = 0; i < SIZE_MAX_X; i++){
+		map[i] = malloc(SIZE_MAX_Y*sizeof(block));
+		for(j = 0; j < SIZE_MAX_Y; j++){
+			block b;
+			b.type = VOID;
+			b.back = SKY;
+			map[i][j] = b;
+		}
+	}
+	return map;
+}
+
 block **removeBlock(block **map, int x, int y) {
 	if(map[x][y].type != NONE) {
 		map[x][y].type = NONE;
@@ -82,6 +97,8 @@ void freeMap(block** map, int size_x, int size_y){
 	int i,j;
 	for(i = 0; i < size_x; i++){
 		for(j = 0; j < size_y; j++){
+			free(&(map[i][j].type));
+			free(&(map[i][j].back));
 			free(&map[i][j]);
 		}
 	}

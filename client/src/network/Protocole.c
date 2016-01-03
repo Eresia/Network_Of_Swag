@@ -52,12 +52,16 @@
 
 char* Requete_Deplacement_Envoi (int direction) {
 	char* Req ;
-	char req_dep[10] = "" ;
+	char* req_dep = calloc(10, sizeof(char)) ;
 
 	sprintf(req_dep, "1,%d", direction);
 
 	Req = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(Req, req_dep) ;
+
+	#ifdef DEBUG
+	printf("Move request : %d\n", direction);
+	#endif
 
 	return Req ;
 }
@@ -73,6 +77,10 @@ char* Requete_Casse_Bloc (int x, int y) {
 
 	strcpy(Requete, req) ;
 
+	#ifdef DEBUG
+	printf("Block break request : %d %d\n", x, y);
+	#endif
+
 	return Requete ;
 }
 
@@ -87,6 +95,10 @@ char* Requete_Pose_Bloc (int x, int y, int index) {
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
 
 	strcpy(Requete, req) ;
+
+	#ifdef DEBUG
+	printf("Block put request : %d %d - item %d\n", x, y, index);
+	#endif
 
 	return Requete ;
 }
@@ -139,25 +151,29 @@ void parse_Protocole (Process* p, char* datagramme) {
 			char* case_actuel ;
 			int i = 0 ;
 			int j = 0 ;
+			bool first = true;
 			block** map_tab = malloc((NB_LIGNE+2*MARGE) * sizeof(block*));
 			for(i = 0; i < NB_LIGNE+2*MARGE; i++){
 				map_tab[i] = malloc((NB_COLONNE+2*MARGE) * sizeof(block));
 			}
 
 
-			for (i = 0 ; i < NB_LIGNE+2*MARGE ; i++) {
-				for (j = 0 ; j < NB_COLONNE+2*MARGE ; j++) {
-					if (i+j == 0) {
-						case_actuel = strtok(map, "-") ;
+			for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
+				for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
+					if((i >= 0) && (i < SIZE_MAX_X) && (j >= 0) && (j < SIZE_MAX_Y)){
+						if (first) {
+							case_actuel = strtok(map, "-") ;
+							first = false;
+						}
+						else {
+							case_actuel = strtok(NULL, "-") ;
+						}
+						map_tab[i][j].type = atoi(case_actuel) ;
+						map_tab[i][j].back = SKY ;
+						#ifdef DEBUG
+						printf("%d ", map_tab[i][j].type) ;
+						#endif
 					}
-					else {
-						case_actuel = strtok(NULL, "-") ;
-					}
-					map_tab[i][j].type = atoi(case_actuel) ;
-					map_tab[i][j].back = SKY ;
-					#ifdef DEBUG
-					printf("%d ", map_tab[i][j].type) ;
-					#endif
 
 				}
 				#ifdef DEBUG

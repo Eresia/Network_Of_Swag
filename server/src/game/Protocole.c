@@ -205,14 +205,9 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 
 	for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
 		for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
-			int b;
 			if((i >= 0) && (i < SIZE_MAX_X) && (j >= 0) && (j < SIZE_MAX_Y)){
-				b = map[i][j].type;
+				sprintf(map_char, "%s%d-", map_char, map[i][j].type);
 			}
-			else{
-				b = VOID;
-			}
-			sprintf(map_char, "%s%d-", map_char, b);
 		}
 	}
 

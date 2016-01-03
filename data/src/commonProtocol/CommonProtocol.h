@@ -11,8 +11,6 @@
 #include "../map/Map.h"
 #include "../player/Player.h"
 
-#define NB_LIGNE 3
-#define NB_COLONNE 3
 #define MARGE 3
 
 #define SIZE_MESSAGE_MAX 1500

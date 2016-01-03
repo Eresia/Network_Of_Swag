@@ -23,6 +23,7 @@ struct Map{
 	int* spawn;
 };
 
+block** createVoidMap();
 block **removeBlock(block **map, int x, int y);
 block **addBlock(block **map, int x, int y, block newBlock);
 bool isBlockFree(block **map, int x, int y);

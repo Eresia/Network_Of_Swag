@@ -9,6 +9,7 @@ struct Client{
 	Process* process;
 	char* ip;
 	int port;
+	bool isClosed;
 };
 
 #endif
