@@ -11,10 +11,11 @@ typedef enum {NONE=0, VOID=1, IRON=41, WOOD=43, DIRT=42, STONE=47} BlockType;
 typedef enum {CAVE=40, SKY=44} Background;
 // typedef enum {false, true} Boolean;
 
-typedef struct {
+typedef struct block block;
+struct block{
 	BlockType type;
 	Background back;
-} block;
+};
 
 typedef struct Map Map;
 struct Map{
@@ -27,5 +28,7 @@ block **addBlock(block **map, int x, int y, block newBlock);
 bool isBlockFree(block **map, int x, int y);
 char *getBlockName(BlockType type);
 BlockType getBlockType(char *name);
+
+void freeMap(block**, int, int);
 
 #endif

@@ -50,30 +50,6 @@
 
 #include "Protocole.h"
 
-/*int main (int argc, char* argv[]) {
-	char* req_deplacement ;
-	char* req_bloc ;
-	char* req_pose_bloc ;
-	char* req_message ;
-
-	req_deplacement = Requete_Deplacement_Envoi(2) ;
-	printf("%s\n\n", req_deplacement) ;
-
-	req_bloc = Requete_Casse_Bloc(324, 758) ;
-	printf("%s\n\n", req_bloc) ;
-
-	req_pose_bloc = Requete_Pose_Bloc(24,1067);
-	printf("%s\n\n", req_pose_bloc) ;
-
-	req_message = Requete_Message("Je suis un test du protocole d'envoi de message");
-	printf("%s\n\n", req_message) ;
-
-	char* requeteTest = "1,0-1-2-3-4-5-6-7-8-9-10-11-12-13-14-15-16-17-18-19-20-21-22-23-24-25-26-27-28-29-30-31-32-33-34-35-36-37-38-39-40-41-42-43-44-45-46-47-48-49-50-51-52-53-54-55-56-57-58-59-60-61-62-63-64-65-66-67-68-69-70-71-72-73-74-75-76-77-78-79-80,Alex_34_68,Bruno_2_92,Bastien_154_292";
-
-	parse_Protocole (requeteTest) ;
-
-	return 0 ;
-}*/
 char* Requete_Deplacement_Envoi (int direction) {
 	char* Req ;
 	char req_dep[10] = "" ;
@@ -129,9 +105,9 @@ char* Requete_Message (char* message) {
 	return Requete ;
 }
 
-void parse_Protocole (char* datagramme) {
+void parse_Protocole (Process* p, char* datagramme) {
+	Player* player = p->player;
 	int taille_data = 0 ;
-	char* saveptr1 ;
 
 	// On calcul la taille de datagramme
 	taille_data = strlen(datagramme) ;
@@ -141,7 +117,7 @@ void parse_Protocole (char* datagramme) {
 	strcpy(datagramme_b, datagramme) ;
 
 	// On récupére le type de la requête
-	char* type = strtok_r(datagramme_b, ",", &saveptr1) ;
+	char* type = strtok(datagramme_b, ",") ;
 
 	#ifdef DEBUG
 	printf("type : %s\n", type) ;
@@ -149,56 +125,93 @@ void parse_Protocole (char* datagramme) {
 
 	// Map autour du joueur + position des autres joueurs
 	if(!strcmp(type, "1")) {
-		char* map = strtok_r(NULL, ",", &saveptr1) ;
+		char* map = strtok(NULL, ",") ;
+		char* nbPlayers = strtok(NULL, ",");
+		char* playersChar = strtok(NULL, ",");
+		char* invChar = strtok(NULL, ",") ;
+		char* fall = strtok(NULL, ",");
 
-		// Récupération de la map autour
-		char* case_actuel ;
-		int i = 0 ;
-		int j = 0 ;
-		int map_tab[NB_LIGNE+2*MARGE][NB_COLONNE+2*MARGE] ;
+		if((map != NULL) && (nbPlayers != NULL) && (atoi(nbPlayers) != 0) && (playersChar != NULL) && (invChar != NULL) && (fall != NULL)){
+			#ifdef DEBUG
+			printf("Move \n") ;
+			#endif
+			// Récupération de la map autour
+			char* case_actuel ;
+			int i = 0 ;
+			int j = 0 ;
+			block** map_tab = malloc((NB_LIGNE+2*MARGE) * sizeof(block*));
+			for(i = 0; i < NB_LIGNE+2*MARGE; i++){
+				map_tab[i] = malloc((NB_COLONNE+2*MARGE) * sizeof(block));
+			}
 
-		for (i = 0 ; i < NB_LIGNE+2*MARGE ; i++) {
-			for (j = 0 ; j < NB_COLONNE+2*MARGE ; j++) {
-				if (i+j == 0) {
-					case_actuel = strtok(map, "-") ;
+
+			for (i = 0 ; i < NB_LIGNE+2*MARGE ; i++) {
+				for (j = 0 ; j < NB_COLONNE+2*MARGE ; j++) {
+					if (i+j == 0) {
+						case_actuel = strtok(map, "-") ;
+					}
+					else {
+						case_actuel = strtok(NULL, "-") ;
+					}
+					map_tab[i][j].type = atoi(case_actuel) ;
+					map_tab[i][j].back = SKY ;
+					#ifdef DEBUG
+					printf("%d ", map_tab[i][j].type) ;
+					#endif
+
 				}
-				else {
-					case_actuel = strtok(NULL, "-") ;
-				}
-				map_tab[i][j] = atoi(case_actuel) ;
 				#ifdef DEBUG
-				printf("%d ", map_tab[i][j]) ;
+				printf("\n") ;
 				#endif
 
 			}
-			#ifdef DEBUG
-			printf("\n") ;
-			#endif
+			block** mapTemp = p->map;
+			p->map = map_tab;
+			freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
 
+			// Récupération des joueurs et de leurs positions
+			char* p = strtok(playersChar, "-") ;
+			DisplayPlayer* dp = malloc(atoi(nbPlayers) * sizeof(DisplayPlayer));
+			i = 0;
+
+			while(p != NULL) {
+				char* pseudo = strtok(p, "_") ;
+				int pos_X = atoi(strtok(NULL, "_"));
+				int pos_Y = atoi(strtok(NULL, "_"));
+
+				#ifdef DEBUG
+				printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
+				#endif
+
+				dp[i].name = pseudo;
+				dp[i].x = pos_X;
+				dp[i].y = pos_Y;
+
+				p = strtok(NULL, "-") ;
+			}
+
+			for(i = 0; i < INV_SIZE; i++){
+				block b;
+				b.type = atoi(strtok(invChar, "_")) ;
+				invCase c;
+				c.desc = b;
+				c.number = atoi(strtok(NULL, "-")) ;
+				player->inventory[i] = c;
+			}
+
+			player->falling = atoi(fall);
+		}
+		else{
+			#ifdef DEBUG
+			printf("Move but bad arguments\n") ;
+			#endif
 		}
 
-		// Récupération des joueurs et de leurs positions
-		char* pseudo ;
-		int pos_X ;
-		int pos_Y ;
-		char* player = strtok_r(NULL, "-", &saveptr1) ;
-
-		do {
-			pseudo = strtok(player, "_") ;
-			pos_X = atoi(strtok(NULL, "_")) ;
-			pos_Y = atoi(strtok(NULL, "_")) ;
-
-			#ifdef DEBUG
-			printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
-			#endif
-
-			player = strtok_r(NULL, ",", &saveptr1) ;
-		}while (player != NULL);
 
 	}
 	// Chat
 	else if (!strcmp(type, "2")) {
-		char* chat = strtok_r(NULL, ",", &saveptr1) ;
+		char* chat = strtok(NULL, ",") ;
 		printf("Chat : %s\n", chat);
 	}
 	else {

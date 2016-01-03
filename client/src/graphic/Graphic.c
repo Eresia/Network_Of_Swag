@@ -1,4 +1,4 @@
-#include "game.h"
+#include "Graphic.h"
 
 SDL_Surface* airBmp;
 SDL_Surface* dirtBmp;

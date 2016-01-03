@@ -77,3 +77,12 @@ BlockType getBlockType(char *name) {
 
 	return type;
 }
+
+void freeMap(block** map, int size_x, int size_y){
+	int i,j;
+	for(i = 0; i < size_x; i++){
+		for(j = 0; j < size_y; j++){
+			free(&map[i][j]);
+		}
+	}
+}

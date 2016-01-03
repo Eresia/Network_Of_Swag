@@ -72,7 +72,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			#ifdef DEBUG
 			printf("C'est un déplacement vers : %s\n", datagramme_b) ;
 			#endif
-			int direction = atoi(datagramme_b);
+			Move direction = atoi(datagramme_b);
 
 			switch(direction){
 				/*case BOT:
@@ -156,7 +156,10 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			#endif
 
 			if(canAccesBlock(player->position[0], player->position[1], position_x_bloc, position_y_bloc, gl->map->map, true)){
-				removeBlockFromInv(player, index);
+				if((player->inventory[index].number != 0) && (player->inventory[index].desc.type != NONE)){
+					gl->map->map[position_x_bloc][position_y_bloc] = player->inventory[index].desc;
+					removeBlockFromInv(player, index);
+				}
 			}
 		}
 		// Message
@@ -184,15 +187,18 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
 	char* map_char = calloc(1400, sizeof(char));
 	char* posPlayers = calloc(1400, sizeof(char));
+	char* inv = calloc(1400, sizeof(char));
 	int i = 0 ;
 	int j = 0 ;
 
 	Player* player = getPlayerByName(players, pseudo);
+	int nbPlayers = 0;
 
 	ItemListPlayer item = players->firstItem;
 	while(item != NULL){
 		if(playerIsVisible(player, item->player)){
 			sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
+			nbPlayers++;
 		}
 		item = item->next;
 	}
@@ -210,8 +216,12 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 		}
 	}
 
+	for(i = 0; i < INV_SIZE; i++){
+		sprintf(inv, "%s%d_%d-", inv, player->inventory[i].desc.type, player->inventory[i].number);
+	}
+
 	// On créé le datagramme
-	sprintf(req_dep, "1,%s,%s", map_char, posPlayers);
+	sprintf(req_dep, "1,%s,%d,%s,%s,%d", map_char, nbPlayers, posPlayers, inv, player->falling);
 
 	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(requete, req_dep) ;
@@ -248,47 +258,4 @@ bool playerIsVisible(Player* player, Player* other){
 		return false;
 	}
 	return true;
-}
-
-bool canGoToBlock(int pX, int pY, int dX, int dY, block** map){
-	if(((pX + dX) >= 0) && ((pX + dX) < SIZE_MAX_X) && ((pY + dY) >= 0) && ((pY + dY) < SIZE_MAX_Y)){
-		return (map[pX + dX][pY + dY].type == NONE);
-	}
-	else{
-		return false;
-	}
-}
-
-bool canAccesBlock(int pX, int pY, int bX, int bY, block** map, bool air){
-	if((abs(pX - bX) <= 1) && (abs(pY - bY) <= 1)){
-		if((bX >= 0) && (bX < SIZE_MAX_X) && (bY >= 0) && (bY < SIZE_MAX_Y)){
-			return (((map[bX][bY].type == NONE) && air) || ((map[bX][bY].type != NONE) && !air));
-		}
-		else{
-			return false;
-		}
-	}
-	else{
-		return false;
-	}
-}
-
-void* fall(void* player_void){
-	FallData* data = (FallData*) player_void;
-	Player* player = data->player;
-	block** map = data->map;
-	do{
-		sleep(1);
-		if(map[player->position[0]][player->position[1]+1].type == NONE){
-			#ifdef DEBUG
-			//printf("%s is falling\n", player->name);
-			#endif
-			player->position[1]++;
-			if(map[player->position[0]][player->position[1]+1].type != NONE){
-				player->falling = false;
-			}
-		}
-	}while(player->falling);
-
-	pthread_exit(NULL);
 }
