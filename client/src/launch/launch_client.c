@@ -6,10 +6,17 @@ int main(int argc, char** argv){
 	Process process;
 	Client client;
 	int* descProc = malloc(2*sizeof(int));
+	int port;
 
-	if(argc != 2){
+	if(argc != 4){
 		printf("Not expected arguments\n");
 		return BAD_NUMBER_OF_ARGUMENTS;
+	}
+
+	port = atoi(argv[3]);
+	if(port == 0){
+		printf("Bad port\n");
+		return INCORRECT_ARGUMENT;
 	}
 
 	if(pipe(descProc) != 0){
@@ -24,6 +31,8 @@ int main(int argc, char** argv){
 	process.player = createPlayer(argv[1]);
 
 	client.process = &process;
+	client.ip = argv[2];
+	client.port = port;
 
 	pthread_create(&graphic, NULL, launch_graphic, &client);
 	pthread_create(&network, NULL, launch_network, &client);

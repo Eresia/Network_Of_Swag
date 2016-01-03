@@ -7,6 +7,8 @@
 typedef struct Client Client;
 struct Client{
 	Process* process;
+	char* ip;
+	int port;
 };
 
 #endif
