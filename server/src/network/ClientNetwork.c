@@ -38,7 +38,7 @@ void* begin_communication(void* client_void){
 		pthread_mutex_lock(cn->closeMutex);
 		isClosed = cn->isClosed;
 		pthread_mutex_unlock(cn->closeMutex);
-		usleep(25);
+		usleep(25000);
 
 	}while(!isClosed);
 

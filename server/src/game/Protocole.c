@@ -28,10 +28,18 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 		#endif
 		Player* newPlayer = loadPlayer(pseudo);
 		if(newPlayer->position == NULL){
+			#ifdef DEBUG
+			printf("It's a new player\n") ;
+			#endif
 			int* position = malloc(2*sizeof(int));
 			position[0] = gl->map->spawn[0];
 			position[1] = gl->map->spawn[1];
 			newPlayer->position = position;
+		}
+		else{
+			#ifdef DEBUG
+			printf("Player loaded\n") ;
+			#endif
 		}
 
 		if(addPlayer(gl->listPlayer, newPlayer) == NO_ERROR){
@@ -39,6 +47,14 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			printf("Parsing - New player added\n") ;
 			#endif
 			write(desc, &newPlayer, sizeof(newPlayer));
+			if(gl->map->map[newPlayer->position[0]][newPlayer->position[1]+1].type == NONE){
+				pthread_t thread;
+				FallData* data = malloc(sizeof(FallData));
+				data->player = newPlayer;
+				data->map = gl->map->map;
+				newPlayer->falling = true;
+				pthread_create(&thread, NULL, fall, data);
+			}
 		}
 		else{
 			write(desc, NULL, sizeof(NULL));
@@ -242,8 +258,11 @@ void* fall(void* player_void){
 	Player* player = data->player;
 	block** map = data->map;
 	do{
-		usleep(500);
+		sleep(1);
 		if(map[player->position[0]][player->position[1]+1].type == NONE){
+			#ifdef DEBUG
+			//printf("%s is falling\n", player->name);
+			#endif
 			player->position[1]++;
 			if(map[player->position[0]][player->position[1]+1].type != NONE){
 				player->falling = false;
