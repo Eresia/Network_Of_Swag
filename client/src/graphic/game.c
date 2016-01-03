@@ -7,8 +7,10 @@ SDL_Surface* stoneBmp;
 SDL_Surface* woodBmp;
 SDL_Surface* caveBmp;
 SDL_Surface* playerBmp;
+SDL_Surface* frameBmp;
+SDL_Surface* selectedBmp;
 
-void printMap(SDL_Window* window,block **map, int x, int y){
+void printMap(SDL_Window* window,block **map, int x, int y, int selectedItem, Player* player){
   int i,j;
   block currentBloc;
   int nbBlocX = WIDTH/24 +1 ;
@@ -19,14 +21,15 @@ void printMap(SDL_Window* window,block **map, int x, int y){
       int mapY = y - (nbBlocY/2) + j;
       if((mapX >= 0) && (mapX < XMAXMAP) && (mapY >= 0) && (mapY < YMAXMAP)){
         currentBloc = map[mapX][mapY];
-        printBlock(window, currentBloc, i*24, j*24);
+        printBlock(window, currentBloc, i*24, j*24, false);
       }
     }
   }
+  printInventory(window,selectedItem,player);
   SDL_UpdateWindowSurface(window);
 }
 
-void printBlock(SDL_Window* mw, block blocValue, int x, int y){
+void printBlock(SDL_Window* mw, block blocValue, int x, int y, bool absolute){
   SDL_Surface* surface = NULL;
   switch (blocValue.type) {
     case NONE:
@@ -52,8 +55,10 @@ void printBlock(SDL_Window* mw, block blocValue, int x, int y){
       surface = ironBmp;
       break;
   }
-  x = (x/24) * 24;
-  y = (y/24) * 24;
+  if(absolute == false){
+    x = (x/24) * 24;
+    y = (y/24) * 24;
+  }
   SDL_Rect block = {x, y, 24, 24};
   SDL_BlitSurface(surface,NULL,SDL_GetWindowSurface(mw), &block);
 }
@@ -63,14 +68,45 @@ void printPlayer(SDL_Window* window, int x, int y){
   SDL_BlitSurface(playerBmp,NULL,SDL_GetWindowSurface(window), &playerRect);
 }
 
-bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents évenement
+void printInventory(SDL_Window* window, int selectedItem, Player* player){
+  int i = 0;
+  int x = (WIDTH / 2) - 80;
+  int y = HEIGHT - 40;
+  for(i=0 ; i<4; i++){
+    SDL_Rect rect ={x +(i * 40), y, 40, 40};
+    SDL_BlitSurface(frameBmp,NULL,SDL_GetWindowSurface(window), &rect);
+  }
+  SDL_Rect rect ={x +(40 * selectedItem), y, 40, 40};
+  SDL_BlitSurface(selectedBmp,NULL,SDL_GetWindowSurface(window), &rect);
+  int item = -1;
+  for(i =0 ; i < INV_SIZE ; i++){
+    switch (player->inventory[i].desc.type) {
+      case DIRT:
+        item = 0;
+        break;
+      case STONE:
+        item = 1;
+        break;
+      case WOOD:
+        item = 2;
+        break;
+      case IRON:
+        item = 3;
+        break;
+      default :
+        item = -1;
+    }
+    if(item != -1){
+      int blocX = x + (item*40) + 8;
+      int blocY = y + 8;
+      printBlock(window,player->inventory[i].desc, blocX, blocY, true);
+    }
+  }
+}
+
+bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* player){ //Gére les différents évenement
   bool quit = false;
   int mouseX,mouseY;
-  /*block air = {NONE, BLUE, false};
-  block dirt = {DIRT, GREEN, true};
-  block stone = {STONE, GRAY, true};
-  block wood = {WOOD, BROWN, true};
-  block iron = {IRON, ORANGE, true};*/
 
   block air = {NONE, SKY};
   //block cave = {NONE, CAVE};
@@ -85,17 +121,32 @@ bool waitEvent(SDL_Event event, SDL_Window* window){ //Gére les différents év
         if(event.window.event == SDL_WINDOWEVENT_CLOSE){
           quit = true;
         }
+        break;
       case SDL_MOUSEBUTTONUP:
         if(event.button.button == SDL_BUTTON_LEFT){ //Ajout d'un bloc sur la map pour tester
           SDL_GetMouseState(&mouseX,&mouseY);
-          printBlock(window,wood,mouseX,mouseY);
+          printBlock(window,wood,mouseX,mouseY,false);
           SDL_UpdateWindowSurface(window);
         }
         else if(event.button.button == SDL_BUTTON_RIGHT){ //Supression d'un bloc pour tester
         SDL_GetMouseState(&mouseX,&mouseY);
-        printBlock(window,air,mouseX,mouseY);
+        printBlock(window,air,mouseX,mouseY,false);
         SDL_UpdateWindowSurface(window);
         }
+        break;
+      case SDL_MOUSEWHEEL :
+        if(event.wheel.y == 1){
+          *selectedItem = (*selectedItem + 1) % 4;
+        }
+        else if (event.wheel.y == -1){
+          *selectedItem = (*selectedItem - 1) ;
+          if(*selectedItem < 0){
+            *selectedItem = 3;
+          }
+        }
+        printInventory(window, *selectedItem, player);
+        SDL_UpdateWindowSurface(window);
+        break;
     }
   }
 
@@ -112,7 +163,9 @@ void loadBmp(){
   caveBmp = SDL_LoadBMP("./client/src/graphic/image/cave.bmp");
   playerBmp = SDL_LoadBMP("./client/src/graphic/image/player.bmp");
   Uint32 colorkey = SDL_MapRGB(playerBmp->format, 0xFF, 0xFF, 0xFF);
-  SDL_SetColorKey(playerBmp,SDL_TRUE,colorkey);
+  SDL_SetColorKey(playerBmp,SDL_TRUE,colorkey); // Transparence du blanc
+  frameBmp = SDL_LoadBMP("./client/src/graphic/image/frame.bmp");
+  selectedBmp = SDL_LoadBMP("./client/src/graphic/image/selected.bmp");
 }
 
 void freeBmp(){
@@ -123,4 +176,6 @@ void freeBmp(){
   SDL_FreeSurface(woodBmp);
   SDL_FreeSurface(caveBmp);
   SDL_FreeSurface(playerBmp);
+  SDL_FreeSurface(frameBmp);
+  SDL_FreeSurface(selectedBmp);
 }
