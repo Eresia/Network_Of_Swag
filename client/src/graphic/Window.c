@@ -10,6 +10,11 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 	}
 	else{
 		SDL_Window* window = NULL;
+		block** map;
+		do{
+			usleep(500000);
+			map = process->map;
+		}while(map == NULL);
 
 		//Création d'une fenêtre en pleine écran à la résolution de l'ordinateur
 		window = SDL_CreateWindow("Network Of Swag", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
@@ -20,11 +25,6 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			SDL_Event event;
 			loadBmp();
 
-			block** map; //Map temporaire a partir des fonctions de vincent
-			do{
-				usleep(500000);
-				map = process->map;
-			}while(map == NULL);
 			Player* player = createPlayer("TestBob"); //Player temporaire pour les test
 			block stone, iron;
 			stone.type = STONE;

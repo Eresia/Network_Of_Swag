@@ -20,6 +20,7 @@ int main(int argc, char** argv){
 	process.map = NULL;
 	process.players = NULL;
 	process.desc = descProc;
+	process.nbPlayers = 0;
 	process.player = createPlayer(argv[1]);
 
 	client.process = &process;

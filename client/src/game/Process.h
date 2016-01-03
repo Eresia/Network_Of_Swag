@@ -22,6 +22,7 @@ typedef struct Process Process;
 struct Process{
 		block** map;
 		Player* player;
+		int nbPlayers;
 		DisplayPlayer* players;
 		int* desc;
 };

@@ -192,11 +192,13 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	int j = 0 ;
 
 	Player* player = getPlayerByName(players, pseudo);
+	int nbPlayers = 0;
 
 	ItemListPlayer item = players->firstItem;
 	while(item != NULL){
 		if(playerIsVisible(player, item->player)){
 			sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
+			nbPlayers++;
 		}
 		item = item->next;
 	}
@@ -219,7 +221,7 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	}
 
 	// On créé le datagramme
-	sprintf(req_dep, "1,%s,%s,%s,%d", map_char, posPlayers, inv, player->falling);
+	sprintf(req_dep, "1,%s,%d,%s,%s,%d", map_char, nbPlayers, posPlayers, inv, player->falling);
 
 	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(requete, req_dep) ;
