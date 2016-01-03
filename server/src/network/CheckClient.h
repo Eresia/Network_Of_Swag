@@ -11,13 +11,14 @@
 #include <pthread.h>
 
 #include "ListClient.h"
-#include "ClientNetwork.h"
 
-typedef struct CheckClient CheckClient;
+#define NB_MAX_TRY 5
+
+/*typedef struct CheckClient CheckClient;
 struct CheckClient{
 	ClientNetwork* client;
 	ListClient* list;
-};
+};*/
 
 void* checkIfClientIsConnected(void*);
 

@@ -50,6 +50,7 @@ void removeClientByName(ListClient* list, char* name){
 	}
 	else if(strcmp(list->firstItem->client->name,name) == 0){
 		ItemList next = list->firstItem->next;
+		list->firstItem->client->isClosed = true;
 		//closesocket(list->firstItem->client->socket_tcp);
 		//closesocket(list->firstItem->client->socket_udp);
 		free(list->firstItem);
