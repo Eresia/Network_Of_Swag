@@ -77,13 +77,8 @@
 char* Requete_Deplacement_Envoi (int direction) {
 	char* Req ;
 	char req_dep[10] = "" ;
-	char c_direction[2] ;
 
-	// On transforme le int en chaîne de caractères.
-	sprintf(c_direction, "%d", direction);
-
-	strcat(req_dep, "1,");
-	strcat(req_dep, c_direction);
+	sprintf(req_dep, "1,%d", direction);
 
 	Req = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(Req, req_dep) ;
@@ -95,7 +90,7 @@ char* Requete_Casse_Bloc (int x, int y) {
 	char* Requete ;
 	char* req = calloc(30, sizeof(char)) ;
 
-	sprintf(req, "%s%d%c%d", "2,", x, ',', y);
+	sprintf(req, "2,%d,%d", x, y);
 
 
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
@@ -110,7 +105,7 @@ char* Requete_Pose_Bloc (int x, int y, int index) {
 	char* req = calloc(30, sizeof(char)) ;
 
 	// On créé le datagramme
-	sprintf(req, "%s%d%c%d%c%d", "3,", x, ',', y, ',', index);
+	sprintf(req, "3,%d,%d,%d", x, y, index);
 
 
 	Requete = calloc((strlen(req)+1), sizeof(char)) ;
@@ -186,7 +181,7 @@ void parse_Protocole (char* datagramme) {
 		char* pseudo ;
 		int pos_X ;
 		int pos_Y ;
-		char* player = strtok_r(NULL, ",", &saveptr1) ;
+		char* player = strtok_r(NULL, "-", &saveptr1) ;
 
 		do {
 			pseudo = strtok(player, "_") ;
