@@ -76,7 +76,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 
 			switch(direction){
 				/*case BOT:
-					if(gl->map->map[player->position[0]][player->position[1]+1].type == NONE){
+					if(canGoToBlock(player->position[0], player->position[1], 0, 1, gl->map->map)){
 						player->position[1]++;
 					}
 					else{
@@ -86,7 +86,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 					}
 					break;*/
 				case RIGHT:
-					if(gl->map->map[player->position[0]+1][player->position[1]].type == NONE){
+					if(canGoToBlock(player->position[0], player->position[1], 1, 0, gl->map->map)){
 						player->position[0]++;
 					}
 					else{
@@ -96,7 +96,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 					}
 					break;
 				case LEFT:
-					if(gl->map->map[player->position[0]-1][player->position[1]].type == NONE){
+					if(canGoToBlock(player->position[0], player->position[1], -1, 0, gl->map->map)){
 						player->position[0]--;
 					}
 					else{
@@ -106,7 +106,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 					}
 					break;
 				case TOP:
-					if(!player->falling && (gl->map->map[player->position[0]][player->position[1]-1].type == NONE)){
+					if(!player->falling && (canGoToBlock(player->position[0], player->position[1], 0, -1, gl->map->map))){
 						player->position[1]--;
 					}
 					else{
@@ -140,7 +140,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			printf("C'est un cassage du bloc de position x : %d, position y : %d\n", position_x_bloc, position_y_bloc) ;
 			#endif
 
-			if((abs(player->position[0] - position_x_bloc) <= 1) && (abs(player->position[1] - position_y_bloc) <= 1) && (gl->map->map[position_x_bloc][position_y_bloc].type != NONE)){
+			if(canAccesBlock(player->position[0], player->position[1], position_x_bloc, position_y_bloc, gl->map->map, false)){
 				block b = gl->map->map[position_x_bloc][position_y_bloc];
 				addBlockToInv(player, b);
 			}
@@ -155,7 +155,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			printf("C'est un posage du bloc d'index %d à la position x : %d, position y : %d\n", index, position_x_bloc, position_y_bloc) ;
 			#endif
 
-			if((abs(player->position[0] - position_x_bloc) <= 1) && (abs(player->position[1] - position_y_bloc) <= 1) && (gl->map->map[position_x_bloc][position_y_bloc].type == NONE)){
+			if(canAccesBlock(player->position[0], player->position[1], position_x_bloc, position_y_bloc, gl->map->map, true)){
 				removeBlockFromInv(player, index);
 			}
 		}
@@ -183,7 +183,6 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	char* req_dep = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
 	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
 	char* map_char = calloc(1400, sizeof(char));
-	char* chiffre = calloc(1400, sizeof(char));
 	char* posPlayers = calloc(1400, sizeof(char));
 	int i = 0 ;
 	int j = 0 ;
@@ -200,21 +199,19 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 
 	for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
 		for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
+			int b;
 			if((i >= 0) && (i < SIZE_MAX_X) && (j >= 0) && (j < SIZE_MAX_Y)){
-				sprintf(chiffre, "%d", map[i][j].type);
-
-				strcat(map_char, chiffre) ;
-
-				// On ajoute "-" après le chiffre sauf pour le dernier
-				if (i+j != (((NB_LIGNE+2*MARGE)*2)-2)) {
-					strcat(map_char, "-") ;
-				}
+				b = map[i][j].type;
 			}
+			else{
+				b = VOID;
+			}
+			sprintf(map_char, "%s%d-", map_char, b);
 		}
 	}
 
 	// On créé le datagramme
-	sprintf(req_dep, "%s%s%s%c%s", req_dep, "1,", map_char, ',', posPlayers);
+	sprintf(req_dep, "1,%s,%s", map_char, posPlayers);
 
 	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(requete, req_dep) ;
@@ -251,6 +248,29 @@ bool playerIsVisible(Player* player, Player* other){
 		return false;
 	}
 	return true;
+}
+
+bool canGoToBlock(int pX, int pY, int dX, int dY, block** map){
+	if(((pX + dX) >= 0) && ((pX + dX) < SIZE_MAX_X) && ((pY + dY) >= 0) && ((pY + dY) < SIZE_MAX_Y)){
+		return (map[pX + dX][pY + dY].type == NONE);
+	}
+	else{
+		return false;
+	}
+}
+
+bool canAccesBlock(int pX, int pY, int bX, int bY, block** map, bool air){
+	if((abs(pX - bX) <= 1) && (abs(pY - bY) <= 1)){
+		if((bX >= 0) && (bX < SIZE_MAX_X) && (bY >= 0) && (bY < SIZE_MAX_Y)){
+			return (((map[bX][bY].type == NONE) && air) || ((map[bX][bY].type != NONE) && !air));
+		}
+		else{
+			return false;
+		}
+	}
+	else{
+		return false;
+	}
 }
 
 void* fall(void* player_void){

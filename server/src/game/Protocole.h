@@ -26,6 +26,8 @@ void parse_Protocole (char*, char*, Gameloop*, int) ;
 char* Requete_Maj (char*, ListPlayer*, Map*) ;
 char* Requete_Chat (char* messages) ;
 bool playerIsVisible(Player*, Player*);
+bool canGoToBlock(int, int, int, int, block**);
+bool canAccesBlock(int, int, int, int, block**, bool);
 void* fall(void*);
 
 #endif
