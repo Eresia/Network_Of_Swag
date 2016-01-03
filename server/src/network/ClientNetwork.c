@@ -24,7 +24,7 @@ void* begin_communication(void* client_void){
 			}
 			else{
 				#ifdef DEBUG
-				printf("Message send : %s\n", buff);
+				//printf("Message send : %s\n", buff);
 				#endif
 			}
 		}

@@ -10,12 +10,21 @@ void* launch_network(void* server_void){
 	SOCKADDR_IN* clientInfo;
 	int result;
 	char* buff = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
+	pthread_t threadCheck;
 
 	result = begin_listen(&socket, server->sn.port);
 	if(result != NO_ERROR){
 		pthread_mutex_lock(server->gl.stopMutex);
 		server->gl.isStopped = true;
 		pthread_mutex_unlock(server->gl.stopMutex);
+		pthread_exit(&result);
+	}
+
+	if(pthread_create(&threadCheck, NULL, checkIfClientIsConnected, server->sn.clients)){
+		#ifdef DEBUG
+		  printf("Threads check not created\n");
+		#endif
+		result = OTHER;
 		pthread_exit(&result);
 	}
 
@@ -64,11 +73,10 @@ void* launch_network(void* server_void){
 						}
 						else{
 							ClientNetwork* cn = malloc(sizeof(ClientNetwork));
-							pthread_t* thread_com, *thread_check;
+							pthread_t* thread_com;
 							pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 							thread_com = malloc(sizeof(pthread_t));
-							thread_check = malloc(sizeof(pthread_t));
 
 							cn->socket = socket;
 							cn->name = pseudo;
@@ -78,15 +86,11 @@ void* launch_network(void* server_void){
 							cn->thread = thread_com;
 							cn->map = server->gl.map;
 							cn->players = server->gl.listPlayer;
+							cn->nbTry = 0;
 
 							if(pthread_create(thread_com, NULL, begin_communication, cn) != 0){
 								#ifdef DEBUG
 					              printf("Threads com not created\n");
-					            #endif
-							}
-							else if(pthread_create(thread_check, NULL, checkIfClientIsConnected, cn) != 0){
-								#ifdef DEBUG
-					              printf("Threads check not created\n");
 					            #endif
 							}
 							else{
@@ -109,15 +113,21 @@ void* launch_network(void* server_void){
 			}
 			else{
 				ClientNetwork* cn = getClientByInfo(server->sn.clients, clientInfo);
+				char* cleanBuff = take_begin(buff, strlen(buff), FORBIDEN_CHAR, strlen(FORBIDEN_CHAR));
 				if(cn == NULL){
 					#ifdef DEBUG
 					  printf("Unknow client\n");
 					#endif
 				}
 				else{
-					char* string = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
-					sprintf(string, "%s%c%s", cn->name, ',', take_begin(buff, strlen(buff), FORBIDEN_CHAR, strlen(FORBIDEN_CHAR)));
-					write(server->gl.desc[1], string, strlen(string));
+					if(strcmp(cleanBuff, "hello") == 0){
+						cn->nbTry = 0;
+					}
+					else{
+						char* string = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
+						sprintf(string, "%s%c%s", cn->name, ',', cleanBuff);
+						write(server->gl.desc[1], string, strlen(string));
+					}
 				}
 			}
 

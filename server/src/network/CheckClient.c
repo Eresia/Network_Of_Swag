@@ -1,21 +1,28 @@
 #include "CheckClient.h"
 
-void* checkIfClientIsConnected(void* client_void){
+void* checkIfClientIsConnected(void* clients_void){
 
-	/*CheckClient* client = (CheckClient*) client_void;
-	char* buf = malloc(sizeof(char));
+	ListClient* clients = (ListClient*) clients_void;
 
-	recv(client->client->socket_tcp, buf, 1, 0);
-
-	#ifdef DEBUG
-		printf("Client was deconnected\n");
-	#endif
-
-	removeClient(client->list, client->client);
-
-	pthread_mutex_lock(client->client->closeMutex);
-	client->client->isClosed = true;
-	pthread_mutex_unlock(client->client->closeMutex);*/
+	while(true){
+		ItemList client = clients->firstItem;
+		while(client != NULL){
+			ClientNetwork* cn = client->client;
+			cn->nbTry++;
+			if(cn->nbTry == NB_MAX_TRY){
+				printf("Client %s disconnected\n", cn->name);
+				client = client->next;
+				removeClient(clients, cn);
+			}
+			else{
+				#ifdef DEBUG
+				//printf("nbTry : %d\n", cn->nbTry);
+				#endif
+				client = client->next;
+			}
+		}
+		sleep(1);
+	}
 
 	pthread_exit(NULL);
 }
