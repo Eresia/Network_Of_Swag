@@ -156,7 +156,10 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			#endif
 
 			if(canAccesBlock(player->position[0], player->position[1], position_x_bloc, position_y_bloc, gl->map->map, true)){
-				removeBlockFromInv(player, index);
+				if((player->inventory[index].number != 0) && (player->inventory[index].desc.type != NONE)){
+					gl->map->map[position_x_bloc][position_y_bloc] = player->inventory[index].desc;
+					removeBlockFromInv(player, index);
+				}
 			}
 		}
 		// Message

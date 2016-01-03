@@ -1,4 +1,5 @@
 #include "Process.h"
+#include "../network/Protocole.h"
 
 void move(Player* player, Move direction, block** map, int out){
 
@@ -71,6 +72,8 @@ void putBlock(Player* player, int x, int y, int index, block** map, int out){
 		if((player->inventory[index].number != 0) && (player->inventory[index].desc.type != NONE)){
 			map[x][y] = player->inventory[index].desc;
 			removeBlockFromInv(player, index);
+			char* request = Requete_Pose_Bloc(x, y, index);
+			write(out, request, strlen(request));
 		}
 	}
 }

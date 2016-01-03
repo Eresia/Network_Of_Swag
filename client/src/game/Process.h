@@ -10,7 +10,6 @@
 #include "../../../data/src/commonProtocol/CommonProtocol.h"
 #include "../../../data/src/map/Map.h"
 #include "../../../data/src/player/Player.h"
-#include "../network/Protocole.h"
 
 typedef struct DisplayPlayer DisplayPlayer;
 struct DisplayPlayer{
