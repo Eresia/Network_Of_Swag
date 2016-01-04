@@ -21,6 +21,14 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			SDL_Event event;
 			loadBmp();
 
+			//POUR LE TROLL
+			SDL_Surface* yogurt = SDL_LoadBMP("./client/src/graphic/image/projet_reseau_logo.bmp");
+			SDL_Rect logo = {310, 195, 375, 413};
+			SDL_BlitSurface(yogurt,NULL,SDL_GetWindowSurface(window), &logo);
+			SDL_UpdateWindowSurface(window);
+
+			SDL_Delay(5000);
+
 			Player* player = process->player; //Player temporaire pour les test
 			block stone, iron;
 			stone.type = STONE;

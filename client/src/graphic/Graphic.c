@@ -81,40 +81,24 @@ void printPlayer(SDL_Window* window, int x, int y){
 }
 
 void printInventory(SDL_Window* window, int selectedItem, Player* player){
-	int i = 0;
-	int x = (WIDTH / 2) - 80;
-	int y = HEIGHT - 40;
-	for(i=0 ; i<4; i++){
-		SDL_Rect rect ={x +(i * 40), y, 40, 40};
-		SDL_BlitSurface(frameBmp,NULL,SDL_GetWindowSurface(window), &rect);
-	}
-	SDL_Rect rect ={x +(40 * selectedItem), y, 40, 40};
-	SDL_BlitSurface(selectedBmp,NULL,SDL_GetWindowSurface(window), &rect);
-	int item = -1;
-	for(i =0 ; i < INV_SIZE ; i++){
-		switch (player->inventory[i].desc.type) {
-			case DIRT:
-			item = 0;
-			break;
-			case STONE:
-			item = 1;
-			break;
-			case WOOD:
-			item = 2;
-			break;
-			case IRON:
-			item = 3;
-			break;
-			default :
-			item = -1;
-		}
-		if(item != -1){
-			int blocX = x + (item*40) + 8;
-			int blocY = y + 8;
-			printBlock(window,player->inventory[i].desc, blocX, blocY, true);
-		}
-	}
+	  int i = 0;
+	  int x = (WIDTH / 2) - 80;
+	  int y = HEIGHT - 40;
+	  for(i=0 ; i<4; i++){
+	    SDL_Rect rect ={x +(i * 40), y, 40, 40};
+	    SDL_BlitSurface(frameBmp,NULL,SDL_GetWindowSurface(window), &rect);
+	  }
+	  SDL_Rect rect ={x +(40 * selectedItem), y, 40, 40};
+	  SDL_BlitSurface(selectedBmp,NULL,SDL_GetWindowSurface(window), &rect);
+	  for(i =0 ; i < 4 ; i++){
+	    if(player->inventory[i].desc.type !=NONE){
+	      int blocX = x + (i * 40) + 8;
+	      int blocY = y + 8;
+	      printBlock(window,player->inventory[i].desc, blocX, blocY, true);
+	    }
+  	}
 }
+
 
 bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* player){ //Gére les différents évenement
 	bool quit = false;
