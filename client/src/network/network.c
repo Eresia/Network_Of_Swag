@@ -111,7 +111,7 @@ void* bufferize_to_server(void* client_struct){
 				*cn->isClosed = true;
 				pthread_exit(NULL);
 			}
-			cn->BUFF_OUT[0] = '\0';
+			memset(cn->BUFF_OUT, 0, SIZE_MESSAGE_MAX);
 		}
 		#ifdef DEBUG
 		printf("[reseau]envoie de  %i octet du buffer vers %s \n" , (int) strlen(cn->BUFF_OUT)  , cn->serv_ip_addr);
@@ -167,7 +167,7 @@ void* processingReadData(void* client_struct){
 		if(receive_from_server(cn, buff) != 0){
 			if(strlen(buff) > 0){
 				parse_Protocole(c->process, buff);
-				buff[0] = '\0';
+				memset(buff, 0, SIZE_MESSAGE_MAX);
 			}
 		}
 		sleep(1);
@@ -183,7 +183,7 @@ void* launch_network(void* client_struct){
 	sprintf(buff, "new,%s", c->process->player->name);
 	pthread_t beatThread, writerThread, receverThread, readThread;
 
-	//pthread_create(&beatThread, NULL , client_beat, cn);
+	pthread_create(&beatThread, NULL , client_beat, cn);
 	pthread_create(&writerThread, NULL , bufferize_to_server, cn);
 	pthread_create(&receverThread, NULL , bufferize_from_server, cn);
 	pthread_create(&readThread, NULL , processingReadData, c);
@@ -193,7 +193,7 @@ void* launch_network(void* client_struct){
 
 	send_to_server(cn, buff, strlen(buff));
 
-	//pthread_join(beatThread, NULL);
+	pthread_join(beatThread, NULL);
 	pthread_join(writerThread, NULL);
 	pthread_join(receverThread, NULL);
 	pthread_join(readThread, NULL);

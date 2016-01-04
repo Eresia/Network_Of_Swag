@@ -181,7 +181,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 				#endif
 
 			}
-			block** mapTemp = p->map;
+			//block** mapTemp = p->map;
 			p->map = map_tab;
 			//freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
 
@@ -218,9 +218,21 @@ void parse_Protocole (Process* p, char* datagramme) {
 				p->players = dp;
 			}
 
+			#ifdef DEBUG
+			printf("Remplissage inv : %s\n", invChar) ;
+			#endif
+			bool begin = true;
+
 			for(i = 0; i < INV_SIZE; i++){
 				block b;
-				b.type = atoi(strtok(invChar, "_")) ;
+				if(begin){
+					b.type = atoi(strtok(invChar, "_")) ;
+					begin = false;
+				}
+				else{
+					b.type = atoi(strtok(NULL, "_")) ;
+				}
+				b.back = SKY;
 				invCase c;
 				c.desc = b;
 				c.number = atoi(strtok(NULL, "-")) ;
@@ -228,6 +240,10 @@ void parse_Protocole (Process* p, char* datagramme) {
 			}
 
 			player->falling = atoi(fall);
+			#ifdef DEBUG
+			printf("Move successfull\n") ;
+			#endif
+
 		}
 		else{
 			#ifdef DEBUG
