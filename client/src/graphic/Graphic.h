@@ -35,7 +35,7 @@ void printPlayer(SDL_Window* window, int x, int y);
 void printInventory(SDL_Window* window, int selectedItem, Player* player);
 void printMap(SDL_Window* window,block **map, int selectedItem, Player* player);
 
-bool waitEvent(SDL_Event event, SDL_Window* window,int* selectedItem, Player* player);
+bool waitEvent(SDL_Event event, SDL_Window* window,int* selectedItem, Player* player, block**, client_network);
 
 void loadBmp();
 void freeBmp();

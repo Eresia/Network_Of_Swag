@@ -3,9 +3,9 @@
 int main(int argc, char** argv){
 
 	pthread_t graphic, network;
-	Process process;
+	Process* process = malloc(sizeof(Process));
 	Client client;
-	int* descProc = malloc(2*sizeof(int));
+	client_network cn = malloc(sizeof(struct client_network_struct));
 	int port;
 
 	if(argc != 4){
@@ -19,18 +19,17 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
-	if(pipe(descProc) != 0){
-		printf("Error of pipe\n");
-		return OTHER_ERROR;
-	}
+	process->map = createVoidMap();
+	process->players = NULL;
+	process->nbPlayers = 0;
+	process->player = createPlayer(argv[1]);
 
-	process.map = createVoidMap();
-	process.players = NULL;
-	process.desc = descProc;
-	process.nbPlayers = 0;
-	process.player = createPlayer(argv[1]);
+	cn = init_client_network(argv[2], port);
 
-	client.process = &process;
+	cn->isClosed = &client.isClosed;
+
+	client.process = process;
+	client.cn = cn;
 	client.ip = argv[2];
 	client.port = port;
 	client.isClosed = false;

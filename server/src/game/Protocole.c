@@ -182,12 +182,12 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	//printf("Spawn : %d, %d\n", fullMap->spawn[0], fullMap->spawn[1]);
 	block** map = fullMap->map;
-	char* requete ;
+	char* requete;
 	char* req_dep = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
 	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
-	char* map_char = calloc(1400, sizeof(char));
-	char* posPlayers = calloc(1400, sizeof(char));
-	char* inv = calloc(1400, sizeof(char));
+	char* map_char = calloc(SIZE_MESSAGE_MAX, sizeof(char));
+	char* posPlayers = calloc(SIZE_MESSAGE_MAX, sizeof(char));
+	char* inv = calloc(SIZE_MESSAGE_MAX, sizeof(char));
 	int i = 0 ;
 	int j = 0 ;
 
@@ -220,6 +220,13 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 
 	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
 	strcpy(requete, req_dep) ;
+
+	/*printf("SizeMax : %d\n", SIZE_MESSAGE_MAX);
+	printf("Map : %d\n", (int) strlen(map_char));
+	printf("nbPlayer : %d\n", nbPlayers);
+	printf("posPlayers : %s - taille : %d\n", posPlayers, (int) strlen(posPlayers));
+	printf("inv : %s - taille : %d\n", inv, (int) strlen(inv));
+	printf("All : %d\n", (int) strlen(requete));*/
 
 	return requete ;
 }

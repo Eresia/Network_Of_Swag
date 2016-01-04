@@ -4,7 +4,6 @@
 #include "../map/Map.h"
 #define MAX_PER_CASE 64
 #define INV_SIZE 4
-#define PIX_PER_BLOCK 24
 
 typedef struct invCase invCase;
 struct invCase {

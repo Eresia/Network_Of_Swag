@@ -151,6 +151,14 @@ int begin_listen(SOCKET* server_udp, int port){
 
 	SOCKADDR_IN info_udp;
 	*server_udp = socket(AF_INET, SOCK_DGRAM, 0);
+	int* sizeP = malloc(sizeof(int));
+	*sizeP = SIZE_MESSAGE_MAX;
+	/*if(setsockopt(*server_udp, SOL_SOCKET, SO_SNDBUF, sizeP, sizeof(*sizeP)) != 0){
+		#ifdef DEBUG
+		printf("Error in size package modifier\n");
+		#endif
+		return OTHER_ERROR;
+	}*/
 	if(*server_udp == INVALID_SOCKET)
 	{
 		#ifdef DEBUG

@@ -10,6 +10,7 @@
 #include "../../../data/src/commonProtocol/CommonProtocol.h"
 #include "../../../data/src/map/Map.h"
 #include "../../../data/src/player/Player.h"
+#include "../network/network.h"
 
 typedef struct DisplayPlayer DisplayPlayer;
 struct DisplayPlayer{
@@ -24,11 +25,10 @@ struct Process{
 		Player* player;
 		int nbPlayers;
 		DisplayPlayer* players;
-		int* desc;
 };
 
-void move(Player*, Move, block**, int);
-void breakBlock(Player*, int, int, block**, int);
-void putBlock(Player*, int, int, int, block**, int);
+void move(Player*, Move, block**, client_network);
+void breakBlock(Player*, int, int, block**, client_network);
+void putBlock(Player*, int, int, int, block**, client_network);
 
 #endif

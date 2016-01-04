@@ -42,7 +42,7 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			while(client->isClosed == false){
 				//Boucle principale
 
-				client->isClosed = waitEvent(event,window,&selectedItem,player); // Gére les évenements
+				client->isClosed = waitEvent(event,window,&selectedItem,player,process->map,client->cn); // Gére les évenements
 			}
 
 			pthread_join(threadDisplay, NULL);

@@ -7,6 +7,7 @@ void* begin_communication(void* client_void){
 	int size;
 	bool isClosed, isInList;
 	char* buff;
+	int n;
 
 	size = sizeof(*cn->info);
 	isInList = isPlayerInListByName(cn->players, cn->name);
@@ -16,7 +17,7 @@ void* begin_communication(void* client_void){
 		if(isInList){
 			buff = Requete_Maj(cn->name, cn->players, cn->map);
 
-			if(sendto(cn->socket, buff, strlen(buff), 0, (SOCKADDR *)cn->info, (socklen_t) size) < 0)
+			if((n = sendto(cn->socket, buff, strlen(buff), 0, (SOCKADDR *)cn->info, (socklen_t) size)) < 0)
 			{
 				#ifdef DEBUG
 				printf("Message not send\n");
@@ -24,7 +25,8 @@ void* begin_communication(void* client_void){
 			}
 			else{
 				#ifdef DEBUG
-				//printf("Message send : %s\n", buff);
+				printf("Size send : %d\n", n);
+				//printf("Message send : %s\n Size : %d\n", buff, (int) strlen(buff));
 				#endif
 			}
 		}

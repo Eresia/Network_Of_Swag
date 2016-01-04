@@ -116,7 +116,7 @@ void printInventory(SDL_Window* window, int selectedItem, Player* player){
 	}
 }
 
-bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* player){ //Gére les différents évenement
+bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* player, block** map, client_network out){ //Gére les différents évenement
 	bool quit = false;
 	int mouseX,mouseY;
 
@@ -137,13 +137,13 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 			case SDL_MOUSEBUTTONUP:
 				if(event.button.button == SDL_BUTTON_LEFT){ //Ajout d'un bloc sur la map pour tester
 					SDL_GetMouseState(&mouseX,&mouseY);
-					Requete_Pose_Bloc(mouseX/24, mouseY/24, *selectedItem);
+					putBlock(player, mouseX/24, mouseY/24, *selectedItem, map, out);
 					//printBlock(window,wood,mouseX,mouseY,false);
 					SDL_UpdateWindowSurface(window);
 				}
 				else if(event.button.button == SDL_BUTTON_RIGHT){ //Supression d'un bloc pour tester
 					SDL_GetMouseState(&mouseX,&mouseY);
-					Requete_Casse_Bloc(mouseX/24, mouseY/24);
+					breakBlock(player, mouseX/24, mouseY/24, map, out);
 					//printBlock(window,air,mouseX,mouseY,false);
 					SDL_UpdateWindowSurface(window);
 				}
