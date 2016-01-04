@@ -8,8 +8,6 @@ typedef struct Client Client;
 struct Client{
 	Process* process;
 	client_network cn;
-	char* ip;
-	int port;
 	bool isClosed;
 };
 

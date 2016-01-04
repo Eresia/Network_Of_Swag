@@ -30,8 +30,6 @@ int main(int argc, char** argv){
 
 	client.process = process;
 	client.cn = cn;
-	client.ip = argv[2];
-	client.port = port;
 	client.isClosed = false;
 
 	pthread_create(&graphic, NULL, launch_graphic, &client);

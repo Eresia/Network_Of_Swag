@@ -25,9 +25,9 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			block stone, iron;
 			stone.type = STONE;
 			iron.type = IRON;
-			addBlockToInv(player,iron); //Ajout de bloc pour tester la barre d'inventaire
+			/*addBlockToInv(player,iron); //Ajout de bloc pour tester la barre d'inventaire
 			addBlockToInv(player,stone);
-			/*
+
 			printMap(window,map,27,37,selectedItem,player); //Print de test
 
 			printPlayer(window, 550, 51);  //Only for test

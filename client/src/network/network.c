@@ -67,6 +67,7 @@ void* client_beat(void* client_struct){
 void* bufferize_from_server(void* client_struct){
 
 	client_network cn = (client_network)  client_struct;
+	printf("Point : %p, %d\n", cn, *cn->isClosed);
 	#ifdef DEBUG
 	printf("[reseau]demarrage du thread ecoute de %s \n ",cn->serv_ip_addr);
 	#endif
@@ -92,6 +93,7 @@ void* bufferize_from_server(void* client_struct){
 
 void* bufferize_to_server(void* client_struct){
 	client_network cn = (client_network)  client_struct;
+	printf("Point : %p, %d\n", cn, *cn->isClosed);
 	#ifdef DEBUG
 	printf("[reseau]demarrage du thread envoie de %s \n ",cn->serv_ip_addr);
 	#endif
@@ -169,13 +171,14 @@ void* processingReadData(void* client_struct){
 void* launch_network(void* client_struct){
 	Client* c = (Client*) client_struct;
 	client_network cn = c->cn;
+	printf("Point : %p, %d\n", cn, *cn->isClosed);
 	char* buff = calloc(4+strlen(c->process->player->name)+1, sizeof(char));
 	sprintf(buff, "new,%s", c->process->player->name);
 	pthread_t beatThread, writerThread, receverThread, readThread;
-	//pthread_create(&beatThread, NULL , client_beat, (void*) cn);
-	pthread_create(&writerThread, NULL , bufferize_to_server, (void*) cn);
-	pthread_create(&receverThread, NULL , bufferize_from_server, (void*) cn);
-	pthread_create(&readThread, NULL , processingReadData, (void*) c);
+	//pthread_create(&beatThread, NULL , client_beat, cn);
+	pthread_create(&writerThread, NULL , bufferize_to_server, cn);
+	pthread_create(&receverThread, NULL , bufferize_from_server, cn);
+	pthread_create(&readThread, NULL , processingReadData, c);
 	#ifdef DEBUG
 	printf("[reseau]lancement des threads\n");
 	#endif

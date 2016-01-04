@@ -149,7 +149,6 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 				}
 				break;
 			case SDL_KEYDOWN:
-				printf("%d\n", event.key.keysym.sym);
 				switch (event.key.keysym.sym){
 					case SDLK_ESCAPE:
 						quit = true;

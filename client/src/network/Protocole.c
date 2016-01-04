@@ -138,12 +138,12 @@ void parse_Protocole (Process* p, char* datagramme) {
 	// Map autour du joueur + position des autres joueurs
 	if(!strcmp(type, "1")) {
 		char* map = strtok(NULL, ",") ;
-		char* nbPlayers = strtok(NULL, ",");
+		char* nbPlayersChar = strtok(NULL, ",");
 		char* playersChar = strtok(NULL, ",");
 		char* invChar = strtok(NULL, ",") ;
 		char* fall = strtok(NULL, ",");
 
-		if((map != NULL) && (nbPlayers != NULL) && (atoi(nbPlayers) != 0) && (playersChar != NULL) && (invChar != NULL) && (fall != NULL)){
+		if((map != NULL) && (nbPlayersChar != NULL) && (atoi(nbPlayersChar) != 0) && (playersChar != NULL) && (invChar != NULL) && (fall != NULL)){
 			#ifdef DEBUG
 			printf("Move \n") ;
 			#endif
@@ -186,24 +186,36 @@ void parse_Protocole (Process* p, char* datagramme) {
 			freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
 
 			// Récupération des joueurs et de leurs positions
-			char* p = strtok(playersChar, "-") ;
-			DisplayPlayer* dp = malloc(atoi(nbPlayers) * sizeof(DisplayPlayer));
+			char* play = strtok(playersChar, "-") ;
+			int nbPlayers = atoi(nbPlayersChar);
+			bool isOk = true;
+			DisplayPlayer* dp = malloc(nbPlayers * sizeof(DisplayPlayer));
 			i = 0;
 
-			while(p != NULL) {
-				char* pseudo = strtok(p, "_") ;
-				int pos_X = atoi(strtok(NULL, "_"));
-				int pos_Y = atoi(strtok(NULL, "_"));
+			for(i = 0; i < nbPlayers; i++) {
+				if(play != NULL){
+					char* pseudo = strtok(play, "_") ;
+					int pos_X = atoi(strtok(NULL, "_"));
+					int pos_Y = atoi(strtok(NULL, "_"));
 
-				#ifdef DEBUG
-				printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
-				#endif
+					#ifdef DEBUG
+					printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
+					#endif
 
-				dp[i].name = pseudo;
-				dp[i].x = pos_X;
-				dp[i].y = pos_Y;
+					dp[i].name = pseudo;
+					dp[i].x = pos_X;
+					dp[i].y = pos_Y;
 
-				p = strtok(NULL, "-") ;
+					play = strtok(NULL, "-") ;
+				}
+				else{
+					isOk = false;
+					break;
+				}
+			}
+
+			if(isOk){
+				p->players = dp;
 			}
 
 			for(i = 0; i < INV_SIZE; i++){
