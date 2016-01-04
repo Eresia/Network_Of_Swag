@@ -149,6 +149,7 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 				}
 				break;
 			case SDL_KEYDOWN:
+				printf("%d\n", event.key.keysym.sym);
 				switch (event.key.keysym.sym){
 					case SDLK_ESCAPE:
 						quit = true;
@@ -166,6 +167,18 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 					/*case SDLK_DOWN:
 					    Requete_Deplacement_Envoi(BOT);
 					    break;*/
+					case '&':
+						*selectedItem = 0;
+						break;
+					case 233:
+						*selectedItem = 1;
+						break;
+					case '"':
+						*selectedItem = 2;
+						break;
+					case '\'':
+						*selectedItem = 3;
+						break;
 				}
 				break;
 			case SDL_MOUSEWHEEL :
