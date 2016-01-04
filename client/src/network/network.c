@@ -36,7 +36,7 @@ client_network init_client_network(char* serv_addr, int serv_port){
 		c->serv_port = serv_port;
 	}
 	// on ecrase ses buffers et on initialise les buffers
-	sem_init(c->read_buffer_empty ,1,1);
+	sem_init(c->write_buffer_empty ,1,1);
 	sem_init(c->write_buffer_full ,0,1);
 	sem_init(c->write_buffer_busy ,0,1);
 	sem_init(c->read_buffer_empty ,1,1);
@@ -58,7 +58,7 @@ void* client_beat(void* client_struct){
 		#ifdef DEBUG
 		printf("[reseau]beat client vers %s  \n",cn->serv_ip_addr);
 		#endif
-		send_to_server(cn,"hello",strlen("hello"));
+		send_to_server(cn,"hello\0",strlen("hello"));
 		sleep(1);
 	}
 	pthread_exit(NULL);
@@ -98,8 +98,9 @@ void* bufferize_to_server(void* client_struct){
 	while(*cn->isClosed == false){
 		sem_wait(cn->write_buffer_full);
 		sem_wait(cn->write_buffer_busy);
-		if (sendto(cn->local_socket, cn->BUFF_OUT, strlen(cn->BUFF_OUT) , 0 ,  (SOCKADDR*)cn->serv_struct, sizeof(cn->serv_struct))==-1)
+		if (sendto(cn->local_socket, cn->BUFF_OUT, (int) strlen(cn->BUFF_OUT) , 0 ,  (SOCKADDR*)cn->serv_struct, sizeof(cn->serv_struct))==-1)
 		{
+
 			perror("erreur de send");
 			fprintf(stderr, "erreur send from serveur %s \n", cn->BUFF_OUT);
 			*cn->isClosed = true;
@@ -172,10 +173,10 @@ void* launch_network(void* client_struct){
 	char* buff = calloc(4+strlen(c->process->player->name)+1, sizeof(char));
 	sprintf(buff, "new,%s", c->process->player->name);
 	pthread_t beatThread, writerThread, receverThread, readThread;
-	//pthread_create(&beatThread, NULL , client_beat, (void*) cn);
-	pthread_create(&writerThread, NULL , bufferize_to_server, (void*) cn);
-	pthread_create(&receverThread, NULL , bufferize_from_server, (void*) cn);
-	pthread_create(&readThread, NULL , processingReadData, (void*) c);
+	pthread_create(&beatThread, NULL , client_beat, (void*) cn);
+	pthread_create(&writerThread, NULL , bufferize_to_server,  cn);
+	pthread_create(&receverThread, NULL , bufferize_from_server,  cn);
+	pthread_create(&readThread, NULL , processingReadData,  c);
 	#ifdef DEBUG
 	printf("[reseau]lancement des threads\n");
 	#endif
