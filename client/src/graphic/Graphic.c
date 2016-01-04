@@ -76,7 +76,7 @@ void printBlock(SDL_Window* mw, block blocValue, int x, int y, bool absolute){
 }
 
 void printPlayer(SDL_Window* window, int x, int y){
-	SDL_Rect playerRect = {x, y, 24, 45};
+	SDL_Rect playerRect = {x*24, y*24, 24, 45};
 	SDL_BlitSurface(playerBmp,NULL,SDL_GetWindowSurface(window), &playerRect);
 }
 
@@ -155,16 +155,16 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 						printf("Close window\n");
 						break;
 					case SDLK_LEFT:
-					    Requete_Deplacement_Envoi(LEFT);
+					    move(player, LEFT, map, out);
 					    break;
 					case SDLK_RIGHT:
-					    Requete_Deplacement_Envoi(RIGHT);
+					    move(player, RIGHT, map, out);
 					    break;
 					case SDLK_UP:
-					    Requete_Deplacement_Envoi(TOP);
+					    move(player, TOP, map, out);
 					    break;
 					/*case SDLK_DOWN:
-					    Requete_Deplacement_Envoi(BOT);
+					    move(player, BOT, map, out);
 					    break;*/
 					case '&':
 						*selectedItem = 0;

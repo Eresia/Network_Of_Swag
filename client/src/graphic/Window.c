@@ -62,10 +62,17 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 void* displayOnScreen(void* screen_void){
 
 	ScreenInfo* screen = (ScreenInfo*) screen_void;
+	Process* process = screen->process;
 
 	while(*screen->isClosed == false){
-		printMap(screen->win,screen->process->map,*screen->selectedItem,screen->process->player);
-		printInventory(screen->win, *screen->selectedItem, screen->process->player);
+		int i;
+		printMap(screen->win, process->map, *screen->selectedItem, process->player);
+		printInventory(screen->win, *screen->selectedItem, process->player);
+		printPlayer(screen->win, (NB_LIGNE / 2), (NB_COLONNE / 2)-1);
+		for(i = 0; i < process->nbPlayers - 1; i++){
+			printPlayer(screen->win, process->players[i].x - process->player->position[0] + (NB_LIGNE / 2), process->players[i].y - process->player->position[1] + (NB_COLONNE / 2));
+		}
+		SDL_UpdateWindowSurface(screen->win);
 		usleep(1000000/30);
 	}
 

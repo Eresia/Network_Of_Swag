@@ -19,13 +19,22 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
-	process->map = createVoidMap();
-	process->players = NULL;
-	process->nbPlayers = 0;
+	/*Map* map = getMapFromFile("server/saves/static.map");
+	process->map = map->map;
 	process->player = createPlayer(argv[1]);
+	process->player->position[0] = map->spawn[0];
+	process->player->position[1] = map->spawn[1];
+	process->map = map->map;
+	process->nbPlayers = 1;
+	process->players = malloc(sizeof(DisplayPlayer));*/
+
+	process->map = createVoidMap();
+	process->player = createPlayer(argv[1]);
+	process->nbPlayers = 0;
+	process->players = NULL;
 
 	cn = init_client_network(argv[2], port);
-client.process = process;
+	client.process = process;
 	client.cn = cn;
 	client.isClosed = false;
 	cn->isClosed = &client.isClosed;

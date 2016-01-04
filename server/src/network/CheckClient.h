@@ -16,8 +16,8 @@
 
 /*typedef struct CheckClient CheckClient;
 struct CheckClient{
-	ClientNetwork* client;
-	ListClient* list;
+	ListPlayer* players;
+	ListClient* clients;
 };*/
 
 void* checkIfClientIsConnected(void*);

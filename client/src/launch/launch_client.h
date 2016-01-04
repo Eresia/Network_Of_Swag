@@ -12,4 +12,6 @@
 #include "../network/network.h"
 #include "Client.h"
 
+Map* getMapFromFile(char *filePath);
+
 #endif

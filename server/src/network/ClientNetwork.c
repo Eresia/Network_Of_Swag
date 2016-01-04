@@ -15,26 +15,31 @@ void* begin_communication(void* client_void){
 	do{
 
 		if(isInList){
+			pthread_mutex_lock(cn->closeMutex);
 			buff = Requete_Maj(cn->name, cn->players, cn->map);
+			pthread_mutex_unlock(cn->closeMutex);
 
-			if((n = sendto(cn->socket, buff, strlen(buff), 0, (SOCKADDR *)cn->info, (socklen_t) size)) < 0)
-			{
-				#ifdef DEBUG
-				printf("Message not send\n");
-				#endif
+			if(buff != NULL){
+
+				if((n = sendto(cn->socket, buff, strlen(buff), 0, (SOCKADDR *)cn->info, (socklen_t) size)) < 0)
+				{
+					#ifdef DEBUG
+					printf("Message not send\n");
+					#endif
+				}
+				else{
+					#ifdef DEBUG
+					//printf("Size send : %d\n", n);
+					//printf("Message send : %s\n Size : %d\n", buff, (int) strlen(buff));
+					#endif
+				}
 			}
 			else{
 				#ifdef DEBUG
-				printf("Size send : %d\n", n);
-				//printf("Message send : %s\n Size : %d\n", buff, (int) strlen(buff));
+				printf("Player is NULL\n");
 				#endif
+				isInList = isPlayerInListByName(cn->players, cn->name);
 			}
-		}
-		else{
-			#ifdef DEBUG
-			printf("Player is NULL\n");
-			#endif
-			isInList = isPlayerInListByName(cn->players, cn->name);
 		}
 
 		pthread_mutex_lock(cn->closeMutex);

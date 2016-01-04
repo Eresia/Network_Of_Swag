@@ -12,7 +12,10 @@ void* checkIfClientIsConnected(void* clients_void){
 			if(cn->nbTry == NB_MAX_TRY){
 				printf("Client %s disconnected\n", cn->name);
 				client = client->next;
+				pthread_mutex_lock(cn->closeMutex);
 				removeClient(clients, cn);
+				removePlayerByName(cn->players, cn->name);
+				pthread_mutex_unlock(cn->closeMutex);
 			}
 			else{
 				#ifdef DEBUG

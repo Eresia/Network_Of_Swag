@@ -69,10 +69,11 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			#endif
 		}
 		if (!strcmp(type, "1")) {
+			char* dt = strtok(NULL, "");
 			#ifdef DEBUG
-			printf("C'est un déplacement vers : %s\n", datagramme_b) ;
+			printf("C'est un déplacement vers : %s\n", dt) ;
 			#endif
-			Move direction = atoi(datagramme_b);
+			Move direction = atoi(dt);
 
 			switch(direction){
 				/*case BOT:
@@ -164,7 +165,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 		}
 		// Message
 		else if (!strcmp(type, "4")) {
-			char* message = strtok(NULL, ",");
+			char* message = strtok(NULL, "");
 
 			#ifdef DEBUG
 			printf("C'est un message chat : %s\n", message) ;
@@ -192,43 +193,49 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	int j = 0 ;
 
 	Player* player = getPlayerByName(players, pseudo);
-	int nbPlayers = 0;
+	if(player != NULL){
+		int nbPlayers = 0;
 
-	ItemListPlayer item = players->firstItem;
-	while(item != NULL){
-		if(playerIsVisible(player, item->player)){
-			sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
-			nbPlayers++;
+		ItemListPlayer item = players->firstItem;
+		while(item != NULL){
+			if(playerIsVisible(player, item->player)){
+				sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
+				printf("posPlayers : %s\n", posPlayers);
+				nbPlayers++;
+			}
+			item = item->next;
 		}
-		item = item->next;
-	}
 
-	for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
-		for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
-			if((i >= 0) && (i < SIZE_MAX_X) && (j >= 0) && (j < SIZE_MAX_Y)){
-				sprintf(map_char, "%s%d-", map_char, map[i][j].type);
+		for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
+			for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
+				if((i >= 0) && (i < SIZE_MAX_X) && (j >= 0) && (j < SIZE_MAX_Y)){
+					sprintf(map_char, "%s%d-", map_char, map[i][j].type);
+				}
 			}
 		}
+
+		for(i = 0; i < INV_SIZE; i++){
+			sprintf(inv, "%s%d_%d-", inv, player->inventory[i].desc.type, player->inventory[i].number);
+		}
+
+		// On créé le datagramme
+		sprintf(req_dep, "1,%s,%d,%s,%s,%d", map_char, nbPlayers, posPlayers, inv, player->falling);
+
+		requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
+		strcpy(requete, req_dep) ;
+
+		/*printf("SizeMax : %d\n", SIZE_MESSAGE_MAX);
+		printf("Map : %d\n", (int) strlen(map_char));
+		printf("nbPlayer : %d\n", nbPlayers);
+		printf("posPlayers : %s - taille : %d\n", posPlayers, (int) strlen(posPlayers));
+		printf("inv : %s - taille : %d\n", inv, (int) strlen(inv));
+		printf("All : %d\n", (int) strlen(requete));*/
+
+		return requete ;
 	}
-
-	for(i = 0; i < INV_SIZE; i++){
-		sprintf(inv, "%s%d_%d-", inv, player->inventory[i].desc.type, player->inventory[i].number);
+	else{
+		return NULL;
 	}
-
-	// On créé le datagramme
-	sprintf(req_dep, "1,%s,%d,%s,%s,%d", map_char, nbPlayers, posPlayers, inv, player->falling);
-
-	requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
-	strcpy(requete, req_dep) ;
-
-	/*printf("SizeMax : %d\n", SIZE_MESSAGE_MAX);
-	printf("Map : %d\n", (int) strlen(map_char));
-	printf("nbPlayer : %d\n", nbPlayers);
-	printf("posPlayers : %s - taille : %d\n", posPlayers, (int) strlen(posPlayers));
-	printf("inv : %s - taille : %d\n", inv, (int) strlen(inv));
-	printf("All : %d\n", (int) strlen(requete));*/
-
-	return requete ;
 }
 
 // Fonction qui envoie le chat.

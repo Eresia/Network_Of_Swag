@@ -22,8 +22,8 @@
 
 #define PIX_PER_BLOCK 24
 
-#define NB_LIGNE WIDTH/PIX_PER_BLOCK +1
-#define NB_COLONNE HEIGHT/PIX_PER_BLOCK + 1
+#define NB_LIGNE ((WIDTH/PIX_PER_BLOCK) +1)
+#define NB_COLONNE ((HEIGHT/PIX_PER_BLOCK) + 1)
 
 //Boolean utilisation
 enum bool{
