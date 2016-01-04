@@ -183,7 +183,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 			}
 			block** mapTemp = p->map;
 			p->map = map_tab;
-			freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
+			//freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
 
 			// Récupération des joueurs et de leurs positions
 			char* play = strtok(playersChar, "-") ;

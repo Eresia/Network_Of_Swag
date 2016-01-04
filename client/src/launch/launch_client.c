@@ -25,12 +25,12 @@ int main(int argc, char** argv){
 	process->player = createPlayer(argv[1]);
 
 	cn = init_client_network(argv[2], port);
-
-	cn->isClosed = &client.isClosed;
-
-	client.process = process;
+client.process = process;
 	client.cn = cn;
 	client.isClosed = false;
+	cn->isClosed = &client.isClosed;
+
+
 
 	pthread_create(&graphic, NULL, launch_graphic, &client);
 	pthread_create(&network, NULL, launch_network, &client);
