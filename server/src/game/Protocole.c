@@ -144,6 +144,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 			if(canAccesBlock(player->position[0], player->position[1], position_x_bloc, position_y_bloc, gl->map->map, false)){
 				block b = gl->map->map[position_x_bloc][position_y_bloc];
 				addBlockToInv(player, b);
+				gl->map->map[position_x_bloc][position_y_bloc].type = NONE;
 			}
 		}
 		// Pose bloc
@@ -162,6 +163,14 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 					removeBlockFromInv(player, index);
 				}
 			}
+		}
+		if(!player->falling && (gl->map->map[player->position[0]][player->position[1]+1].type == NONE)){
+			pthread_t thread;
+			FallData* data = malloc(sizeof(FallData));
+			data->player = player;
+			data->map = gl->map->map;
+			player->falling = true;
+			pthread_create(&thread, NULL, fall, data);
 		}
 		// Message
 		else if (!strcmp(type, "4")) {

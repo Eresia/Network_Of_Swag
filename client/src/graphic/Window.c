@@ -68,7 +68,7 @@ void* displayOnScreen(void* screen_void){
 		int i;
 		printMap(screen->win, process->map, *screen->selectedItem, process->player);
 		printInventory(screen->win, *screen->selectedItem, process->player);
-		printPlayer(screen->win, (NB_LIGNE / 2), (NB_COLONNE / 2)-1);
+		printPlayer(screen->win, (NB_LIGNE / 2), (NB_COLONNE / 2));
 		for(i = 0; i < process->nbPlayers - 1; i++){
 			printPlayer(screen->win, process->players[i].x - process->player->position[0] + (NB_LIGNE / 2), process->players[i].y - process->player->position[1] + (NB_COLONNE / 2));
 		}

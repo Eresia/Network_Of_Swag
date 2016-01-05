@@ -10,7 +10,9 @@ bool canGoToBlock(int pX, int pY, int dX, int dY, block** map){
 }
 
 bool canAccesBlock(int pX, int pY, int bX, int bY, block** map, bool air){
-	if((abs(pX - bX) <= 1) && (abs(pY - bY) <= 1)){
+	int absX = abs(pX - bX);
+	 int absY = abs(pY - bY);
+	if(((absX <= 1) && (absY <= 1)) && (absX != absY)){
 		if((bX >= 0) && (bX < SIZE_MAX_X) && (bY >= 0) && (bY < SIZE_MAX_Y)){
 			return (((map[bX][bY].type == NONE) && air) || ((map[bX][bY].type != NONE) && !air));
 		}
@@ -28,7 +30,7 @@ void* fall(void* player_void){
 	Player* player = data->player;
 	block** map = data->map;
 	do{
-		sleep(1);
+		usleep(500000);
 		if(map[player->position[0]][player->position[1]+1].type == NONE){
 			#ifdef DEBUG
 			//printf("%s is falling\n", player->name);
@@ -37,6 +39,9 @@ void* fall(void* player_void){
 			if(map[player->position[0]][player->position[1]+1].type != NONE){
 				player->falling = false;
 			}
+		}
+		else{
+			player->falling = false;
 		}
 	}while(player->falling);
 

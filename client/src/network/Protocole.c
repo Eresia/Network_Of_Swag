@@ -132,7 +132,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 	char* type = strtok(datagramme_b, ",") ;
 
 	#ifdef DEBUG
-	printf("type : %s\n", type) ;
+	//printf("type : %s\n", type) ;
 	#endif
 
 	// Map autour du joueur + position des autres joueurs
@@ -188,7 +188,6 @@ void parse_Protocole (Process* p, char* datagramme) {
 					if(strcmp(p->player->name, pseudo) == 0){
 						player->position[0] = pos_X;
 						player->position[1] = pos_Y;
-						printf("pos : %d\n", player->position[0]);
 						byPlayer = true;
 					}
 					else{

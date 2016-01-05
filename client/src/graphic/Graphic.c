@@ -35,7 +35,7 @@ void printMap(SDL_Window* window,block **map, int selectedItem, Player* player){
 		}
 	}
 	printInventory(window,selectedItem,player);
-	SDL_UpdateWindowSurface(window);
+	//SDL_UpdateWindowSurface(window);
 }
 
 void printBlock(SDL_Window* mw, block blocValue, int x, int y, bool absolute){
@@ -76,7 +76,7 @@ void printBlock(SDL_Window* mw, block blocValue, int x, int y, bool absolute){
 }
 
 void printPlayer(SDL_Window* window, int x, int y){
-	SDL_Rect playerRect = {x*24, y*24, 24, 45};
+	SDL_Rect playerRect = {x*24, y*24, 24, 24};
 	SDL_BlitSurface(playerBmp,NULL,SDL_GetWindowSurface(window), &playerRect);
 }
 
@@ -135,16 +135,15 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if(event.button.button == SDL_BUTTON_LEFT){ //Ajout d'un bloc sur la map pour tester
+				if(event.button.button == SDL_BUTTON_LEFT){
 					SDL_GetMouseState(&mouseX,&mouseY);
-					putBlock(player, mouseX/24, mouseY/24, *selectedItem, map, out);
-					//printBlock(window,wood,mouseX,mouseY,false);
+					putBlock(player, mouseX/24 + player->position[0] - NB_LIGNE/2, mouseY/24 + player->position[1] - NB_COLONNE/2, *selectedItem, map, out);
 					SDL_UpdateWindowSurface(window);
 				}
-				else if(event.button.button == SDL_BUTTON_RIGHT){ //Supression d'un bloc pour tester
+				else if(event.button.button == SDL_BUTTON_RIGHT){
 					SDL_GetMouseState(&mouseX,&mouseY);
-					breakBlock(player, mouseX/24, mouseY/24, map, out);
-					//printBlock(window,air,mouseX,mouseY,false);
+					printf("pX : %d, pY : %d, mX : %d, mY : %d\n", player->position[0], player->position[1], mouseX, mouseY);
+					breakBlock(player, mouseX/24 + player->position[0] - NB_LIGNE/2, mouseY/24 + player->position[1] - NB_COLONNE/2, map, out);
 					SDL_UpdateWindowSurface(window);
 				}
 				break;
