@@ -39,6 +39,5 @@
 	Player* getPlayerByName_Item(ItemListPlayer, char*);
 	Player* getLastPlayer_Item(ItemListPlayer);
 	bool isPlayerInListByName_Item(ItemListPlayer, char*);
-	void saveAllPlayer_Item(ItemListPlayer);
 
 #endif

@@ -89,13 +89,6 @@ bool isPlayerInListByName(ListPlayer* list, char* name){
 	return result;
 }
 
-void saveAllPlayer(ListPlayer* list){
-	saveAllPlayer_Item(list->firstItem);
-}
-
-
-
-
 int addPlayer_Item(ItemListPlayer item, Player* player){
 	if(item == NULL){
 		return OTHER;

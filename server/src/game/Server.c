@@ -222,18 +222,6 @@ bool savePlayer(Player p) {
 	return false;
 }
 
-void saveAllPlayer_Item(ItemListPlayer item){
-	if(item == NULL){
-		#ifdef DEBUG
-			printf("Player saved\n");
-		#endif
-	}
-	else{
-		savePlayer(*item->player);
-		saveAllPlayer_Item(item->next);
-	}
-}
-
 bool savePlayers(Player *p, int nbPlayers) {
     int i=0;
     int savesOk=0;
@@ -247,6 +235,22 @@ bool savePlayers(Player *p, int nbPlayers) {
         return true;
     }
     return false;
+}
+
+void saveAllPlayer(ListPlayer* list){
+	saveAllPlayer_Item(list->firstItem);
+}
+
+void saveAllPlayer_Item(ItemListPlayer item){
+	if(item == NULL){
+		#ifdef DEBUG
+			printf("Player saved\n");
+		#endif
+	}
+	else{
+		savePlayer(*item->player);
+		saveAllPlayer_Item(item->next);
+	}
 }
 
 void displayMap(block **map) {
