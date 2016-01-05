@@ -90,6 +90,7 @@ void* launch_network(void* server_void){
 							cn->map = server->gl.map;
 							cn->players = server->gl.listPlayer;
 							cn->nbTry = 0;
+							cn->chat = calloc(SIZE_MESSAGE_MAX, sizeof(char));
 
 							if(pthread_create(thread_com, NULL, begin_communication, cn) != 0){
 								#ifdef DEBUG

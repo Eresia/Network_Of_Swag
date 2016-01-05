@@ -18,6 +18,7 @@ struct ClientNetwork{
 	Map* map;
 	ListPlayer* players;
 	int nbTry;
+	char* chat;
 };
 
 //#include "CheckClient.h"

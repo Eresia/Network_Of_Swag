@@ -13,9 +13,9 @@ void* begin_communication(void* client_void){
 	char** parts;
 
 	size = sizeof(*cn->info);
+	isInList = isPlayerInListByName(cn->players, cn->name);
 
 	do{
-		isInList = isPlayerInListByName(cn->players, cn->name);
 		if(isInList){
 			buff = Requete_Maj(cn->name, cn->players, cn->map);
 
@@ -54,8 +54,26 @@ void* begin_communication(void* client_void){
 				#ifdef DEBUG
 				printf("Player is NULL\n");
 				#endif
-				isInList = isPlayerInListByName(cn->players, cn->name);
 			}
+
+			if(strlen(cn->chat) != 0){
+				if((n = sendto(cn->socket, cn->chat, strlen(cn->chat), 0, (SOCKADDR *)cn->info, (socklen_t) size)) < 0)
+				{
+					#ifdef DEBUG
+					printf("Message not send\n");
+					#endif
+				}
+				else{
+					#ifdef DEBUG
+					//printf("Size send : %d\n", n);
+					//printf("Message send : %s\n", parts[i]);
+					#endif
+				}
+				memset(cn->chat, 0, 3000);
+			}
+		}
+		else{
+			isInList = isPlayerInListByName(cn->players, cn->name);
 		}
 
 		pthread_mutex_lock(cn->closeMutex);

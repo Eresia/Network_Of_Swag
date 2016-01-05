@@ -11,5 +11,6 @@
 #include "../game/Process.h"
 #include "../network/network.h"
 #include "Client.h"
+#include "../Shell/Shell.h"
 
 #endif

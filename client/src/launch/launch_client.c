@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv){
 
-	pthread_t graphic, network;
+	pthread_t graphic, network, shell;
 	Process* process = malloc(sizeof(Process));
 	Client client;
 	client_network cn = malloc(sizeof(struct client_network_struct));
@@ -48,9 +48,11 @@ int main(int argc, char** argv){
 
 	pthread_create(&graphic, NULL, launch_graphic, &client);
 	pthread_create(&network, NULL, launch_network, &client);
+	pthread_create(&shell, NULL, launch_shell, &client);
 
 	pthread_join(graphic, NULL);
 	pthread_join(network, NULL);
+	//pthread_join(shell, NULL);
 
 	return NO_ERROR;
 }

@@ -105,11 +105,10 @@ char* Requete_Pose_Bloc (int x, int y, int index) {
 
 char* Requete_Message (char* message) {
 	char* Requete ;
-	char req_mess[1503] = "" ;
+	char* req_mess = calloc(1400, sizeof(char)) ;
 
 	// On créé le protocole.
-	strcat(req_mess, "4,");
-	strcat(req_mess, message) ;
+	sprintf(req_mess, "4,%s", message);
 
 	Requete = calloc((strlen(req_mess)+1), sizeof(char)) ;
 	strcpy(Requete, req_mess) ;
