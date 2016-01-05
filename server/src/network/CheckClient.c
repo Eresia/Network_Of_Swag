@@ -28,6 +28,5 @@ void* checkIfClientIsConnected(void* clients_void){
 		getFileFromMap(cc->map);
 		sleep(1);
 	}
-
 	pthread_exit(NULL);
 }

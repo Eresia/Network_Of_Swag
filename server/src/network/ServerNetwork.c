@@ -143,7 +143,7 @@ void* launch_network(void* server_void){
 		usleep(50);
 	}while(!stopServer);
 
-	//closeAll(server->sn.clients);
+	saveAllPlayer(server->gl.listPlayer);
 	closesocket(socket);
 	result = NO_ERROR;
 	pthread_exit(&result);

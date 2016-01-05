@@ -89,8 +89,8 @@ bool isPlayerInListByName(ListPlayer* list, char* name){
 	return result;
 }
 
-void closeAllPlayer(ListPlayer* list){
-	closeAllPlayer_Item(list->firstItem);
+void saveAllPlayer(ListPlayer* list){
+	saveAllPlayer_Item(list->firstItem);
 }
 
 
@@ -164,21 +164,5 @@ bool isPlayerInListByName_Item(ItemListPlayer item, char* name){
 	}
 	else{
 		return isPlayerInListByName_Item(item->next, name);
-	}
-}
-
-void closeAllPlayer_Item(ItemListPlayer item){
-	if(item == NULL){
-		#ifdef DEBUG
-			printf("List free\n");
-		#endif
-	}
-	else{
-		ItemListPlayer next = item->next;
-		//closesocket(item->client->socket_tcp);
-		//closesocket(item->client->socket);
-		free(item->player);
-		free(item);
-		closeAllPlayer_Item(next);
 	}
 }

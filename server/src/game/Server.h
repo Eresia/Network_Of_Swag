@@ -18,6 +18,7 @@ void getFileFromMap(Map* map);
 Player* loadPlayer(char *name);
 bool savePlayer(Player p);
 bool savePlayers(Player *p, int nbPlayers);
+void saveAllPlayer(ListPlayer*);
 
 /* Les 2 fonctions peuvent être utiles pour le jeu final, mais pas sûr */
 void displayMap(block **map);
