@@ -13,7 +13,7 @@
 
 #define MARGE 3
 
-#define SIZE_MESSAGE_MAX 10000
+#define SIZE_MESSAGE_MAX 1400
 #define FORBIDEN_CHAR " \n"
 
 //Bot never used

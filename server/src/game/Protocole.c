@@ -184,9 +184,9 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	//printf("Spawn : %d, %d\n", fullMap->spawn[0], fullMap->spawn[1]);
 	block** map = fullMap->map;
 	char* requete;
-	char* req_dep = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
+	char* req_dep = calloc(10000 + 1, sizeof(char));
 	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
-	char* map_char = calloc(SIZE_MESSAGE_MAX, sizeof(char));
+	char* map_char = calloc(5000, sizeof(char));
 	char* posPlayers = calloc(SIZE_MESSAGE_MAX, sizeof(char));
 	char* inv = calloc(SIZE_MESSAGE_MAX, sizeof(char));
 	int i = 0 ;
@@ -200,7 +200,7 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 		while(item != NULL){
 			if(playerIsVisible(player, item->player)){
 				sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
-				printf("posPlayers : %s\n", posPlayers);
+				//printf("posPlayers : %s\n", posPlayers);
 				nbPlayers++;
 			}
 			item = item->next;
@@ -219,10 +219,11 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 		}
 
 		// On créé le datagramme
-		sprintf(req_dep, "1,%s,%d,%s,%s,%d", map_char, nbPlayers, posPlayers, inv, player->falling);
+		sprintf(req_dep, "1,%s,%d,%s,%s,%d%c", map_char, nbPlayers, posPlayers, inv, player->falling, '\0');
 
-		requete = malloc((strlen(req_dep)+1)*sizeof(char)) ;
+		requete = calloc((strlen(req_dep)+1), sizeof(char)) ;
 		strcpy(requete, req_dep) ;
+		requete[strlen(req_dep)] = '\0';
 
 		/*printf("SizeMax : %d\n", SIZE_MESSAGE_MAX);
 		printf("Map : %d\n", (int) strlen(map_char));

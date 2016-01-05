@@ -132,7 +132,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 	char* type = strtok(datagramme_b, ",") ;
 
 	#ifdef DEBUG
-	//printf("type : %s\n", type) ;
+	printf("type : %s\n", type) ;
 	#endif
 
 	// Map autour du joueur + position des autres joueurs
@@ -272,7 +272,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 		}
 		else{
 			#ifdef DEBUG
-			printf("Reception but bad arguments\n") ;
+			printf("Reception but bad arguments map : %p,  nbPlayersChar : %p, playersChar : %p, invChar : %p, fall : %p:\n\n", map, nbPlayersChar, playersChar, invChar, fall);
 			#endif
 		}
 
@@ -285,7 +285,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 	}
 	else {
 		#ifdef DEBUG
-		printf("Erreur, type de protocole inconnu") ;
+		printf("Erreur, type de protocole inconnu : %s\n", type) ;
 		#endif
 	}
 }

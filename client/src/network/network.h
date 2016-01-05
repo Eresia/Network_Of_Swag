@@ -45,12 +45,12 @@
 
 	typedef struct client_network_struct{
 		//pthread_t* client_beat_thread, *recever_thread, *writer_thread;
-		sem_t*  write_buffer_full;
+		/*sem_t*  write_buffer_full;
 		sem_t* write_buffer_empty;
 		sem_t* write_buffer_busy;
 		sem_t* read_buffer_full;
 		sem_t* read_buffer_empty;
-		sem_t* read_buffer_busy;
+		sem_t* read_buffer_busy;*/
 		bool*  isClosed;
 		char serv_ip_addr[16];
 		int	 serv_port;
