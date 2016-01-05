@@ -14,6 +14,7 @@ void* checkIfClientIsConnected(void* clients_void){
 			if(cn->nbTry == NB_MAX_TRY){
 				printf("Client %s disconnected\n", cn->name);
 				client = client->next;
+				savePlayer(*getPlayerByName(cn->players, cn->name));
 				removeClient(clients, cn);
 				removePlayerByName(cn->players, cn->name);
 			}
