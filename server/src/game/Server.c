@@ -5,45 +5,17 @@
 
 #define MAX_LINE_SIZE 2000
 
-/* Le main de ce fichier sera enlevé par la suite, il me sert à faire des tests (Vincent)
-int main(int argc, char const *argv[]) {
-
-	block **map = getMapFromFile("server/saves/static.map");
- 	map = removeBlock(map, 64, 43);
- 	block ironBlock = {IRON, CAVE};
- 	map = addBlock(map, 64, 43, ironBlock);
- 	getFileFromMap(map, "server/saves/static2.map");
- 	map = getMapFromFile("server/saves/static2.map");
-
-	//player p0 = createPlayer("agurato");
-	//savePlayer(p0);
-    player p1 = loadPlayer("agurato");
-    block woodBlock = {WOOD, SKY};
-    addBlockToInv(&p1, ironBlock);
-    addBlockToInv(&p1, woodBlock);
-    removeBlockFromInv(&p1, 0);
-    removeBlockFromInv(&p1, 1);
-    int i=0;
-
-    printf("%d, %d\n", p1.position[0], p1.position[1]);
-    for(i=0 ; i<INV_SIZE ; i++) {
-        printf("%s-%d\n", getBlockName(p1.inventory[i].desc.type), p1.inventory[i].number);
-    }
-
-    //displayMap(map);
-
-    return 0;
-}
-*/
-
-Map* getMapFromFile(char *filePath) {
+Map* getMapFromFile(char *name) {
 
 	char mapBlock;
 	FILE *mapFile;
 	block **map;
 	Map* endMap = malloc(sizeof(Map));
+	endMap->name = name;
 	int x=0, y=0;
 	int* spawn = malloc(2*sizeof(int));
+	char* filePath = calloc(strlen("server/saves/.map") + strlen(name) + 1, sizeof(char));
+	sprintf(filePath, "server/saves/%s.map", name);
 
 	map = malloc(SIZE_MAX_X * sizeof(block *));
 	if(map != NULL) {
@@ -112,6 +84,7 @@ Map* getMapFromFile(char *filePath) {
 	}
 	else{
 		printf("Problem with map file\n");
+		return NULL;
 	}
 
 	endMap->map = map;
@@ -119,22 +92,26 @@ Map* getMapFromFile(char *filePath) {
 	return endMap;
 }
 
-void getFileFromMap(Map map, char *filePath) {
+void getFileFromMap(Map* map) {
 
 	FILE *mapFile;
 	char mapBlock;
-	mapFile = fopen(filePath, "w+");
+	char* filePath = calloc(strlen("server/saves/.map") + strlen(map->name) + 1, sizeof(char));
+	char* filePathTemp = calloc(strlen("server/saves/2.map") + strlen(map->name) + 1, sizeof(char));
+	sprintf(filePath, "server/saves/%s.map", map->name);
+	sprintf(filePathTemp, "server/saves/%s2.map", map->name);
+	mapFile = fopen(filePathTemp, "w+");
 	int x=0, y=0;
 
 	if(mapFile != NULL) {
 		for(y=0 ; y<SIZE_MAX_Y ; y++) {
 			for(x=0 ; x<SIZE_MAX_X ; x++) {
 				//mapBlock = fgetc(mapFile);
-				switch(map.map[x][y].type) {
+				switch(map->map[x][y].type) {
 					case NONE:
-						switch(map.map[x][y].back) {
+						switch(map->map[x][y].back) {
 							case SKY:
-								if((x == map.spawn[0]) && (y == map.spawn[1])){
+								if((x == map->spawn[0]) && (y == map->spawn[1])){
 									mapBlock = '9';
 								}
 								else{
@@ -169,8 +146,11 @@ void getFileFromMap(Map map, char *filePath) {
 			}
 			fputc('\n', mapFile);
 		}
-
 		fclose(mapFile);
+		rename(filePathTemp, filePath);
+	}
+	else{
+		printf("Problem to loading the map\n");
 	}
 }
 

@@ -22,12 +22,12 @@ int main(int argc, char** argv){
 	int* descGl = malloc(2*sizeof(int));
 	int* descSn = malloc(2*sizeof(int));
 
-	if(argc != 2){
+	if(argc != 3){
 		printf("Not expected arguments\n");
 		return BAD_NUMBER_OF_ARGUMENTS;
 	}
 
-	sn.port = atoi(argv[1]);
+	sn.port = atoi(argv[2]);
 
 	if(sn.port == 0){
 		printf("Number expected for port\n");
@@ -44,8 +44,13 @@ int main(int argc, char** argv){
 	gl.stopMutex = &glStopMutex;
 	gl.mapMutex = &glMapMutex;
 	gl.desc = descGl;
-	gl.map = getMapFromFile("server/saves/static.map");
+	gl.map = getMapFromFile(argv[1]);
 	gl.listPlayer = createListPlayer();
+
+	if(gl.map == NULL){
+		printf("Bad file for map\n");
+		return INCORRECT_ARGUMENT;
+	}
 
 	sn.thread = &thread_network;
 	sn.desc = descSn;

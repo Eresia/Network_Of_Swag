@@ -14,11 +14,11 @@
 
 #define NB_MAX_TRY 5
 
-/*typedef struct CheckClient CheckClient;
+typedef struct CheckClient CheckClient;
 struct CheckClient{
-	ListPlayer* players;
 	ListClient* clients;
-};*/
+	Map* map;
+};
 
 void* checkIfClientIsConnected(void*);
 

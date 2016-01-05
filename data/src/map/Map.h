@@ -21,6 +21,7 @@ typedef struct Map Map;
 struct Map{
 	block** map;
 	int* spawn;
+	char* name;
 };
 
 block** createVoidMap();

@@ -1,8 +1,10 @@
 #include "CheckClient.h"
+#include "../game/Server.h"
 
 void* checkIfClientIsConnected(void* clients_void){
 
-	ListClient* clients = (ListClient*) clients_void;
+	CheckClient* cc = (CheckClient*) clients_void;
+	ListClient* clients = cc->clients;
 
 	while(true){
 		ItemList client = clients->firstItem;
@@ -22,6 +24,7 @@ void* checkIfClientIsConnected(void* clients_void){
 				client = client->next;
 			}
 		}
+		getFileFromMap(cc->map);
 		sleep(1);
 	}
 

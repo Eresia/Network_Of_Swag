@@ -175,7 +175,6 @@ void parse_Protocole (Process* p, char* datagramme) {
 				}
 				pos_XChar = strtok(NULL, "_");
 				pos_YChar = strtok(NULL, "-");
-
 				if((pseudo != NULL) && (pos_XChar != NULL) && (pos_YChar != NULL)){
 
 					int pos_X = atoi(pos_XChar);
@@ -209,10 +208,10 @@ void parse_Protocole (Process* p, char* datagramme) {
 					break;
 				}
 			}
-
 			if(isOk){
 				p->players = dp;
 				p->nbPlayers = nbPlayers;
+				isOk = true;
 				first = true;
 				for (i = player->position[0]-((NB_LIGNE+2*MARGE)/2) ; i < player->position[0]+((NB_LIGNE+2*MARGE)/2)  ; i++) {
 					for (j = player->position[1]-((NB_COLONNE+2*MARGE)/2); j < player->position[1]+((NB_COLONNE+2*MARGE)/2) ; j++) {
@@ -224,14 +223,23 @@ void parse_Protocole (Process* p, char* datagramme) {
 							else {
 								case_actuel = strtok(NULL, "-") ;
 							}
-							//printf("i : %d, j : %d\n", i, j);
-							map_tab[i][j].type = atoi(case_actuel) ;
-							map_tab[i][j].back = SKY ;
-							#ifdef DEBUG
-							//printf("%d ", map_tab[i][j].type) ;
-							#endif
+							if(case_actuel != NULL){
+								//printf("i : %d, j : %d\n", i, j);
+								map_tab[i][j].type = atoi(case_actuel) ;
+								map_tab[i][j].back = SKY ;
+								#ifdef DEBUG
+								//printf("%d ", map_tab[i][j].type) ;
+								#endif
+							}
+							else{
+								isOk = false;
+								break;
+							}
 						}
 
+					}
+					if(!isOk){
+						break;
 					}
 					#ifdef DEBUG
 					//printf("\n") ;
@@ -239,7 +247,9 @@ void parse_Protocole (Process* p, char* datagramme) {
 
 				}
 				//block** mapTemp = p->map;
-				p->map = map_tab;
+				if(isOk){
+					p->map = map_tab;
+				}
 				//freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
 
 				#ifdef DEBUG
@@ -274,8 +284,6 @@ void parse_Protocole (Process* p, char* datagramme) {
 			printf("Reception but bad arguments map : %p,  nbPlayersChar : %p, playersChar : %p, invChar : %p, fall : %p:\n\n", map, nbPlayersChar, playersChar, invChar, fall);
 			#endif
 		}
-
-
 	}
 	// Chat
 	else if (!strcmp(type, "2")) {

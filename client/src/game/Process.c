@@ -48,7 +48,6 @@ void move(Player* player, Move direction, block** map, client_network out){
 			}
 			else{
 				#ifdef DEBUG
-				printf("falling : %d\n", player->falling);
 				printf("Top direction not possible\n");
 				#endif
 			}

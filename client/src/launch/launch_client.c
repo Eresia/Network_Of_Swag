@@ -8,7 +8,7 @@ int main(int argc, char** argv){
 	client_network cn = malloc(sizeof(struct client_network_struct));
 	int port;
 
-	if(argc != 4){
+	if(argc != 4 && argc != 5){
 		printf("Not expected arguments\n");
 		return BAD_NUMBER_OF_ARGUMENTS;
 	}
@@ -38,7 +38,12 @@ int main(int argc, char** argv){
 	client.cn = cn;
 	client.isClosed = false;
 	cn->isClosed = &client.isClosed;
-
+	if(argc == 5){
+		client.logo = false;
+	}
+	else{
+		client.logo = true;
+	}
 
 
 	pthread_create(&graphic, NULL, launch_graphic, &client);

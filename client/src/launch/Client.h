@@ -9,6 +9,7 @@ struct Client{
 	Process* process;
 	client_network cn;
 	bool isClosed;
+	bool logo;
 };
 
 #endif

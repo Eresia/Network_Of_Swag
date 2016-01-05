@@ -72,65 +72,87 @@ void* bufferize_from_server(void* client_struct){
 	printf("[reseau]demarrage du thread ecoute de %s \n ",cn->serv_ip_addr);
 	#endif
 	int n, size;
+	fd_set rfds;
+	struct timeval tv;
+
 	while(*cn->isClosed == false){
 		/*sem_wait(cn->read_buffer_full);
 		sem_wait(cn->read_buffer_busy);*/
+		int iResult = 0;
 		size = sizeof(*cn->serv_struct);
-		if((n = recvfrom(cn->local_socket, cn->BUFF_IN, SIZE_MESSAGE_MAX+4, 0, (SOCKADDR*)cn->serv_struct, (socklen_t*) &size)) < 0)
+
+		FD_ZERO(&rfds);
+		FD_SET(cn->local_socket, &rfds);
+
+		tv.tv_sec = (long) 2;
+		tv.tv_usec = (long) 0;
+
+		iResult = select(cn->local_socket + 1, &rfds, (fd_set *) 0, (fd_set *) 0, &tv);
+		if(iResult > 0)
 		{
-			fprintf(stderr, "[reseau]erreur rcv from serveur \n");
-			*cn->isClosed = true;
-			pthread_exit(NULL);
-		}
-		else{
-			cn->BUFF_IN[n] = '\0';
-			char* buff = calloc(SIZE_MESSAGE_MAX+4, sizeof(char));
-			strcpy(buff, cn->BUFF_IN);
-			if(strcmp(strtok(buff, ","), "-2") == 0){
-				int nbParts = atoi(strtok(NULL, ""));
-				if(nbParts != 0){
-					bool isOk = true;
-					int total = 0, i;
-					buff = calloc(SIZE_MESSAGE_MAX*nbParts+1, sizeof(char));
-					for(i = 0; i < nbParts; i++){
-						memset(cn->BUFF_IN, 0, SIZE_MESSAGE_MAX);
-						if((n = recvfrom(cn->local_socket, cn->BUFF_IN, SIZE_MESSAGE_MAX+3, 0, (SOCKADDR*)cn->serv_struct, (socklen_t*) &size)) < 0)
-						{
-							isOk = false;
-							break;
-						}
-						else{
-							if(strcmp(strtok(cn->BUFF_IN, ","), "-3") == 0){
-								char* r = strtok(NULL, "");
-								if(r != NULL){
-									strcat(buff, r);
-									total += n-3;
+			if((n = recvfrom(cn->local_socket, cn->BUFF_IN, SIZE_MESSAGE_MAX+4, 0, (SOCKADDR*)cn->serv_struct, (socklen_t*) &size)) < 0)
+			{
+				fprintf(stderr, "[reseau]erreur rcv from serveur \n");
+				*cn->isClosed = true;
+				pthread_exit(NULL);
+			}
+			else{
+				cn->BUFF_IN[n] = '\0';
+				char* buff = calloc(SIZE_MESSAGE_MAX+4, sizeof(char));
+				strcpy(buff, cn->BUFF_IN);
+				if(strcmp(strtok(buff, ","), "-2") == 0){
+					int nbParts = atoi(strtok(NULL, ""));
+					if(nbParts != 0){
+						bool isOk = true;
+						int total = 0, i;
+						buff = calloc(SIZE_MESSAGE_MAX*nbParts+1, sizeof(char));
+						for(i = 0; i < nbParts; i++){
+							memset(cn->BUFF_IN, 0, SIZE_MESSAGE_MAX);
+							if((n = recvfrom(cn->local_socket, cn->BUFF_IN, SIZE_MESSAGE_MAX+3, 0, (SOCKADDR*)cn->serv_struct, (socklen_t*) &size)) < 0)
+							{
+								isOk = false;
+								break;
+							}
+							else{
+								if(strcmp(strtok(cn->BUFF_IN, ","), "-3") == 0){
+									char* r = strtok(NULL, "");
+									if(r != NULL){
+										strcat(buff, r);
+										total += n-3;
+									}
+									else{
+										isOk = false;
+										break;
+									}
 								}
 								else{
 									isOk = false;
 									break;
 								}
 							}
-							else{
-								isOk = false;
-								break;
-							}
+						}
+						if(isOk){
+							buff[total] = '\0';
+							parse_Protocole(c->process, buff);
 						}
 					}
-					if(isOk){
-						buff[total] = '\0';
-						parse_Protocole(c->process, buff);
-					}
 				}
+				else{
+					parse_Protocole(c->process, cn->BUFF_IN);
+				}
+				#ifdef DEBUG
+				//printf("[reseau]reception de %i octet \n"/*de %s \n" */, (int) n /*, cn->BUFF_IN*/);
+				#endif
+				memset(cn->BUFF_IN, 0, SIZE_MESSAGE_MAX+4);
 			}
-			else{
-				parse_Protocole(c->process, cn->BUFF_IN);
-			}
-			#ifdef DEBUG
-			//printf("[reseau]reception de %i octet \n"/*de %s \n" */, (int) n /*, cn->BUFF_IN*/);
-			#endif
-			memset(cn->BUFF_IN, 0, SIZE_MESSAGE_MAX+4);
 		}
+		else
+		{
+			printf("Server closed\n");
+			*cn->isClosed = true;
+			return NULL;
+		}
+
 
 		/*sem_post(cn->read_buffer_busy);
 		sem_post(cn->read_buffer_full);*/
@@ -141,7 +163,6 @@ void* bufferize_from_server(void* client_struct){
 
 void* bufferize_to_server(void* client_struct){
 	client_network cn = (client_network)  client_struct;
-	printf("Point : %p, %d\n", cn, *cn->isClosed);
 	#ifdef DEBUG
 	printf("[reseau]demarrage du thread envoie de %s \n ",cn->serv_ip_addr);
 	#endif
@@ -243,9 +264,12 @@ void* launch_network(void* client_struct){
 	send_to_server(cn, buff, strlen(buff));
 
 	pthread_join(beatThread, NULL);
-	//pthread_join(writerThread, NULL);
-	//pthread_join(receverThread, NULL);
+	pthread_join(writerThread, NULL);
+	pthread_join(receverThread, NULL);
 	free(cn);
 	closesocket(cn->local_socket);
+	#ifdef DEBUG
+	printf("Close network\n");
+	#endif
 	pthread_exit(NULL);
 }

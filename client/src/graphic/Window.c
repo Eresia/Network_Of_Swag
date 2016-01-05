@@ -6,6 +6,7 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 	Process* process = client->process;
 	pthread_t threadDisplay;
 	ScreenInfo* screenInfo = malloc(sizeof(ScreenInfo));
+	bool quit = false;
 	if(SDL_Init(SDL_INIT_VIDEO) == -1){
 		fprintf(stderr, "Erreur initialisation de la vidéo : %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);//
@@ -21,11 +22,20 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			SDL_Event event;
 			loadBmp();
 
+			if(client->logo){
+				//POUR LE TROLL
+				SDL_Surface* yogurt = SDL_LoadBMP("./client/src/graphic/image/projet_reseau_logo.bmp");
+				SDL_Rect logo = {310, 195, 375, 413};
+				SDL_BlitSurface(yogurt,NULL,SDL_GetWindowSurface(window), &logo);
+				SDL_UpdateWindowSurface(window);
+				sleep(2);
+			}
+
 			Player* player = process->player; //Player temporaire pour les test
-			block stone, iron;
+			/*block stone, iron;
 			stone.type = STONE;
 			iron.type = IRON;
-			/*addBlockToInv(player,iron); //Ajout de bloc pour tester la barre d'inventaire
+			addBlockToInv(player,iron); //Ajout de bloc pour tester la barre d'inventaire
 			addBlockToInv(player,stone);
 
 			printMap(window,map,27,37,selectedItem,player); //Print de test
@@ -41,8 +51,10 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 
 			while(client->isClosed == false){
 				//Boucle principale
-
-				client->isClosed = waitEvent(event,window,&selectedItem,player,process->map,client->cn); // Gére les évenements
+				quit = waitEvent(event,window,&selectedItem,player,process->map,client->cn); // Gére les évenements
+				if(quit){
+					client->isClosed = true;
+				}
 			}
 
 			pthread_join(threadDisplay, NULL);
@@ -56,6 +68,9 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 	}
 
 	SDL_Quit();
+	#ifdef DEBUG
+	printf("Close Graphic\n");
+	#endif
 	pthread_exit(NULL);
 }
 

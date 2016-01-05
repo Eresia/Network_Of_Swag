@@ -13,8 +13,8 @@ struct Server{
 	ServerNetwork sn;
 };
 
-Map* getMapFromFile(char *filePath);
-void getFileFromMap(Map map, char *filePath);
+Map* getMapFromFile(char *name);
+void getFileFromMap(Map* map);
 Player* loadPlayer(char *name);
 bool savePlayer(Player p);
 bool savePlayers(Player *p, int nbPlayers);

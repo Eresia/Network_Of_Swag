@@ -11,6 +11,9 @@ void* launch_network(void* server_void){
 	int result;
 	char* buff = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
 	pthread_t threadCheck;
+	CheckClient cc;
+	cc.clients = server->sn.clients;
+	cc.map = server->gl.map;
 
 	result = begin_listen(&socket, server->sn.port);
 	if(result != NO_ERROR){
@@ -20,7 +23,7 @@ void* launch_network(void* server_void){
 		pthread_exit(&result);
 	}
 
-	if(pthread_create(&threadCheck, NULL, checkIfClientIsConnected, server->sn.clients)){
+	if(pthread_create(&threadCheck, NULL, checkIfClientIsConnected, &cc)){
 		#ifdef DEBUG
 		  printf("Threads check not created\n");
 		#endif

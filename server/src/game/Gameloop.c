@@ -9,7 +9,6 @@ void* launch_gameloop(void* server_void){
 	bool stopServer;
 	char* buff;
 
-	gl->map = getMapFromFile("server/saves/static.map");
 	gl->listPlayer = createListPlayer();
 
 	do{
