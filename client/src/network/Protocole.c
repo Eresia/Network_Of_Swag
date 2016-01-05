@@ -287,7 +287,9 @@ void parse_Protocole (Process* p, char* datagramme) {
 	// Chat
 	else if (!strcmp(type, "2")) {
 		char* chat = strtok(NULL, ",") ;
-		printf("Chat : %s\n", chat);
+		if(chat != NULL){
+			printf("%s\n", chat);
+		}
 	}
 	else {
 		#ifdef DEBUG

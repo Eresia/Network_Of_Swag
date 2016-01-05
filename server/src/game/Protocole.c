@@ -1,8 +1,10 @@
 #include "Protocole.h"
 #include "Server.h"
+#include "../network/ListClient.h"
 
-void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
+void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* clients_void, int desc) {
 	int taille_data = 0 ;
+	ListClient* clients = (ListClient*) clients_void;
 
 	#ifdef DEBUG
 	printf("Parsing - pseudo : %s - datagram : %s\n", pseudo, datagramme);
@@ -175,10 +177,20 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, int desc) {
 		// Message
 		else if (!strcmp(type, "4")) {
 			char* message = strtok(NULL, "");
-
-			#ifdef DEBUG
-			printf("C'est un message chat : %s\n", message) ;
-			#endif
+			if(message != NULL){
+				#ifdef DEBUG
+				printf("C'est un message chat : %s\n", message) ;
+				#endif
+				char* complet = calloc(strlen(pseudo) + strlen(message) + 6, sizeof(char));
+				sprintf(complet, "2,%s : %s\n", pseudo, message);
+				ItemList item = clients->firstItem;
+				while(item != NULL){
+					if(strcmp(item->client->name, pseudo) != 0){
+						strcat(item->client->chat, complet);
+					}
+					item = item->next;
+				}
+			}
 		}
 		else {
 			#ifdef DEBUG

@@ -261,6 +261,7 @@ void* launch_network(void* client_struct){
 	printf("[reseau]lancement des threads\n");
 	#endif
 
+	sleep(1);
 	send_to_server(cn, buff, strlen(buff));
 
 	pthread_join(beatThread, NULL);

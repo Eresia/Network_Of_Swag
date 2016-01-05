@@ -6,7 +6,6 @@
 #include "DefineNetwork.h"
 #include "ClientNetwork.h"
 #include "ListClient.h"
-#include "CheckClient.h"
 
 #define NB_CLIENT_MAX 100
 

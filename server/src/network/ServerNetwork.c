@@ -1,5 +1,6 @@
 #include "ServerNetwork.h"
 #include "../game/Server.h"
+#include "CheckClient.h"
 
 void* launch_network(void* server_void){
 

@@ -16,7 +16,7 @@
 #include "../../../data/src/player/ListPlayer.h"
 #include "Gameloop.h"
 
-void parse_Protocole (char*, char*, Gameloop*, int) ;
+void parse_Protocole (char*, char*, Gameloop*, void*,  int) ;
 char* Requete_Maj (char*, ListPlayer*, Map*) ;
 char* Requete_Chat (char* messages) ;
 bool playerIsVisible(Player*, Player*);

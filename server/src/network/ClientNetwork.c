@@ -69,7 +69,7 @@ void* begin_communication(void* client_void){
 					//printf("Message send : %s\n", parts[i]);
 					#endif
 				}
-				memset(cn->chat, 0, 3000);
+				memset(cn->chat, 0, SIZE_MESSAGE_MAX);
 			}
 		}
 		else{

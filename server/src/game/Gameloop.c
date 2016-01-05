@@ -31,7 +31,7 @@ void* launch_gameloop(void* server_void){
 					#endif
 				}
 				else{
-					parse_Protocole(pseudo, cmd, gl, server->sn.desc[1]);
+					parse_Protocole(pseudo, cmd, gl, server->sn.clients, server->sn.desc[1]);
 				}
 			}
 		}
