@@ -3,8 +3,12 @@
 #include "../network/ListClient.h"
 
 void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* clients_void, int desc) {
-	int taille_data = 0 ;
-	ListClient* clients = (ListClient*) clients_void;
+	int taille_data;
+	ListClient* clients;
+	char* datagramme_b;
+	char* type;
+
+	clients = (ListClient*) clients_void;
 
 	#ifdef DEBUG
 	printf("Parsing - pseudo : %s - datagram : %s\n", pseudo, datagramme);
@@ -14,26 +18,28 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 	taille_data = strlen(datagramme) ;
 
 	/* On déclare un char[] de la taille de datagramme et on copie datagramme dedans.*/
-	char datagramme_b[taille_data] ;
+	datagramme_b = malloc(taille_data * sizeof(char));
 	strcpy (datagramme_b, datagramme) ;
 
 	/* On récupère le type de requête*/
-	char* type = strtok(datagramme_b, ",") ;
+	type = strtok(datagramme_b, ",") ;
 	#ifdef DEBUG
 	printf("type : %s\n\n", datagramme_b) ;
 	#endif
 
 	/* Nouveau joueur*/
 	if (!strcmp(type, "-1")) {
+		Player* newPlayer;
 		#ifdef DEBUG
 		printf("Parsing - New Player : %s\n", pseudo) ;
 		#endif
-		Player* newPlayer = loadPlayer(pseudo);
+		newPlayer = loadPlayer(pseudo);
 		if(newPlayer->position == NULL){
+			int* position;
 			#ifdef DEBUG
 			printf("It's a new player\n") ;
 			#endif
-			int* position = malloc(2*sizeof(int));
+			position = malloc(2*sizeof(int));
 			position[0] = gl->map->spawn[0];
 			position[1] = gl->map->spawn[1];
 			newPlayer->position = position;
@@ -51,7 +57,9 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 			write(desc, &newPlayer, sizeof(newPlayer));
 			if(gl->map->map[newPlayer->position[0]][newPlayer->position[1]+1].type == NONE){
 				pthread_t thread;
-				FallData* data = malloc(sizeof(FallData));
+				FallData* data;
+
+				data = malloc(sizeof(FallData));
 				data->player = newPlayer;
 				data->map = gl->map->map;
 				newPlayer->falling = true;
@@ -64,18 +72,21 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 	}
 	/* Déplacement*/
 	else{
-		Player* player = getPlayerByName(gl->listPlayer, pseudo);
+		Player* player;
+		player = getPlayerByName(gl->listPlayer, pseudo);
 		if(player == NULL){
 			#ifdef DEBUG
 			printf("Bad player\n") ;
 			#endif
 		}
 		if (!strcmp(type, "1")) {
-			char* dt = strtok(NULL, "");
+			Move direction;
+			char* dt;
+			dt = strtok(NULL, "");
 			#ifdef DEBUG
 			printf("C'est un déplacement vers : %s\n", dt) ;
 			#endif
-			Move direction = atoi(dt);
+			direction = atoi(dt);
 
 			switch(direction){
 				/*case BOT:
@@ -178,12 +189,14 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 		else if (!strcmp(type, "4")) {
 			char* message = strtok(NULL, "");
 			if(message != NULL){
+				ItemList item;
+				char* complet;
 				#ifdef DEBUG
 				printf("C'est un message chat : %s\n", message) ;
 				#endif
-				char* complet = calloc(strlen(pseudo) + strlen(message) + 6, sizeof(char));
+				complet = calloc(strlen(pseudo) + strlen(message) + 6, sizeof(char));
 				sprintf(complet, "2,%s : %s\n", pseudo, message);
-				ItemList item = clients->firstItem;
+				item = clients->firstItem;
 				while(item != NULL){
 					if(strcmp(item->client->name, pseudo) != 0){
 						strcat(item->client->chat, complet);
@@ -202,16 +215,17 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 
 /* Fonction qui créé le datagramme à envoyer à un joueur.*/
 char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
-	block** map = fullMap->map;
+	block** map;
 	char* requete;
 	char* req_dep;
-	char* map_char;;
+	char* map_char;
 	char* posPlayers;
 	char* inv;
 	int i;
 	int j;
 	Player* player;
 
+	map = fullMap->map;
 	req_dep = calloc(10000 + 1, sizeof(char));
 	map_char = calloc(5000, sizeof(char));
 	posPlayers = calloc(SIZE_MESSAGE_MAX, sizeof(char));

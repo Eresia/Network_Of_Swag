@@ -14,6 +14,7 @@ Map* getMapFromFile(char *name) {
 	int x, y;
 	int* spawn;
 	char* filePath;
+	block sky, cave, dirt, stone, wood, iron;
 
 	endMap = malloc(sizeof(Map));
 	endMap->name = name;
@@ -36,7 +37,6 @@ Map* getMapFromFile(char *name) {
 		return NULL;
 	}
 
-	block sky, cave, dirt, stone, wood, iron;
 	sky.type = NONE;
 	sky.back = SKY;
 	sky.type = NONE;
@@ -49,7 +49,7 @@ Map* getMapFromFile(char *name) {
 	sky.back = SKY;
 	sky.type = IRON;
 	sky.back = CAVE;
-	
+
 	mapFile = fopen(filePath, "r");
 
 	if(mapFile != NULL) {
@@ -109,13 +109,13 @@ void getFileFromMap(Map* map) {
 	char mapBlock;
 	char* filePath;
 	char* filePathTemp;
+	int x, y;
 
 	filePath = calloc(strlen("server/saves/.map") + strlen(map->name) + 1, sizeof(char));
 	filePathTemp = calloc(strlen("server/saves/2.map") + strlen(map->name) + 1, sizeof(char));
 	sprintf(filePath, "server/saves/%s.map", map->name);
 	sprintf(filePathTemp, "server/saves/%s2.map", map->name);
 	mapFile = fopen(filePathTemp, "w+");
-	int x, y;
 
 	if(mapFile != NULL) {
 		for(y=0 ; y<SIZE_MAX_Y ; y++) {

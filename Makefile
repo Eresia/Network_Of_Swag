@@ -1,7 +1,7 @@
 CC=gcc
 headName=h
 srcName=c
-CFLAGS=-Wall -pedantic -DDEBUG \`sdl2-config --cflags\`
+CFLAGS=-Wall -pedantic -Werror -Wextra -DDEBUG \`sdl2-config --cflags\`
 EFLAGS=-lpthread -g `sdl2-config --libs`
 
 server=server.out
