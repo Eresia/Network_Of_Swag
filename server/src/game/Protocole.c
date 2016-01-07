@@ -10,20 +10,20 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 	printf("Parsing - pseudo : %s - datagram : %s\n", pseudo, datagramme);
 	#endif
 
-	// Calcul de la taille de datagramme ;
+	/* Calcul de la taille de datagramme ;*/
 	taille_data = strlen(datagramme) ;
 
-	// On déclare un char[] de la taille de datagramme et on copie datagramme dedans.
+	/* On déclare un char[] de la taille de datagramme et on copie datagramme dedans.*/
 	char datagramme_b[taille_data] ;
 	strcpy (datagramme_b, datagramme) ;
 
-	// On récupère le type de requête
+	/* On récupère le type de requête*/
 	char* type = strtok(datagramme_b, ",") ;
 	#ifdef DEBUG
 	printf("type : %s\n\n", datagramme_b) ;
 	#endif
 
-	// Nouveau joueur
+	/* Nouveau joueur*/
 	if (!strcmp(type, "-1")) {
 		#ifdef DEBUG
 		printf("Parsing - New Player : %s\n", pseudo) ;
@@ -62,7 +62,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 			write(desc, NULL, sizeof(NULL));
 		}
 	}
-	// Déplacement
+	/* Déplacement*/
 	else{
 		Player* player = getPlayerByName(gl->listPlayer, pseudo);
 		if(player == NULL){
@@ -134,7 +134,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 			}
 
 		}
-		// Casse bloc
+		/* Casse bloc*/
 		else if (!strcmp(type, "2")) {
 			int position_x_bloc = atoi(strtok(NULL, ","));
 			int position_y_bloc = atoi(strtok(NULL, ","));
@@ -149,7 +149,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 				gl->map->map[position_x_bloc][position_y_bloc].type = NONE;
 			}
 		}
-		// Pose bloc
+		/* Pose bloc*/
 		else if (!strcmp(type, "3")) {
 			int position_x_bloc = atoi(strtok(NULL, ","));
 			int position_y_bloc = atoi(strtok(NULL, ","));
@@ -174,7 +174,7 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 			player->falling = true;
 			pthread_create(&thread, NULL, fall, data);
 		}
-		// Message
+		/* Message*/
 		else if (!strcmp(type, "4")) {
 			char* message = strtok(NULL, "");
 			if(message != NULL){
@@ -200,28 +200,33 @@ void parse_Protocole (char* pseudo, char* datagramme, Gameloop* gl, void* client
 	}
 }
 
-// Fonction qui créé le datagramme à envoyer à un joueur.
+/* Fonction qui créé le datagramme à envoyer à un joueur.*/
 char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
-	//printf("Spawn : %d, %d\n", fullMap->spawn[0], fullMap->spawn[1]);
 	block** map = fullMap->map;
 	char* requete;
-	char* req_dep = calloc(10000 + 1, sizeof(char));
-	//char map_char[(((NB_LIGNE+2*MARGE)*(NB_COLONNE+2*MARGE))*2)+1] ;
-	char* map_char = calloc(5000, sizeof(char));
-	char* posPlayers = calloc(SIZE_MESSAGE_MAX, sizeof(char));
-	char* inv = calloc(SIZE_MESSAGE_MAX, sizeof(char));
-	int i = 0 ;
-	int j = 0 ;
+	char* req_dep;
+	char* map_char;;
+	char* posPlayers;
+	char* inv;
+	int i;
+	int j;
+	Player* player;
 
-	Player* player = getPlayerByName(players, pseudo);
+	req_dep = calloc(10000 + 1, sizeof(char));
+	map_char = calloc(5000, sizeof(char));
+	posPlayers = calloc(SIZE_MESSAGE_MAX, sizeof(char));
+	inv = calloc(SIZE_MESSAGE_MAX, sizeof(char));
+	player = getPlayerByName(players, pseudo);
+
 	if(player != NULL){
-		int nbPlayers = 0;
-
+		int nbPlayers;
 		ItemListPlayer item = players->firstItem;
+
+		nbPlayers = 0;
+
 		while(item != NULL){
 			if(playerIsVisible(player, item->player)){
 				sprintf(posPlayers, "%s%s_%d_%d-", posPlayers, item->player->name, item->player->position[0], item->player->position[1]);
-				//printf("posPlayers : %s\n", posPlayers);
 				nbPlayers++;
 			}
 			item = item->next;
@@ -239,19 +244,12 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 			sprintf(inv, "%s%d_%d-", inv, player->inventory[i].desc.type, player->inventory[i].number);
 		}
 
-		// On créé le datagramme
+		/* On créé le datagramme*/
 		sprintf(req_dep, "1,%s,%d,%s,%s,%d%c", map_char, nbPlayers, posPlayers, inv, player->falling, '\0');
 
 		requete = calloc((strlen(req_dep)+1), sizeof(char)) ;
 		strcpy(requete, req_dep) ;
 		requete[strlen(req_dep)] = '\0';
-
-		/*printf("SizeMax : %d\n", SIZE_MESSAGE_MAX);
-		printf("Map : %d\n", (int) strlen(map_char));
-		printf("nbPlayer : %d\n", nbPlayers);
-		printf("posPlayers : %s - taille : %d\n", posPlayers, (int) strlen(posPlayers));
-		printf("inv : %s - taille : %d\n", inv, (int) strlen(inv));
-		printf("All : %d\n", (int) strlen(requete));*/
 
 		return requete ;
 	}
@@ -260,19 +258,19 @@ char* Requete_Maj (char* pseudo, ListPlayer* players, Map* fullMap) {
 	}
 }
 
-// Fonction qui envoie le chat.
+/* Fonction qui envoie le chat.*/
 char* Requete_Message (char* message) {
-	char* Requete ;
+	char* requete ;
 	char req_mess[1503] = "" ;
 
-	// On créé le protocole.
+	/* On créé le protocole.*/
 	strcat(req_mess, "4,");
 	strcat(req_mess, message) ;
 
-	Requete = calloc((strlen(req_mess)+1), sizeof(char)) ;
-	strcpy(Requete, req_mess) ;
+	requete = calloc((strlen(req_mess)+1), sizeof(char)) ;
+	strcpy(requete, req_mess) ;
 
-	return Requete ;
+	return requete ;
 }
 
 bool playerIsVisible(Player* player, Player* other){

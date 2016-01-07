@@ -4,15 +4,18 @@
 
 void* launch_network(void* server_void){
 
-	Server* server = (Server*) server_void;
-	server->sn.clients = createList();
+	Server* server;
 	bool stopServer;
+	int result;
+	char* buff;
+	CheckClient cc;
+	pthread_t threadCheck;
 	SOCKET socket;
 	SOCKADDR_IN* clientInfo;
-	int result;
-	char* buff = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
-	pthread_t threadCheck;
-	CheckClient cc;
+
+	server = (Server*) server_void;
+	server->sn.clients = createList();
+	buff = calloc(SIZE_MESSAGE_MAX + 1, sizeof(char));
 	cc.clients = server->sn.clients;
 	cc.map = server->gl.map;
 
@@ -37,10 +40,11 @@ void* launch_network(void* server_void){
 		clientInfo = waitConnexion(socket, buff, 1, 0);
 
 		if(clientInfo != NULL){
+			char* result;
 			#ifdef DEBUG
 			printf("Message received : %s\n", buff);
 			#endif
-			char* result = calloc(strlen(buff) + 1, sizeof(char));
+			result = calloc(strlen(buff) + 1, sizeof(char));
 			strcpy(result, buff);
 			result = strtok(result, ",");
 			if(strcmp(result, "new") == 0){
@@ -58,7 +62,9 @@ void* launch_network(void* server_void){
 					#endif
 				}
 				else{
-					char* pseudo = malloc(11*sizeof(char));
+					char* pseudo;
+
+					pseudo = malloc(11*sizeof(char));
 					strncat(pseudo, strtok(NULL, ""), 11);
 					pseudo = take_begin(pseudo, 11, FORBIDEN_CHAR, strlen(FORBIDEN_CHAR));
 					if(strlen(pseudo) == 0){
@@ -76,9 +82,12 @@ void* launch_network(void* server_void){
 							#endif
 						}
 						else{
-							ClientNetwork* cn = malloc(sizeof(ClientNetwork));
+							ClientNetwork* cn;
 							pthread_t* thread_com;
-							pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+							pthread_mutex_t mutex;
+
+							cn = malloc(sizeof(ClientNetwork));
+							pthread_mutex_init(&mutex, NULL);
 
 							thread_com = malloc(sizeof(pthread_t));
 
@@ -99,11 +108,13 @@ void* launch_network(void* server_void){
 					            #endif
 							}
 							else{
+								char* string;
+								Player** player;
 								addClient(server->sn.clients, cn);
-								char* string = calloc(4 + strlen(pseudo) + 1, sizeof(char));
+								string = calloc(4 + strlen(pseudo) + 1, sizeof(char));
 								sprintf(string, "%s%s", pseudo, ",-1");
 								write(server->gl.desc[1], string, strlen(string));
-								Player** player = malloc(sizeof(Player*));
+								player = malloc(sizeof(Player*));
 								read(server->sn.desc[0], player, sizeof(Player*));
 								if(player == NULL){
 									#ifdef DEBUG
@@ -117,8 +128,11 @@ void* launch_network(void* server_void){
 				}
 			}
 			else{
-				ClientNetwork* cn = getClientByInfo(server->sn.clients, clientInfo);
-				char* cleanBuff = take_begin(buff, strlen(buff), FORBIDEN_CHAR, strlen(FORBIDEN_CHAR));
+				ClientNetwork* cn;
+				char* cleanBuff;
+
+				cn = getClientByInfo(server->sn.clients, clientInfo);
+				cleanBuff = take_begin(buff, strlen(buff), FORBIDEN_CHAR, strlen(FORBIDEN_CHAR));
 				if(cn == NULL){
 					#ifdef DEBUG
 					  printf("Unknow client\n");
@@ -129,7 +143,8 @@ void* launch_network(void* server_void){
 						cn->nbTry = 0;
 					}
 					else{
-						char* string = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
+						char* string;
+						string = calloc(SIZE_MESSAGE_MAX + 11, sizeof(char));
 						sprintf(string, "%s%c%s", cn->name, ',', cleanBuff);
 						write(server->gl.desc[1], string, strlen(string));
 					}
@@ -151,7 +166,7 @@ void* launch_network(void* server_void){
 	pthread_exit(&result);
 }
 
-//Fonction qui lance l'écoute du serveur
+/*Fonction qui lance l'écoute du serveur*/
 int begin_listen(SOCKET* server_udp, int port){
 
 	SOCKADDR_IN info_udp;
@@ -169,12 +184,12 @@ int begin_listen(SOCKET* server_udp, int port){
 	printf("Socket creation successfull\n");
 	#endif
 
-	//On assigne les informations UDP de connexions au serveur
+	/*On assigne les informations UDP de connexions au serveur*/
 	info_udp.sin_addr.s_addr = htonl(INADDR_ANY); /* Accept any adress */
 	info_udp.sin_family = AF_INET;
 	info_udp.sin_port = htons(port);
 
-	//On bind le serveur en UDP sur le port s'il est disponible
+	/*On bind le serveur en UDP sur le port s'il est disponible*/
 	if(bind (*server_udp, (SOCKADDR *) &info_udp, sizeof(info_udp)) == SOCKET_ERROR)
 	{
 		#ifdef DEBUG

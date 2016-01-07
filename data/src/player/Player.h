@@ -15,8 +15,6 @@ typedef struct Player Player;
 struct Player {
 	char *name;
 	int* position;
-	// 0 <= position[0] < 2880 -> correspond à x
-	// 0 <= position[1] < 2400 -> correspond à y
 	invCase inventory[INV_SIZE];
 	bool falling;
 };

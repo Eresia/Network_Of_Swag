@@ -1,24 +1,24 @@
 #ifndef DEFINE_CLIENT
 #define DEFINE_CLIENT
 
-	//General includes
+	/*General includes*/
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include <string.h>
 	#include <unistd.h>
 	#include <errno.h>
-	//Threads include
+	/*Threads include*/
 	#include <pthread.h>
 	#include <semaphore.h>
 
-	//Socket include
+	/*Socket include*/
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
 	#include <netdb.h>
 
-	//For Windows or Linux :
+	/*For Windows or Linux :*/
 	#ifdef WIN32
 
 		#include <winsock2.h>
@@ -44,13 +44,6 @@
 	#include "../../../data/src/usefull/Usefull.h"
 
 	typedef struct client_network_struct{
-		//pthread_t* client_beat_thread, *recever_thread, *writer_thread;
-		/*sem_t*  write_buffer_full;
-		sem_t* write_buffer_empty;
-		sem_t* write_buffer_busy;
-		sem_t* read_buffer_full;
-		sem_t* read_buffer_empty;
-		sem_t* read_buffer_busy;*/
 		bool*  isClosed;
 		char serv_ip_addr[16];
 		int	 serv_port;

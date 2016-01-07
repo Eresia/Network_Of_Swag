@@ -19,14 +19,10 @@ struct ServerNetwork{
 	int* desc;
 };
 
-//server-client
+/*server-client*/
 void* launch_network(void*);
-/*void* listenClient(void* );
-void* speakClient(void* );
-void* testClientConnexion(void* );
-void* serverIsFull(void* client);*/
 
-//sockets
+/*sockets*/
 int begin_listen(SOCKET*, int);
 SOCKADDR_IN* waitConnexion(SOCKET, char*, int, int);
 

@@ -3,15 +3,14 @@
 
 void* begin_communication(void* client_void){
 
-	printf("In The thread\n");
-
-	ClientNetwork* cn = (ClientNetwork*) client_void;
+	ClientNetwork* cn;
 	int size;
 	bool isClosed, isInList;
 	char* buff;
 	int i, j, n, nbParts;
 	char** parts;
 
+	cn = (ClientNetwork*) client_void;
 	size = sizeof(*cn->info);
 	isInList = isPlayerInListByName(cn->players, cn->name);
 
@@ -42,10 +41,10 @@ void* begin_communication(void* client_void){
 						#endif
 					}
 					else{
-						#ifdef DEBUG
-						//printf("Size send : %d\n", n);
-						//printf("Message send : %s\n", parts[i]);
-						#endif
+						/*#ifdef DEBUG
+						printf("Size send : %d\n", n);
+						printf("Message send : %s\n", parts[i]);
+						#endif*/
 					}
 				}
 
@@ -64,10 +63,10 @@ void* begin_communication(void* client_void){
 					#endif
 				}
 				else{
-					#ifdef DEBUG
-					//printf("Size send : %d\n", n);
-					//printf("Message send : %s\n", parts[i]);
-					#endif
+					/*#ifdef DEBUG
+					printf("Size send : %d\n", n);
+					printf("Message send : %s\n", parts[i]);
+					#endif*/
 				}
 				memset(cn->chat, 0, SIZE_MESSAGE_MAX);
 			}

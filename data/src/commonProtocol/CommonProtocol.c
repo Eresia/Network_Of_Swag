@@ -32,9 +32,9 @@ void* fall(void* player_void){
 	do{
 		usleep(500000);
 		if(map[player->position[0]][player->position[1]+1].type == NONE){
-			#ifdef DEBUG
-			//printf("%s is falling\n", player->name);
-			#endif
+			/*#ifdef DEBUG
+			printf("%s is falling\n", player->name);
+			#endif*/
 			player->position[1]++;
 			if(map[player->position[0]][player->position[1]+1].type != NONE){
 				player->falling = false;

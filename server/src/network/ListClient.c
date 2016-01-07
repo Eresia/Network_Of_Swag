@@ -39,7 +39,7 @@ void addClient(ListClient* list, ClientNetwork* client){
 }
 
 void removeClient(ListClient* list, ClientNetwork* client){
-	return removeClientByName(list, client->name);
+	removeClientByName(list, client->name);
 }
 
 void removeClientByName(ListClient* list, char* name){
@@ -51,8 +51,6 @@ void removeClientByName(ListClient* list, char* name){
 	else if(strcmp(list->firstItem->client->name,name) == 0){
 		ItemList next = list->firstItem->next;
 		list->firstItem->client->isClosed = true;
-		//closesocket(list->firstItem->client->socket_tcp);
-		//closesocket(list->firstItem->client->socket_udp);
 		free(list->firstItem);
 		list->firstItem = next;
 		list->nb--;
@@ -197,8 +195,6 @@ void closeAll_Item(ItemList item){
 	}
 	else{
 		ItemList next = item->next;
-		//closesocket(item->client->socket_tcp);
-		//closesocket(item->client->socket);
 		free(item->client);
 		free(item);
 		closeAll_Item(next);

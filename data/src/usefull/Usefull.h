@@ -17,7 +17,7 @@
 #define INCORRECT_ARGUMENT 2
 #define OTHER_ERROR 3
 
-#define HEIGHT 700 //Taille de la fenêtre
+#define HEIGHT 700 /*Taille de la fenêtre*/
 #define WIDTH 1000
 
 #define PIX_PER_BLOCK 24
@@ -25,13 +25,13 @@
 #define NB_LIGNE ((WIDTH/PIX_PER_BLOCK) +1)
 #define NB_COLONNE ((HEIGHT/PIX_PER_BLOCK) + 1)
 
-//Boolean utilisation
+/*Boolean utilisation*/
 enum bool{
 	false = 0, true = 1
 };
 typedef enum bool bool;
 
-//Clean a descriptor after a "fgets"
+/*Clean a descriptor after a "fgets"*/
 void clean(const char *, FILE *);
 
 bool startsWith(const char *, const char *);

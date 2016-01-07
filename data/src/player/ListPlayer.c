@@ -43,7 +43,7 @@ int addPlayer(ListPlayer* list, Player* player){
 }
 
 void removePlayer(ListPlayer* list, Player* player){
-	return removePlayerByName(list, player->name);
+	removePlayerByName(list, player->name);
 }
 
 void removePlayerByName(ListPlayer* list, char* name){
@@ -54,8 +54,6 @@ void removePlayerByName(ListPlayer* list, char* name){
 	}
 	else if(strcmp(list->firstItem->player->name,name) == 0){
 		ItemListPlayer next = list->firstItem->next;
-		//closesocket(list->firstItem->client->socket_tcp);
-		//closesocket(list->firstItem->client->socket_udp);
 		free(list->firstItem);
 		list->firstItem = next;
 		list->nb--;
@@ -113,8 +111,6 @@ int removePlayerByName_Item(ItemListPlayer item, char* name){
 	}
 	else if(strcmp(item->next->player->name, name) == 0){
 		ItemListPlayer next = item->next->next;
-		//closesocket(item->client->socket_tcp);
-		//closesocket(item->client->socket_udp);
 		free(item->next);
 		item->next = next;
 		return NO_ERROR;

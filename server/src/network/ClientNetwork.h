@@ -21,8 +21,6 @@ struct ClientNetwork{
 	char* chat;
 };
 
-//#include "CheckClient.h"
-
 void* begin_communication(void*);
 
 #endif

@@ -55,7 +55,6 @@ int main(int argc, char** argv){
 	sn.thread = &thread_network;
 	sn.desc = descSn;
 
-	//server = malloc(sizeof(Server));
 	server.gl = gl;
 	server.sn = sn;
 

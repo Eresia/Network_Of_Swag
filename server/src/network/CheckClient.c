@@ -19,9 +19,9 @@ void* checkIfClientIsConnected(void* clients_void){
 				removePlayerByName(cn->players, cn->name);
 			}
 			else{
-				#ifdef DEBUG
-				//printf("nbTry : %d\n", cn->nbTry);
-				#endif
+				/*#ifdef DEBUG
+				printf("nbTry : %d\n", cn->nbTry);
+				#endif*/
 				client = client->next;
 			}
 		}

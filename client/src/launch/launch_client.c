@@ -19,15 +19,6 @@ int main(int argc, char** argv){
 		return INCORRECT_ARGUMENT;
 	}
 
-	/*Map* map = getMapFromFile("server/saves/static.map");
-	process->map = map->map;
-	process->player = createPlayer(argv[1]);
-	process->player->position[0] = map->spawn[0];
-	process->player->position[1] = map->spawn[1];
-	process->map = map->map;
-	process->nbPlayers = 1;
-	process->players = malloc(sizeof(DisplayPlayer));*/
-
 	process->map = createVoidMap();
 	process->player = createPlayer(argv[1]);
 	process->nbPlayers = 0;
@@ -52,7 +43,6 @@ int main(int argc, char** argv){
 
 	pthread_join(graphic, NULL);
 	pthread_join(network, NULL);
-	//pthread_join(shell, NULL);
 
 	return NO_ERROR;
 }

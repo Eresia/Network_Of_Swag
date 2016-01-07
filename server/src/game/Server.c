@@ -10,11 +10,15 @@ Map* getMapFromFile(char *name) {
 	char mapBlock;
 	FILE *mapFile;
 	block **map;
-	Map* endMap = malloc(sizeof(Map));
+	Map* endMap;
+	int x, y;
+	int* spawn;
+	char* filePath;
+
+	endMap = malloc(sizeof(Map));
 	endMap->name = name;
-	int x=0, y=0;
-	int* spawn = malloc(2*sizeof(int));
-	char* filePath = calloc(strlen("server/saves/.map") + strlen(name) + 1, sizeof(char));
+	spawn = malloc(2*sizeof(int));
+	filePath = calloc(strlen("server/saves/.map") + strlen(name) + 1, sizeof(char));
 	sprintf(filePath, "server/saves/%s.map", name);
 
 	map = malloc(SIZE_MAX_X * sizeof(block *));
@@ -32,13 +36,20 @@ Map* getMapFromFile(char *name) {
 		return NULL;
 	}
 
-	block sky = {NONE, SKY};
-	block cave = {NONE, CAVE};
-	block dirt = {DIRT, SKY};
-	block stone = {STONE, CAVE};
-	block wood = {WOOD, SKY};
-	block iron = {IRON, CAVE};
-
+	block sky, cave, dirt, stone, wood, iron;
+	sky.type = NONE;
+	sky.back = SKY;
+	sky.type = NONE;
+	sky.back = CAVE;
+	sky.type = DIRT;
+	sky.back = SKY;
+	sky.type = STONE;
+	sky.back = CAVE;
+	sky.type = WOOD;
+	sky.back = SKY;
+	sky.type = IRON;
+	sky.back = CAVE;
+	
 	mapFile = fopen(filePath, "r");
 
 	if(mapFile != NULL) {
@@ -96,17 +107,20 @@ void getFileFromMap(Map* map) {
 
 	FILE *mapFile;
 	char mapBlock;
-	char* filePath = calloc(strlen("server/saves/.map") + strlen(map->name) + 1, sizeof(char));
-	char* filePathTemp = calloc(strlen("server/saves/2.map") + strlen(map->name) + 1, sizeof(char));
+	char* filePath;
+	char* filePathTemp;
+
+	filePath = calloc(strlen("server/saves/.map") + strlen(map->name) + 1, sizeof(char));
+	filePathTemp = calloc(strlen("server/saves/2.map") + strlen(map->name) + 1, sizeof(char));
 	sprintf(filePath, "server/saves/%s.map", map->name);
 	sprintf(filePathTemp, "server/saves/%s2.map", map->name);
 	mapFile = fopen(filePathTemp, "w+");
-	int x=0, y=0;
+	int x, y;
 
 	if(mapFile != NULL) {
 		for(y=0 ; y<SIZE_MAX_Y ; y++) {
 			for(x=0 ; x<SIZE_MAX_X ; x++) {
-				//mapBlock = fgetc(mapFile);
+				/*mapBlock = fgetc(mapFile);*/
 				switch(map->map[x][y].type) {
 					case NONE:
 						switch(map->map[x][y].back) {
@@ -155,10 +169,11 @@ void getFileFromMap(Map* map) {
 }
 
 Player* loadPlayer(char *name) {
-    Player* p = createPlayer(name);
-
+    Player* p;
     FILE *file;
     char filePath[80];
+
+	p = createPlayer(name);
     sprintf(filePath, "server/saves/%s.player", name);
     file = fopen(filePath, "r");
 
@@ -177,8 +192,11 @@ Player* loadPlayer(char *name) {
         for(i=0 ; i<INV_SIZE ; i++) {
             if(fgets(line, 25, file) != NULL) {
                 char *array[2];
-                int j=0;
-                char *split = strtok(line, "-");
+                int j;
+                char *split;
+
+				split = strtok(line, "-");
+				j = 0;
                 while(split != NULL) {
                     array[j++] = split;
                     split = strtok(NULL, "-");
@@ -209,8 +227,8 @@ bool savePlayer(Player p) {
 	file = fopen(filePath, "w+");
 
 	if(file != NULL) {
+		int i;
 		fprintf(file, "%d\n%d\n", p.position[0], p.position[1]);
-		int i=0;
 		for(i=0 ; i<INV_SIZE ; i++) {
 			fprintf(file, "%s-%d\n", getBlockName(p.inventory[i].desc.type), p.inventory[i].number);
 		}
@@ -223,8 +241,10 @@ bool savePlayer(Player p) {
 }
 
 bool savePlayers(Player *p, int nbPlayers) {
-    int i=0;
-    int savesOk=0;
+    int i;
+    int savesOk;
+
+	savesOk=0;
     for(i=0 ; i<nbPlayers ; i++) {
         if(savePlayer(p[i])) {
             savesOk ++;
@@ -271,8 +291,10 @@ void displayMap(block **map) {
 }
 
 void displayMapPlayer(block **map, int player[]) {
-	int startX = 0, startY = 0, x, y;
+	int startX, startY, x, y;
 
+	startX = 0;
+	startY = 0;
 	if(player[0] > 90) {
 		startX = 60;
 	}

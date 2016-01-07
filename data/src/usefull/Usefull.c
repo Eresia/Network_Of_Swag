@@ -13,7 +13,7 @@ void clean(const char *buffer, FILE *fp)
     }
 }
 
-// Dit si str commence par pre
+/* Dit si str commence par pre*/
 bool startsWith(const char *str, const char *pre) {
     size_t lenpre = strlen(pre),
            lenstr = strlen(str);

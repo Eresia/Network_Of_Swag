@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <math.h>
 
-//Threads include
+/*Threads include*/
 #include <pthread.h>
 
 #include "../../../data/src/usefull/Usefull.h"

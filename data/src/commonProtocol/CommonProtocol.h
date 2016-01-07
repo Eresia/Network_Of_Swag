@@ -16,9 +16,9 @@
 #define SIZE_MESSAGE_MAX 1400
 #define FORBIDEN_CHAR " \n"
 
-//Bot never used
-typedef enum Move Move;
+/*Bot never used*/
 enum Move {BOT=2, LEFT=4, RIGHT=6, TOP=8};
+typedef enum Move Move;
 
 typedef struct FallData FallData;
 struct FallData{

@@ -1,23 +1,23 @@
 #ifndef DEFINE_NETWORK
 #define DEFINE_NETWORK
 
-//General includes
+/*General includes*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
-//Threads include
+/*Threads include*/
 #include <pthread.h>
 
-//Socket include
+/*Socket include*/
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 
-//For Windows or Linux :
+/*For Windows or Linux :*/
 #ifdef WIN32
 
 #include <winsock2.h>

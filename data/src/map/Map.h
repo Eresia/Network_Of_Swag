@@ -9,7 +9,6 @@
 /* Les valeurs des enum BlockType et Background sont amenée à être supprimées par la suite */
 typedef enum {NONE=0, VOID=1, IRON=41, WOOD=43, DIRT=42, STONE=47} BlockType;
 typedef enum {CAVE=40, SKY=44} Background;
-// typedef enum {false, true} Boolean;
 
 typedef struct block block;
 struct block{

@@ -88,7 +88,7 @@ char* Requete_Pose_Bloc (int x, int y, int index) {
 	char* Requete ;
 	char* req = calloc(30, sizeof(char)) ;
 
-	// On créé le datagramme
+	/*On créé le datagramme*/
 	sprintf(req, "3,%d,%d,%d", x, y, index);
 
 
@@ -107,7 +107,7 @@ char* Requete_Message (char* message) {
 	char* Requete ;
 	char* req_mess = calloc(1400, sizeof(char)) ;
 
-	// On créé le protocole.
+	/*On créé le protocole.*/
 	sprintf(req_mess, "4,%s", message);
 
 	Requete = calloc((strlen(req_mess)+1), sizeof(char)) ;
@@ -117,49 +117,64 @@ char* Requete_Message (char* message) {
 }
 
 void parse_Protocole (Process* p, char* datagramme) {
-	Player* player = p->player;
-	int taille_data = 0 ;
+	Player* player;
+	int taille_data;
+	char* datagramme_b;
+	char* type;
 
-	// On calcul la taille de datagramme
+	player = p->player;
+
+	/*On calcul la taille de datagramme*/
 	taille_data = strlen(datagramme) ;
+	datagramme_b = malloc(taille_data* sizeof(char));
 
-	// On créé un char[] de la taille de datagramme et on copie datagramme dedans.
-	char datagramme_b[taille_data] ;
+	/*On créé un char[] de la taille de datagramme et on copie datagramme dedans.*/
 	strcpy(datagramme_b, datagramme) ;
 
-	// On récupére le type de la requête
-	char* type = strtok(datagramme_b, ",") ;
+	/*On récupére le type de la requête*/
+	type = strtok(datagramme_b, ",") ;
 
-	#ifdef DEBUG
-	//printf("type : %s\n", type) ;
-	#endif
+	/*#ifdef DEBUG
+	printf("type : %s\n", type) ;
+	#endif*/
 
-	// Map autour du joueur + position des autres joueurs
+	/* Map autour du joueur + position des autres joueurs*/
 	if(!strcmp(type, "1")) {
-		char* map = strtok(NULL, ",") ;
-		char* nbPlayersChar = strtok(NULL, ",");
-		char* playersChar = strtok(NULL, ",");
-		char* invChar = strtok(NULL, ",") ;
-		char* fall = strtok(NULL, ",");
+		char* map;
+		char* nbPlayersChar;
+		char* playersChar;
+		char* invChar;
+		char* fall;
+
+		map = strtok(NULL, ",") ;
+		nbPlayersChar = strtok(NULL, ",");
+		playersChar = strtok(NULL, ",");
+		invChar = strtok(NULL, ",") ;
+		fall = strtok(NULL, ",");
 
 		if((map != NULL) && (nbPlayersChar != NULL) && (atoi(nbPlayersChar) != 0) && (playersChar != NULL) && (invChar != NULL) && (fall != NULL)){
-			#ifdef DEBUG
-			//printf("Reception \n") ;
-			#endif
-			// Récupération de la map autour
+			/*#ifdef DEBUG
+			printf("Reception \n") ;
+			#endif*/
+			/* Récupération de la map autour*/
 			char* case_actuel ;
-			int i = 0 ;
-			int j = 0 ;
+			int i;
+			int j;
 			bool first = true;
-			block** map_tab = malloc(SIZE_MAX_X * sizeof(block*));
+			int nbPlayers;
+			bool isOk, byPlayer;
+			DisplayPlayer* dp;
+			block** map_tab;
+			map_tab = malloc(SIZE_MAX_X * sizeof(block*));
 			for(i = 0; i < SIZE_MAX_X; i++){
 				map_tab[i] = malloc(SIZE_MAX_Y * sizeof(block));
 			}
 
-			// Récupération des joueurs et de leurs positions
-			int nbPlayers = atoi(nbPlayersChar);
-			bool isOk = true, byPlayer = false;
-			DisplayPlayer* dp = malloc((nbPlayers) * sizeof(DisplayPlayer));
+			/* Récupération des joueurs et de leurs positions*/
+			nbPlayers = atoi(nbPlayersChar);
+			isOk = true;
+			byPlayer = false;
+			dp = malloc((nbPlayers) * sizeof(DisplayPlayer));
 			i = 0;
 			first = true;
 
@@ -176,12 +191,15 @@ void parse_Protocole (Process* p, char* datagramme) {
 				pos_YChar = strtok(NULL, "-");
 				if((pseudo != NULL) && (pos_XChar != NULL) && (pos_YChar != NULL)){
 
-					int pos_X = atoi(pos_XChar);
-					int pos_Y = atoi(pos_YChar);
+					int pos_X;
+					int pos_Y;
 
-					#ifdef DEBUG
-					//printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
-					#endif
+					pos_X = atoi(pos_XChar);
+					pos_Y = atoi(pos_YChar);
+
+					/*#ifdef DEBUG
+					printf("Pseudo = %s, pos x = %d, pos y = %d\n", pseudo, pos_X, pos_Y) ;
+					#endif*/
 
 					if(strcmp(p->player->name, pseudo) == 0){
 						player->position[0] = pos_X;
@@ -208,6 +226,7 @@ void parse_Protocole (Process* p, char* datagramme) {
 				}
 			}
 			if(isOk){
+				bool begin;
 				p->players = dp;
 				p->nbPlayers = nbPlayers;
 				isOk = true;
@@ -223,12 +242,11 @@ void parse_Protocole (Process* p, char* datagramme) {
 								case_actuel = strtok(NULL, "-") ;
 							}
 							if(case_actuel != NULL){
-								//printf("i : %d, j : %d\n", i, j);
 								map_tab[i][j].type = atoi(case_actuel) ;
 								map_tab[i][j].back = SKY ;
-								#ifdef DEBUG
-								//printf("%d ", map_tab[i][j].type) ;
-								#endif
+								/*#ifdef DEBUG
+								printf("%d ", map_tab[i][j].type) ;
+								#endif*/
 							}
 							else{
 								isOk = false;
@@ -240,24 +258,23 @@ void parse_Protocole (Process* p, char* datagramme) {
 					if(!isOk){
 						break;
 					}
-					#ifdef DEBUG
-					//printf("\n") ;
-					#endif
+					/*#ifdef DEBUG
+					printf("\n") ;
+					#endif*/
 
 				}
-				//block** mapTemp = p->map;
 				if(isOk){
 					p->map = map_tab;
 				}
-				//freeMap(mapTemp, SIZE_MAX_X, SIZE_MAX_Y);
 
-				#ifdef DEBUG
-				//printf("Remplissage inv : %s\n", invChar) ;
-				#endif
-				bool begin = true;
+				/*#ifdef DEBUG
+				printf("Remplissage inv : %s\n", invChar) ;
+				#endif*/
+				begin = true;
 
 				for(i = 0; i < INV_SIZE; i++){
 					block b;
+					invCase c;
 					if(begin){
 						b.type = atoi(strtok(invChar, "_")) ;
 						begin = false;
@@ -266,16 +283,15 @@ void parse_Protocole (Process* p, char* datagramme) {
 						b.type = atoi(strtok(NULL, "_")) ;
 					}
 					b.back = SKY;
-					invCase c;
 					c.desc = b;
 					c.number = atoi(strtok(NULL, "-")) ;
 					player->inventory[i] = c;
 				}
 
 				player->falling = atoi(fall);
-				#ifdef DEBUG
-				//printf("Reception successfull\n") ;
-				#endif
+				/*#ifdef DEBUG
+				printf("Reception successfull\n") ;
+				#endif*/
 			}
 		}
 		else{
@@ -284,9 +300,10 @@ void parse_Protocole (Process* p, char* datagramme) {
 			#endif
 		}
 	}
-	// Chat
+	/* Chat*/
 	else if (!strcmp(type, "2")) {
-		char* chat = strtok(NULL, ",") ;
+		char* chat;
+		chat = strtok(NULL, ",") ;
 		if(chat != NULL){
 			printf("%s\n", chat);
 		}
