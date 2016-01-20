@@ -45,9 +45,8 @@ int main(int argc, char** argv){
 		client.logo = true;
 	}
 
-
-	pthread_create(&graphic, NULL, launch_graphic, &client);
 	pthread_create(&network, NULL, launch_network, &client);
+	pthread_create(&graphic, NULL, launch_graphic, &client);
 	pthread_create(&shell, NULL, launch_shell, &client);
 
 	pthread_join(graphic, NULL);

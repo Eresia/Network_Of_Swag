@@ -126,7 +126,6 @@ bool waitEvent(SDL_Event event, SDL_Window* window, int* selectedItem, Player* p
 				}
 				else if(event.button.button == SDL_BUTTON_RIGHT){
 					SDL_GetMouseState(&mouseX,&mouseY);
-					printf("pX : %d, pY : %d, mX : %d, mY : %d\n", player->position[0], player->position[1], mouseX, mouseY);
 					breakBlock(player, mouseX/24 + player->position[0] - NB_LIGNE/2, mouseY/24 + player->position[1] - NB_COLONNE/2, map, out);
 					SDL_UpdateWindowSurface(window);
 				}

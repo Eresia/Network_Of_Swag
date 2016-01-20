@@ -22,14 +22,16 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			SDL_Event event;
 			loadBmp();
 
-			if(client->logo){
+			/*if(client->logo){
 				//POUR LE TROLL
 				SDL_Surface* yogurt = SDL_LoadBMP("./client/src/graphic/image/projet_reseau_logo.bmp");
 				SDL_Rect logo = {310, 195, 375, 413};
 				SDL_BlitSurface(yogurt,NULL,SDL_GetWindowSurface(window), &logo);
 				SDL_UpdateWindowSurface(window);
 				sleep(2);
-			}
+			}*/
+
+
 
 			Player* player = process->player; //Player temporaire pour les test
 			/*block stone, iron;
@@ -47,7 +49,6 @@ void* launch_graphic(void * client_void){ //Main de test (Bruno)
 			screenInfo->selectedItem = &selectedItem;
 			screenInfo->isClosed = &(client->isClosed);
 			pthread_create(&threadDisplay, NULL, displayOnScreen, screenInfo);
-
 
 			while(client->isClosed == false){
 				//Boucle principale
@@ -81,13 +82,15 @@ void* displayOnScreen(void* screen_void){
 
 	while(*screen->isClosed == false){
 		int i;
-		printMap(screen->win, process->map, *screen->selectedItem, process->player);
-		printInventory(screen->win, *screen->selectedItem, process->player);
-		printPlayer(screen->win, (NB_LIGNE / 2), (NB_COLONNE / 2));
-		for(i = 0; i < process->nbPlayers - 1; i++){
-			printPlayer(screen->win, process->players[i].x - process->player->position[0] + (NB_LIGNE / 2), process->players[i].y - process->player->position[1] + (NB_COLONNE / 2));
+		if(process->player->position[0] != -1){
+			printMap(screen->win, process->map, *screen->selectedItem, process->player);
+			printInventory(screen->win, *screen->selectedItem, process->player);
+			printPlayer(screen->win, (NB_LIGNE / 2), (NB_COLONNE / 2));
+			for(i = 0; i < process->nbPlayers - 1; i++){
+				printPlayer(screen->win, process->players[i].x - process->player->position[0] + (NB_LIGNE / 2), process->players[i].y - process->player->position[1] + (NB_COLONNE / 2));
+			}
+			SDL_UpdateWindowSurface(screen->win);
 		}
-		SDL_UpdateWindowSurface(screen->win);
 		usleep(1000000/30);
 	}
 
